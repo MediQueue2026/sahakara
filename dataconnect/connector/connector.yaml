@@ -1,0 +1,5 @@
+connectorId: sahakara
+generate:
+  dartSdk:
+    - outputDir: ../../app/lib/dataconnect_generated
+      package: sahakara

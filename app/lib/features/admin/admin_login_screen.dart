@@ -1,6 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../../core/supabase_client.dart';
+import '../../core/firebase_client.dart';
 
 class AdminLoginScreen extends StatefulWidget {
   const AdminLoginScreen({super.key});
@@ -21,14 +22,14 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
       _error = null;
     });
     try {
-      await supabase.auth.signInWithPassword(
+      await auth.signInWithEmailAndPassword(
         email: _email.text.trim(),
         password: _password.text,
       );
-    } catch (e) {
-      setState(() => _error = e.toString());
+    } on FirebaseAuthException catch (e) {
+      setState(() => _error = e.message ?? e.code);
     } finally {
-      setState(() => _busy = false);
+      if (mounted) setState(() => _busy = false);
     }
   }
 
@@ -77,7 +78,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                   ],
                   const SizedBox(height: 12),
                   const Text(
-                    'Create staff accounts from Supabase → Authentication → Users.',
+                    'Staff accounts are created by the team — see the README.',
                     style: TextStyle(color: Colors.grey, fontSize: 12),
                   ),
                 ],

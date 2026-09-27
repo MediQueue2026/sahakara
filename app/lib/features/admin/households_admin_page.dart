@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../core/supabase_client.dart';
+import '../../core/firebase_client.dart';
+import '../../dataconnect_generated/sahakara.dart';
 
 class HouseholdsAdminPage extends StatefulWidget {
   const HouseholdsAdminPage({super.key});
@@ -10,7 +11,7 @@ class HouseholdsAdminPage extends StatefulWidget {
 }
 
 class _HouseholdsAdminPageState extends State<HouseholdsAdminPage> {
-  List<Map<String, dynamic>> _households = [];
+  List<AdminHouseholdsHouseholds> _households = [];
   bool _loading = true;
   String? _error;
 
@@ -22,11 +23,8 @@ class _HouseholdsAdminPageState extends State<HouseholdsAdminPage> {
 
   Future<void> _load() async {
     try {
-      final rows = await supabase
-          .from('households')
-          .select('id, name, address, created_at, household_members(count)')
-          .order('created_at', ascending: false);
-      setState(() => _households = List<Map<String, dynamic>>.from(rows));
+      final result = await db.adminHouseholds().execute();
+      setState(() => _households = result.data.households);
     } catch (e) {
       setState(() => _error = e.toString());
     } finally {
@@ -55,14 +53,14 @@ class _HouseholdsAdminPageState extends State<HouseholdsAdminPage> {
               children: _households
                   .map(
                     (h) => ListTile(
-                      title: Text(h['name'] as String),
+                      title: Text(h.name),
                       subtitle: Text(
-                        (h['address'] as String?)?.isNotEmpty == true
-                            ? h['address']
+                        h.address?.isNotEmpty == true
+                            ? h.address!
                             : 'No address on file',
                       ),
                       trailing: Text(
-                        '${(h['household_members'] as List?)?.firstOrNull?['count'] ?? 0} member(s)',
+                        '${h.householdMembers_on_household.length} member(s)',
                       ),
                     ),
                   )

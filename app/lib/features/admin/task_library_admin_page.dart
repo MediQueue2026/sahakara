@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../core/supabase_client.dart';
-
-const _categories = ['kitchen', 'cleaning', 'laundry', 'cooking', 'other'];
+import '../../core/firebase_client.dart';
+import '../../dataconnect_generated/sahakara.dart';
 
 class TaskLibraryAdminPage extends StatefulWidget {
   const TaskLibraryAdminPage({super.key});
@@ -12,11 +11,11 @@ class TaskLibraryAdminPage extends StatefulWidget {
 }
 
 class _TaskLibraryAdminPageState extends State<TaskLibraryAdminPage> {
-  List<Map<String, dynamic>> _tasks = [];
+  List<LibraryTasksLibraryTasks> _tasks = [];
   bool _loading = true;
   String? _error;
 
-  String _category = _categories.first;
+  TaskCategory _category = TaskCategory.values.first;
   final _nameEn = TextEditingController();
   final _nameSi = TextEditingController();
   final _nameTa = TextEditingController();
@@ -31,13 +30,9 @@ class _TaskLibraryAdminPageState extends State<TaskLibraryAdminPage> {
   Future<void> _load() async {
     setState(() => _loading = true);
     try {
-      final rows = await supabase
-          .from('task_library')
-          .select()
-          .order('category')
-          .order('name_en');
+      final result = await db.libraryTasks().execute();
       setState(() {
-        _tasks = List<Map<String, dynamic>>.from(rows);
+        _tasks = result.data.libraryTasks;
         _error = null;
       });
     } catch (e) {
@@ -51,12 +46,11 @@ class _TaskLibraryAdminPageState extends State<TaskLibraryAdminPage> {
     if (_nameEn.text.trim().isEmpty) return;
     setState(() => _saving = true);
     try {
-      await supabase.from('task_library').insert({
-        'category': _category,
-        'name_en': _nameEn.text.trim(),
-        'name_si': _nameSi.text.trim(),
-        'name_ta': _nameTa.text.trim(),
-      });
+      await db
+          .addLibraryTask(category: _category, nameEn: _nameEn.text.trim())
+          .nameSi(_nameSi.text.trim())
+          .nameTa(_nameTa.text.trim())
+          .execute();
       _nameEn.clear();
       _nameSi.clear();
       _nameTa.clear();
@@ -70,7 +64,7 @@ class _TaskLibraryAdminPageState extends State<TaskLibraryAdminPage> {
 
   Future<void> _remove(String id) async {
     try {
-      await supabase.from('task_library').delete().eq('id', id);
+      await db.deleteLibraryTask(id: id).execute();
       await _load();
     } catch (e) {
       setState(() => _error = e.toString());
@@ -95,10 +89,12 @@ class _TaskLibraryAdminPageState extends State<TaskLibraryAdminPage> {
               runSpacing: 12,
               crossAxisAlignment: WrapCrossAlignment.end,
               children: [
-                DropdownButton<String>(
+                DropdownButton<TaskCategory>(
                   value: _category,
-                  items: _categories
-                      .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                  items: TaskCategory.values
+                      .map(
+                        (c) => DropdownMenuItem(value: c, child: Text(c.name)),
+                      )
                       .toList(),
                   onChanged: (v) => setState(() => _category = v!),
                 ),
@@ -151,13 +147,13 @@ class _TaskLibraryAdminPageState extends State<TaskLibraryAdminPage> {
               children: _tasks
                   .map(
                     (t) => ListTile(
-                      title: Text(t['name_en'] as String),
+                      title: Text(t.nameEn),
                       subtitle: Text(
-                        '${t['category']} · ${t['name_si'] ?? '—'} · ${t['name_ta'] ?? '—'}',
+                        '${t.category.stringValue} · ${t.nameSi ?? '—'} · ${t.nameTa ?? '—'}',
                       ),
                       trailing: IconButton(
                         icon: const Icon(Icons.delete_outline),
-                        onPressed: () => _remove(t['id'] as String),
+                        onPressed: () => _remove(t.id),
                       ),
                     ),
                   )

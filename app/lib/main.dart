@@ -1,24 +1,35 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'core/env.dart';
+import 'core/firebase_client.dart';
 import 'core/theme.dart';
 import 'features/admin/admin_app.dart';
+import 'firebase_options.dart';
 import 'mobile_app.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  if (Env.supabaseUrl.isEmpty || Env.supabaseAnonKey.isEmpty) {
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } on UnsupportedError {
     runApp(const _MissingConfigApp());
     return;
   }
 
-  await Supabase.initialize(
-    url: Env.supabaseUrl,
-    publishableKey: Env.supabaseAnonKey,
-  );
+  if (Env.useEmulators) {
+    // The Android emulator reaches the host machine at 10.0.2.2.
+    final host = !kIsWeb && defaultTargetPlatform == TargetPlatform.android
+        ? '10.0.2.2'
+        : 'localhost';
+    await auth.useAuthEmulator(host, 9099);
+    db.dataConnect.useDataConnectEmulator(host, 9399);
+  }
+
   runApp(const RootApp());
 }
 
@@ -35,10 +46,9 @@ class _MissingConfigApp extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: Text(
-              'Missing Supabase credentials.\n\n'
-              'Copy env.example.json to env.json, fill in your project URL '
-              'and anon key, then run:\n\n'
-              'flutter run --dart-define-from-file=env.json',
+              'Firebase is not configured yet.\n\n'
+              'From the app/ folder, run:\n\n'
+              'flutterfire configure --project=sahakara-f78dd',
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.titleMedium,
             ),
@@ -50,8 +60,7 @@ class _MissingConfigApp extends StatelessWidget {
 }
 
 /// One Flutter codebase, two front doors: the owner/maid experience on
-/// mobile, and the staff admin panel on web (see env.example.json for how
-/// to supply Supabase credentials to either).
+/// mobile, and the staff admin panel on web.
 class RootApp extends StatelessWidget {
   const RootApp({super.key});
 

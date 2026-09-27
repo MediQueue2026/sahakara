@@ -10,13 +10,11 @@ import '../../core/strings.dart';
 /// membership already exists by the time she logs in.
 class HouseholdSetupScreen extends StatefulWidget {
   final LanguageController lang;
-  final String ownerId;
   final VoidCallback onDone;
 
   const HouseholdSetupScreen({
     super.key,
     required this.lang,
-    required this.ownerId,
     required this.onDone,
   });
 
@@ -38,7 +36,6 @@ class _HouseholdSetupScreenState extends State<HouseholdSetupScreen> {
     });
     try {
       await AppData.createHousehold(
-        ownerId: widget.ownerId,
         name: _nameController.text.trim(),
         address: _addressController.text.trim(),
       );

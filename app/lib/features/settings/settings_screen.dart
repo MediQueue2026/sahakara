@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import '../../core/app_data.dart';
 import '../../core/app_language.dart';
 import '../../core/strings.dart';
-import '../../core/supabase_client.dart';
+import '../../core/firebase_client.dart';
 
 class SettingsScreen extends StatelessWidget {
   final LanguageController lang;
-  final Map<String, dynamic> profile;
+  final Profile profile;
 
   const SettingsScreen({super.key, required this.lang, required this.profile});
 
@@ -19,14 +19,8 @@ class SettingsScreen extends StatelessWidget {
         return ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            Text(
-              profile['name'] as String? ?? '',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            Text(
-              profile['phone'] as String? ?? '',
-              style: const TextStyle(color: Colors.grey),
-            ),
+            Text(profile.name, style: Theme.of(context).textTheme.titleMedium),
+            Text(profile.phone, style: const TextStyle(color: Colors.grey)),
             const SizedBox(height: 24),
             Text(
               Strings.of('language', current),
@@ -42,7 +36,7 @@ class SettingsScreen extends StatelessWidget {
                       selected: current == l,
                       onSelected: (_) {
                         lang.value = l;
-                        AppData.setLanguage(profile['id'] as String, l.name);
+                        AppData.setLanguage(l.name);
                       },
                     ),
                   )
@@ -50,7 +44,7 @@ class SettingsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 32),
             OutlinedButton.icon(
-              onPressed: () => supabase.auth.signOut(),
+              onPressed: () => auth.signOut(),
               icon: const Icon(Icons.logout),
               label: Text(Strings.of('signOut', current)),
             ),

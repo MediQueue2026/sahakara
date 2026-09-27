@@ -39,24 +39,25 @@ A localized, accessible, and offline-first household operations platform built t
 
 - **App:** Flutter — one codebase for the owner/maid mobile app (Android/iOS)
   and the staff admin panel (Flutter Web), optimized for low-end devices.
-- **Backend:** [Supabase](https://supabase.com) — Postgres database, phone
-  OTP auth, storage, realtime, row-level security per household.
+- **Backend:** [Firebase](https://firebase.google.com) — Data Connect
+  (PostgreSQL on Cloud SQL, schema and access rules in GraphQL) and Auth
+  (phone OTP, email/password for staff).
 - **Offline Sync:** local-first caching layer for low-connectivity
   environments (planned — see `app/README.md`).
-- **Notifications:** Firebase Cloud Messaging, triggered by Supabase Edge
-  Functions (planned).
-- **Audio & Media:** localized audio clips / image assets in Supabase
-  Storage, linked from the task library.
+- **Notifications:** Firebase Cloud Messaging (planned).
+- **Audio & Media:** localized audio clips / image assets in Cloud Storage
+  for Firebase, linked from the task library (planned).
 
 ## 🚀 Getting started
 
-1. [`supabase/README.md`](supabase/README.md) — create a Supabase project
-   and run the database schema.
-2. [`app/README.md`](app/README.md) — configure credentials and run the
-   Flutter app (mobile) or the admin panel (`flutter run -d chrome`).
+1. [`dataconnect/README.md`](dataconnect/README.md) — run the backend
+   locally with the Firebase emulators, or deploy it to Firebase.
+2. [`app/README.md`](app/README.md) — connect the Flutter app to Firebase
+   and run it (mobile) or the admin panel (`flutter run -d chrome`).
 
 ```
 sahakara/
-  app/         Flutter app — mobile (owner/maid) + web (admin panel)
-  supabase/    Database schema, RLS policies, seed data
+  app/          Flutter app — mobile (owner/maid) + web (admin panel)
+  dataconnect/  Database schema, access-controlled operations, seed data
+  firebase.json Firebase CLI config (emulators, deploy)
 ```

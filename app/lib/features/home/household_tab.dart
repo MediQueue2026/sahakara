@@ -6,8 +6,8 @@ import '../../core/strings.dart';
 
 class HouseholdTab extends StatefulWidget {
   final LanguageController lang;
-  final Map<String, dynamic> profile;
-  final Map<String, dynamic> membership;
+  final Profile profile;
+  final Membership membership;
 
   const HouseholdTab({
     super.key,
@@ -21,13 +21,13 @@ class HouseholdTab extends StatefulWidget {
 }
 
 class _HouseholdTabState extends State<HouseholdTab> {
-  late Future<List<Map<String, dynamic>>> _members;
+  late Future<List<Member>> _members;
   final _phoneController = TextEditingController(text: '+94');
   bool _busy = false;
   String? _error;
 
-  String get _householdId => widget.membership['household_id'] as String;
-  bool get _isOwner => widget.membership['role'] == 'owner';
+  String get _householdId => widget.membership.household.id;
+  bool get _isOwner => widget.membership.role.stringValue == 'owner';
 
   @override
   void initState() {
@@ -57,7 +57,7 @@ class _HouseholdTabState extends State<HouseholdTab> {
 
   @override
   Widget build(BuildContext context) {
-    final household = widget.membership['households'] as Map<String, dynamic>?;
+    final household = widget.membership.household;
     return ValueListenableBuilder<AppLanguage>(
       valueListenable: widget.lang,
       builder: (context, lang, _) {
@@ -65,16 +65,16 @@ class _HouseholdTabState extends State<HouseholdTab> {
           padding: const EdgeInsets.all(16),
           children: [
             Text(
-              household?['name'] ?? '',
+              household.name,
               style: Theme.of(context).textTheme.headlineSmall,
             ),
-            if ((household?['address'] as String?)?.isNotEmpty == true)
+            if (household.address?.isNotEmpty == true)
               Text(
-                household!['address'],
+                household.address!,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
             const SizedBox(height: 20),
-            FutureBuilder<List<Map<String, dynamic>>>(
+            FutureBuilder<List<Member>>(
               future: _members,
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
@@ -86,12 +86,8 @@ class _HouseholdTabState extends State<HouseholdTab> {
                       .map(
                         (m) => Card(
                           child: ListTile(
-                            title: Text(
-                              (m['users']?['name'] as String?) ??
-                                  m['users']?['phone'] ??
-                                  '',
-                            ),
-                            subtitle: Text(m['role'] as String),
+                            title: Text(m.user.name),
+                            subtitle: Text(m.role.stringValue),
                           ),
                         ),
                       )

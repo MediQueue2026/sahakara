@@ -8,8 +8,8 @@ import 'contract_detail_screen.dart';
 /// Everyone else: their own contract, straight away.
 class ContractScreen extends StatelessWidget {
   final LanguageController lang;
-  final Map<String, dynamic> profile;
-  final Map<String, dynamic> membership;
+  final Profile profile;
+  final Membership membership;
 
   const ContractScreen({
     super.key,
@@ -20,27 +20,25 @@ class ContractScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isOwner = membership['role'] == 'owner';
+    final isOwner = membership.role.stringValue == 'owner';
 
     if (!isOwner) {
       return ContractDetailScreen(
         lang: lang,
-        memberId: membership['id'] as String,
-        memberName: profile['name'] as String? ?? '',
+        memberId: membership.id,
+        memberName: profile.name,
         editable: false,
       );
     }
 
-    return FutureBuilder<List<Map<String, dynamic>>>(
-      future: AppData.fetchHouseholdMembers(
-        membership['household_id'] as String,
-      ),
+    return FutureBuilder<List<Member>>(
+      future: AppData.fetchHouseholdMembers(membership.household.id),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const Center(child: CircularProgressIndicator());
         }
         final staff = snapshot.data!
-            .where((m) => m['role'] != 'owner')
+            .where((m) => m.role.stringValue != 'owner')
             .toList();
         if (staff.isEmpty) {
           return const Center(
@@ -53,19 +51,15 @@ class ContractScreen extends StatelessWidget {
               .map(
                 (m) => Card(
                   child: ListTile(
-                    title: Text(
-                      (m['users']?['name'] as String?) ??
-                          m['users']?['phone'] ??
-                          '',
-                    ),
-                    subtitle: Text(m['role'] as String),
+                    title: Text(m.user.name),
+                    subtitle: Text(m.role.stringValue),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () => Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (_) => ContractDetailScreen(
                           lang: lang,
-                          memberId: m['id'] as String,
-                          memberName: (m['users']?['name'] as String?) ?? '',
+                          memberId: m.id,
+                          memberName: m.user.name,
                           editable: true,
                         ),
                       ),

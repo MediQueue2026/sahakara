@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/app_data.dart';
 import '../../core/app_language.dart';
 import '../../core/strings.dart';
 import '../contract/contract_screen.dart';
@@ -12,8 +13,8 @@ import 'household_tab.dart';
 /// each tab decides internally what to show for the current role.
 class HomeShell extends StatefulWidget {
   final LanguageController lang;
-  final Map<String, dynamic> profile;
-  final Map<String, dynamic> membership;
+  final Profile profile;
+  final Membership membership;
 
   const HomeShell({
     super.key,

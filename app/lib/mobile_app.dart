@@ -1,9 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'core/app_data.dart';
 import 'core/app_language.dart';
-import 'core/supabase_client.dart';
+import 'core/firebase_client.dart';
 import 'features/auth/phone_login_screen.dart';
 import 'features/home/home_shell.dart';
 import 'features/onboarding/household_setup_screen.dart';
@@ -22,14 +22,14 @@ class _MobileAppState extends State<MobileApp> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<AuthState>(
-      stream: supabase.auth.onAuthStateChange,
+    return StreamBuilder<User?>(
+      stream: auth.authStateChanges(),
       builder: (context, snapshot) {
-        final session = supabase.auth.currentSession;
-        if (session == null) {
+        final user = snapshot.data;
+        if (user == null) {
           return PhoneLoginScreen(lang: lang);
         }
-        return _AuthedRouter(lang: lang);
+        return _AuthedRouter(key: ValueKey(user.uid), lang: lang);
       },
     );
   }
@@ -37,14 +37,14 @@ class _MobileAppState extends State<MobileApp> {
 
 class _AuthedRouter extends StatefulWidget {
   final LanguageController lang;
-  const _AuthedRouter({required this.lang});
+  const _AuthedRouter({super.key, required this.lang});
 
   @override
   State<_AuthedRouter> createState() => _AuthedRouterState();
 }
 
 class _AuthedRouterState extends State<_AuthedRouter> {
-  late Future<(Map<String, dynamic>, Map<String, dynamic>?)> _future;
+  late Future<(Profile, Membership?)> _future;
 
   @override
   void initState() {
@@ -52,13 +52,14 @@ class _AuthedRouterState extends State<_AuthedRouter> {
     _future = _bootstrap();
   }
 
-  Future<(Map<String, dynamic>, Map<String, dynamic>?)> _bootstrap() async {
+  Future<(Profile, Membership?)> _bootstrap() async {
     final profile = await AppData.ensureUserProfile();
-    final storedLang = profile['language'] as String?;
+    final storedLang = AppLanguage.values
+        .asNameMap()[profile.language.stringValue];
     if (storedLang != null) {
-      widget.lang.value = AppLanguage.values.byName(storedLang);
+      widget.lang.value = storedLang;
     }
-    final membership = await AppData.fetchMyMembership(profile['id'] as String);
+    final membership = await AppData.fetchMyMembership();
     return (profile, membership);
   }
 
@@ -83,11 +84,7 @@ class _AuthedRouterState extends State<_AuthedRouter> {
         }
         final (profile, membership) = snapshot.data!;
         if (membership == null) {
-          return HouseholdSetupScreen(
-            lang: widget.lang,
-            ownerId: profile['id'] as String,
-            onDone: refresh,
-          );
+          return HouseholdSetupScreen(lang: widget.lang, onDone: refresh);
         }
         return HomeShell(
           lang: widget.lang,

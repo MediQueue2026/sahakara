@@ -1,9 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../core/app_language.dart';
+import '../../core/firebase_client.dart';
 import '../../core/strings.dart';
-import '../../core/supabase_client.dart';
 
 class PhoneLoginScreen extends StatefulWidget {
   final LanguageController lang;
@@ -16,6 +16,7 @@ class PhoneLoginScreen extends StatefulWidget {
 class _PhoneLoginScreenState extends State<PhoneLoginScreen> {
   final _phoneController = TextEditingController(text: '+94');
   final _codeController = TextEditingController();
+  String? _verificationId;
   bool _codeSent = false;
   bool _busy = false;
   String? _error;
@@ -27,14 +28,22 @@ class _PhoneLoginScreenState extends State<PhoneLoginScreen> {
       _busy = true;
       _error = null;
     });
-    try {
-      await supabase.auth.signInWithOtp(phone: _phone);
-      setState(() => _codeSent = true);
-    } catch (e) {
-      setState(() => _error = e.toString());
-    } finally {
-      setState(() => _busy = false);
-    }
+    await auth.verifyPhoneNumber(
+      phoneNumber: _phone,
+      // Android can read the SMS itself and sign in without the code being
+      // typed; MobileApp's auth stream then rebuilds into the home shell.
+      verificationCompleted: auth.signInWithCredential,
+      verificationFailed: (e) => setState(() {
+        _error = e.message ?? e.code;
+        _busy = false;
+      }),
+      codeSent: (verificationId, _) => setState(() {
+        _verificationId = verificationId;
+        _codeSent = true;
+        _busy = false;
+      }),
+      codeAutoRetrievalTimeout: (_) {},
+    );
   }
 
   Future<void> _verifyCode() async {
@@ -43,16 +52,17 @@ class _PhoneLoginScreenState extends State<PhoneLoginScreen> {
       _error = null;
     });
     try {
-      await supabase.auth.verifyOTP(
-        phone: _phone,
-        token: _codeController.text.trim(),
-        type: OtpType.sms,
+      await auth.signInWithCredential(
+        PhoneAuthProvider.credential(
+          verificationId: _verificationId!,
+          smsCode: _codeController.text.trim(),
+        ),
       );
       // On success, MobileApp's auth stream rebuilds into the home shell.
-    } catch (e) {
-      setState(() => _error = e.toString());
+    } on FirebaseAuthException catch (e) {
+      setState(() => _error = e.message ?? e.code);
     } finally {
-      setState(() => _busy = false);
+      if (mounted) setState(() => _busy = false);
     }
   }
 

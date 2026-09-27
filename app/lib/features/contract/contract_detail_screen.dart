@@ -27,7 +27,7 @@ class ContractDetailScreen extends StatefulWidget {
 }
 
 class _ContractDetailScreenState extends State<ContractDetailScreen> {
-  Map<String, dynamic>? _contract;
+  CurrentContract? _contract;
   bool _loading = true;
   bool _busy = false;
   String? _error;
@@ -46,10 +46,10 @@ class _ContractDetailScreenState extends State<ContractDetailScreen> {
   Future<void> _load() async {
     final contract = await AppData.fetchCurrentContract(widget.memberId);
     if (contract != null) {
-      _payType = contract['pay_type'] as String;
-      _rateController.text = (contract['rate'] ?? '').toString();
-      _offDaysController.text = (contract['off_days'] ?? '').toString();
-      _hoursController.text = (contract['working_hours'] ?? '').toString();
+      _payType = contract.payType.stringValue;
+      _rateController.text = contract.rate.toString();
+      _offDaysController.text = contract.offDays ?? '';
+      _hoursController.text = contract.workingHours ?? '';
     }
     setState(() {
       _contract = contract;
@@ -110,13 +110,10 @@ class _ContractDetailScreenState extends State<ContractDetailScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _row(Strings.of('payType', lang), _contract!['pay_type']),
-        _row(Strings.of('rate', lang), '${_contract!['rate']}'),
-        _row(Strings.of('offDays', lang), _contract!['off_days'] ?? '—'),
-        _row(
-          Strings.of('workingHours', lang),
-          _contract!['working_hours'] ?? '—',
-        ),
+        _row(Strings.of('payType', lang), _contract!.payType.stringValue),
+        _row(Strings.of('rate', lang), '${_contract!.rate}'),
+        _row(Strings.of('offDays', lang), _contract!.offDays ?? '—'),
+        _row(Strings.of('workingHours', lang), _contract!.workingHours ?? '—'),
       ],
     );
   }

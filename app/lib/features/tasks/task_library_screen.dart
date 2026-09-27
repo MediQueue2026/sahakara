@@ -4,7 +4,7 @@ import '../../core/app_data.dart';
 import '../../core/app_language.dart';
 
 /// Read-only view of the shared task library, in the user's language.
-/// Turning a library entry into a household's recurring task_template is a
+/// Turning a library entry into a household's recurring TaskTemplate is a
 /// Sprint 2 feature — this is the Sprint 1 basics: everyone can browse it.
 class TaskLibraryScreen extends StatefulWidget {
   final LanguageController lang;
@@ -15,7 +15,7 @@ class TaskLibraryScreen extends StatefulWidget {
 }
 
 class _TaskLibraryScreenState extends State<TaskLibraryScreen> {
-  late Future<List<Map<String, dynamic>>> _tasks;
+  late Future<List<LibraryTask>> _tasks;
 
   @override
   void initState() {
@@ -28,7 +28,7 @@ class _TaskLibraryScreenState extends State<TaskLibraryScreen> {
     return ValueListenableBuilder<AppLanguage>(
       valueListenable: widget.lang,
       builder: (context, lang, _) {
-        return FutureBuilder<List<Map<String, dynamic>>>(
+        return FutureBuilder<List<LibraryTask>>(
           future: _tasks,
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
@@ -44,14 +44,14 @@ class _TaskLibraryScreenState extends State<TaskLibraryScreen> {
               itemBuilder: (context, i) {
                 final t = tasks[i];
                 final name = switch (lang) {
-                  AppLanguage.si => (t['name_si'] as String?) ?? t['name_en'],
-                  AppLanguage.ta => (t['name_ta'] as String?) ?? t['name_en'],
-                  AppLanguage.en => t['name_en'],
+                  AppLanguage.si => t.nameSi ?? t.nameEn,
+                  AppLanguage.ta => t.nameTa ?? t.nameEn,
+                  AppLanguage.en => t.nameEn,
                 };
                 return ListTile(
                   leading: const Icon(Icons.cleaning_services_outlined),
-                  title: Text(name as String),
-                  subtitle: Text(t['category'] as String),
+                  title: Text(name),
+                  subtitle: Text(t.category.stringValue),
                 );
               },
             );

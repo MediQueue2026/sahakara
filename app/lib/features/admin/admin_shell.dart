@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../core/supabase_client.dart';
+import '../../core/firebase_client.dart';
 import 'holidays_admin_page.dart';
 import 'households_admin_page.dart';
 import 'task_library_admin_page.dart';
@@ -58,7 +58,7 @@ class _AdminShellState extends State<AdminShell> {
                 child: Padding(
                   padding: const EdgeInsets.only(bottom: 16),
                   child: IconButton(
-                    onPressed: () => supabase.auth.signOut(),
+                    onPressed: () => auth.signOut(),
                     icon: const Icon(Icons.logout),
                     tooltip: 'Sign out',
                   ),

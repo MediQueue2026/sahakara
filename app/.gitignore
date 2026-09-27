@@ -47,5 +47,5 @@ app.*.map.json
 # Widget Preview related
 .widget_preview/
 
-# Supabase credentials (copy env.example.json -> env.json)
+# Local run switches (copy env.example.json -> env.json)
 env.json

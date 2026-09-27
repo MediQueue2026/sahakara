@@ -1,0 +1,150 @@
+# Read operations. Clients can only run the operations defined in this
+# connector, so each one's `where` filter is its access rule: a household's
+# data is only returned to an active member of that household.
+
+# ── profile & membership ─────────────────────────────────────────────────
+
+# The signed-in user's row — or, on their first phone login, the row an
+# owner pre-created for their phone number (see ClaimInvitedProfile).
+query MyProfile @auth(level: USER) {
+  users(
+    where: {
+      _or: [
+        { authUid: { eq_expr: "auth.uid" } }
+        {
+          authUid: { isNull: true }
+          phone: { eq_expr: "auth.token.phone_number" }
+        }
+      ]
+    }
+    limit: 1
+  ) {
+    id
+    authUid
+    phone
+    name
+    language
+  }
+}
+
+# The signed-in user's first active household membership. The schema
+# supports several (multi-house, Phase 3) — the basics just use the first.
+query MyMembership @auth(level: USER) {
+  householdMembers(
+    where: {
+      active: { eq: true }
+      user: { authUid: { eq_expr: "auth.uid" } }
+    }
+    orderBy: [{ joinedOn: ASC }]
+    limit: 1
+  ) {
+    id
+    role
+    household {
+      id
+      name
+      address
+    }
+  }
+}
+
+query HouseholdMembers($householdId: UUID!) @auth(level: USER) {
+  householdMembers(
+    where: {
+      household: {
+        id: { eq: $householdId }
+        householdMembers_on_household: {
+          exist: {
+            active: { eq: true }
+            user: { authUid: { eq_expr: "auth.uid" } }
+          }
+        }
+      }
+    }
+    orderBy: [{ joinedOn: ASC }]
+  ) {
+    id
+    role
+    active
+    user {
+      id
+      name
+      phone
+    }
+  }
+}
+
+# Used when an owner adds staff by phone, to link an existing user rather
+# than create a duplicate. Returns only the id.
+query UserIdByPhone($phone: String!) @auth(level: USER) {
+  users(where: { phone: { eq: $phone } }, limit: 1) {
+    id
+  }
+}
+
+# ── contracts ────────────────────────────────────────────────────────────
+
+query CurrentContract($memberId: UUID!) @auth(level: USER) {
+  contracts(
+    where: {
+      endDate: { isNull: true }
+      member: {
+        id: { eq: $memberId }
+        household: {
+          householdMembers_on_household: {
+            exist: {
+              active: { eq: true }
+              user: { authUid: { eq_expr: "auth.uid" } }
+            }
+          }
+        }
+      }
+    }
+    orderBy: [{ startDate: DESC }]
+    limit: 1
+  ) {
+    id
+    payType
+    rate
+    offDays
+    workingHours
+    startDate
+  }
+}
+
+# ── shared, admin-curated lists ──────────────────────────────────────────
+
+query LibraryTasks @auth(level: USER) {
+  libraryTasks(orderBy: [{ category: ASC }, { nameEn: ASC }]) {
+    id
+    category
+    nameEn
+    nameSi
+    nameTa
+  }
+}
+
+query Holidays @auth(level: USER) {
+  holidays(orderBy: [{ date: ASC }]) {
+    id
+    date
+    type
+    nameEn
+    nameSi
+    nameTa
+  }
+}
+
+# ── admin panel (staff accounts only) ────────────────────────────────────
+
+query AdminHouseholds @auth(expr: "auth.token.is_staff == true") {
+  households(orderBy: [{ createdAt: DESC }]) {
+    id
+    name
+    address
+    createdAt
+    householdMembers_on_household {
+      id
+    }
+  }
+}

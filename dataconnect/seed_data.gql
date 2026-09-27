@@ -1,0 +1,28 @@
+# Starter task library (trilingual). Sprint 1 target is 40-50 tasks with
+# images and audio — this is the first batch to build the feature against;
+# extend it from the admin panel as content is produced.
+#
+# Not part of the connector (the app can't call it). Run it once from the
+# Firebase Data Connect VS Code extension: open this file and click
+# "Run (local)" for the emulator or "Run (production)" for Cloud SQL.
+
+mutation SeedTaskLibrary @transaction {
+  libraryTask_insertMany(
+    data: [
+      { category: cleaning, nameEn: "Sweep and mop the floors", nameSi: "බිම අතුගා පිස දැමීම", nameTa: "தரை பெருக்கி துடைத்தல்" }
+      { category: kitchen, nameEn: "Wash the dishes", nameSi: "පිඟන් සේදීම", nameTa: "பாத்திரம் கழுவுதல்" }
+      { category: kitchen, nameEn: "Kitchen deep clean", nameSi: "කුස්සිය හොඳින් පිරිසිදු කිරීම", nameTa: "சமையலறை ஆழ்ந்த சுத்தம்" }
+      { category: laundry, nameEn: "Wash the clothes", nameSi: "රෙදි සේදීම", nameTa: "துணி துவைத்தல்" }
+      { category: laundry, nameEn: "Iron the clothes", nameSi: "රෙදි ඉස්තිරික්ක කිරීම", nameTa: "துணி அயர்ன் செய்தல்" }
+      { category: cleaning, nameEn: "Clean the bathrooms", nameSi: "නාන කාමර පිරිසිදු කිරීම", nameTa: "குளியலறை சுத்தம்" }
+      { category: cleaning, nameEn: "Dust the furniture", nameSi: "ගෘහ භාණ්ඩ දූවිලි පිසදැමීම", nameTa: "மரச்சாமான் தூசி துடைத்தல்" }
+      { category: cooking, nameEn: "Cook lunch", nameSi: "දිවා ආහාරය පිසීම", nameTa: "மதிய உணவு சமைத்தல்" }
+      { category: cooking, nameEn: "Cook dinner", nameSi: "රාත්‍රී ආහාරය පිසීම", nameTa: "இரவு உணவு சமைத்தல்" }
+      { category: other, nameEn: "Water the garden", nameSi: "උද්‍යානයට වතුර දැමීම", nameTa: "தோட்டத்திற்கு நீர் ஊற்றுதல்" }
+      { category: other, nameEn: "Take out the rubbish", nameSi: "කසළ ඉවත් කිරීම", nameTa: "குப்பை அகற்றுதல்" }
+      { category: cleaning, nameEn: "Clean the windows", nameSi: "ජනෙල් පිරිසිදු කිරීම", nameTa: "ஜன்னல் சுத்தம்" }
+      { category: kitchen, nameEn: "Clean the fridge", nameSi: "ශීතකරණය පිරිසිදු කිරීම", nameTa: "குளிர்சாதனப்பெட்டி சுத்தம்" }
+      { category: cleaning, nameEn: "Change the bed linen", nameSi: "ඇඳ ඇතිරිලි මාරු කිරීම", nameTa: "படுக்கை விரிப்பு மாற்றுதல்" }
+    ]
+  )
+}

@@ -1,0 +1,282 @@
+# Sahakara (Housemaid Management App) — Firebase Data Connect schema.
+# 21 tables in 6 groups: users & households, tasks, rewards, attendance &
+# leave, payments, household & admin. Data Connect turns each `@table` type
+# into a PostgreSQL table (Cloud SQL); access rules live on the operations
+# in ../connector/, not here.
+#
+# Design rules (keep these in mind when writing operations):
+#   1. Never update or delete LedgerEntry rows — fix mistakes with a
+#      `correction` entry so payment history stays trustworthy. (No update/
+#      delete mutation exists for it, so clients can't do it.)
+#   2. On a pay raise, set endDate on the old Contract and insert a new one
+#      rather than editing rate in place, so past months keep the old rate.
+#   3. Tasks/attendance/pay all reference a HouseholdMember, not a User
+#      directly, so one maid can work across several households.
+
+# ── enums ────────────────────────────────────────────────────────────────
+
+enum AppLanguage { si ta en }
+enum MemberRole { owner adult maid driver cook gardener }
+enum PayType { monthly daily hourly per_visit }
+enum TaskCategory { kitchen cleaning laundry cooking other }
+enum RecurrenceType { once daily weekly fortnightly monthly quarterly }
+enum TaskPriority { high medium low }
+enum TaskStatus { pending started done need_help cant_do carried_forward }
+enum CantDoReason { no_supplies power_cut water_cut sick no_time other }
+enum TaskLogAction { started done help cant_do }
+enum BadgeType { six_months one_year perfect_month }
+enum AttendanceDayType { full half late early_leave leave absent holiday }
+enum LeaveType { paid unpaid sick }
+enum LeaveStatus { pending approved rejected }
+enum HolidayType { poya public festival }
+enum LedgerEntryType { salary payment advance advance_repay bonus deduction overtime correction }
+enum PaymentMethod { cash bank mobile_wallet }
+enum DisputeStatus { open resolved }
+enum ShoppingStatus { needed bought }
+enum DocumentType { nic agency contract other }
+enum SubscriptionPlan { free basic premium }
+
+# ── users & households ──────────────────────────────────────────────────
+
+type User @table {
+  id: UUID! @default(expr: "uuidV4()")
+  # Firebase Auth uid. Null for a maid an owner invited by phone who hasn't
+  # signed in yet — her first phone login claims the row (ClaimInvitedProfile).
+  authUid: String @unique
+  phone: String! @unique
+  name: String!
+  language: AppLanguage! @default(value: en)
+  profilePhoto: String
+  createdAt: Timestamp! @default(expr: "request.time")
+}
+
+type Household @table {
+  id: UUID! @default(expr: "uuidV4()")
+  name: String!
+  address: String
+  owner: User!
+  createdAt: Timestamp! @default(expr: "request.time")
+}
+
+type HouseholdMember @table @unique(fields: ["household", "user"]) {
+  id: UUID! @default(expr: "uuidV4()")
+  household: Household!
+  user: User!
+  role: MemberRole!
+  active: Boolean! @default(value: true)
+  joinedOn: Date! @default(expr: "request.time")
+}
+
+type Contract @table {
+  id: UUID! @default(expr: "uuidV4()")
+  member: HouseholdMember!
+  payType: PayType!
+  rate: Float!
+  offDays: String
+  workingHours: String
+  scope: String
+  startDate: Date! @default(expr: "request.time")
+  endDate: Date # null while this is the current contract
+  createdAt: Timestamp! @default(expr: "request.time")
+}
+
+# ── tasks ────────────────────────────────────────────────────────────────
+
+# The shared, admin-curated, trilingual task list.
+type LibraryTask @table {
+  id: UUID! @default(expr: "uuidV4()")
+  category: TaskCategory! @default(value: other)
+  nameEn: String!
+  nameSi: String
+  nameTa: String
+  imageUrl: String
+  audioSi: String
+  audioTa: String
+  audioEn: String
+}
+
+# A household's recurring task. Needs either `library` or `customTitle`.
+type TaskTemplate @table {
+  id: UUID! @default(expr: "uuidV4()")
+  household: Household!
+  library: LibraryTask
+  customTitle: String
+  photoUrl: String
+  donePhotoUrl: String
+  recurrence: RecurrenceType! @default(value: once)
+  recurrenceDay: String
+  estMinutes: Int
+  priority: TaskPriority! @default(value: medium)
+  needsPhotoProof: Boolean! @default(value: false)
+  createdBy: User!
+  active: Boolean! @default(value: true)
+}
+
+type Task @table @index(fields: ["assignedToId", "dueDate"]) {
+  id: UUID! @default(expr: "uuidV4()")
+  template: TaskTemplate!
+  assignedTo: HouseholdMember!
+  dueDate: Date!
+  sortOrder: Int! @default(value: 0)
+  status: TaskStatus! @default(value: pending)
+  cantDoReason: CantDoReason
+  completedAt: Timestamp
+}
+
+type TaskLog @table {
+  id: UUID! @default(expr: "uuidV4()")
+  task: Task!
+  action: TaskLogAction!
+  proofPhoto: String
+  byUser: User!
+  at: Timestamp! @default(expr: "request.time")
+}
+
+# ── rewards (positive only — no penalty/demerit table) ─────────────────
+
+type Star @table {
+  id: UUID! @default(expr: "uuidV4()")
+  task: Task
+  member: HouseholdMember!
+  givenBy: User!
+  voiceNote: String
+  note: String
+  at: Timestamp! @default(expr: "request.time")
+}
+
+type Badge @table {
+  id: UUID! @default(expr: "uuidV4()")
+  member: HouseholdMember!
+  badgeType: BadgeType!
+  earnedOn: Date! @default(expr: "request.time")
+}
+
+# ── attendance & leave ───────────────────────────────────────────────────
+
+type Attendance @table @unique(fields: ["member", "day"]) {
+  id: UUID! @default(expr: "uuidV4()")
+  member: HouseholdMember!
+  day: Date!
+  checkIn: Timestamp
+  checkOut: Timestamp
+  dayType: AttendanceDayType!
+  overtimeHours: Float! @default(value: 0)
+  note: String
+}
+
+# toDate must be on or after fromDate.
+type LeaveRequest @table {
+  id: UUID! @default(expr: "uuidV4()")
+  member: HouseholdMember!
+  fromDate: Date!
+  toDate: Date!
+  leaveType: LeaveType!
+  reason: String
+  voiceNote: String
+  status: LeaveStatus! @default(value: pending)
+  decidedBy: User
+  createdAt: Timestamp! @default(expr: "request.time")
+}
+
+# Global, admin-curated Poya / public holiday calendar.
+type Holiday @table {
+  id: UUID! @default(expr: "uuidV4()")
+  date: Date!
+  nameEn: String!
+  nameSi: String
+  nameTa: String
+  type: HolidayType!
+}
+
+# ── payments ─────────────────────────────────────────────────────────────
+
+type Advance @table {
+  id: UUID! @default(expr: "uuidV4()")
+  member: HouseholdMember!
+  amount: Float!
+  remaining: Float!
+  givenOn: Date! @default(expr: "request.time")
+  note: String
+  createdBy: User!
+  at: Timestamp! @default(expr: "request.time")
+}
+
+# Every money movement is one row here. Balance due = sum of rows for a
+# member. Append-only — add a `correction` entry instead of editing.
+# A `deduction` must have a note.
+type LedgerEntry @table @index(fields: ["memberId", "month"]) {
+  id: UUID! @default(expr: "uuidV4()")
+  member: HouseholdMember!
+  entryType: LedgerEntryType!
+  amount: Float!
+  method: PaymentMethod
+  note: String
+  advance: Advance
+  month: String! # 'YYYY-MM'
+  createdBy: User!
+  at: Timestamp! @default(expr: "request.time")
+}
+
+type Payslip @table @unique(fields: ["memberId", "month"]) {
+  id: UUID! @default(expr: "uuidV4()")
+  member: HouseholdMember!
+  month: String!
+  daysWorked: Int! @default(value: 0)
+  totalEarned: Float! @default(value: 0)
+  totalDeductions: Float! @default(value: 0)
+  totalPaid: Float! @default(value: 0)
+  balance: Float! @default(value: 0)
+  language: AppLanguage! @default(value: en)
+  pdfUrl: String
+}
+
+# Raised against either a ledger entry or an attendance record.
+type Dispute @table {
+  id: UUID! @default(expr: "uuidV4()")
+  raisedBy: User!
+  ledger: LedgerEntry
+  attendance: Attendance
+  message: String!
+  status: DisputeStatus! @default(value: open)
+  resolvedNote: String
+  createdAt: Timestamp! @default(expr: "request.time")
+}
+
+# ── household & admin ────────────────────────────────────────────────────
+
+# Needs either `text` or `voiceUrl`.
+type Message @table @index(fields: ["householdId", "at"]) {
+  id: UUID! @default(expr: "uuidV4()")
+  household: Household!
+  fromUser: User!
+  toUser: User!
+  text: String
+  voiceUrl: String
+  read: Boolean! @default(value: false)
+  at: Timestamp! @default(expr: "request.time")
+}
+
+type ShoppingItem @table {
+  id: UUID! @default(expr: "uuidV4()")
+  household: Household!
+  item: String!
+  addedBy: User!
+  status: ShoppingStatus! @default(value: needed)
+  at: Timestamp! @default(expr: "request.time")
+}
+
+type MemberDocument @table {
+  id: UUID! @default(expr: "uuidV4()")
+  member: HouseholdMember!
+  docType: DocumentType!
+  fileUrl: String!
+  uploadedAt: Timestamp! @default(expr: "request.time")
+}
+
+type HouseholdSubscription @table {
+  id: UUID! @default(expr: "uuidV4()")
+  household: Household!
+  plan: SubscriptionPlan! @default(value: free)
+  paidUntil: Date
+  paymentRef: String
+}

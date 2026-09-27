@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../core/supabase_client.dart';
-
-const _types = ['poya', 'public', 'festival'];
+import '../../core/firebase_client.dart';
+import '../../dataconnect_generated/sahakara.dart';
 
 class HolidaysAdminPage extends StatefulWidget {
   const HolidaysAdminPage({super.key});
@@ -12,12 +11,12 @@ class HolidaysAdminPage extends StatefulWidget {
 }
 
 class _HolidaysAdminPageState extends State<HolidaysAdminPage> {
-  List<Map<String, dynamic>> _holidays = [];
+  List<HolidaysHolidays> _holidays = [];
   bool _loading = true;
   String? _error;
 
   DateTime? _date;
-  String _type = _types.first;
+  HolidayType _type = HolidayType.values.first;
   final _nameEn = TextEditingController();
   final _nameSi = TextEditingController();
   final _nameTa = TextEditingController();
@@ -32,9 +31,9 @@ class _HolidaysAdminPageState extends State<HolidaysAdminPage> {
   Future<void> _load() async {
     setState(() => _loading = true);
     try {
-      final rows = await supabase.from('holidays').select().order('date');
+      final result = await db.holidays().execute();
       setState(() {
-        _holidays = List<Map<String, dynamic>>.from(rows);
+        _holidays = result.data.holidays;
         _error = null;
       });
     } catch (e) {
@@ -58,13 +57,11 @@ class _HolidaysAdminPageState extends State<HolidaysAdminPage> {
     if (_date == null || _nameEn.text.trim().isEmpty) return;
     setState(() => _saving = true);
     try {
-      await supabase.from('holidays').insert({
-        'date': _date!.toIso8601String().substring(0, 10),
-        'type': _type,
-        'name_en': _nameEn.text.trim(),
-        'name_si': _nameSi.text.trim(),
-        'name_ta': _nameTa.text.trim(),
-      });
+      await db
+          .addHoliday(date: _date!, type: _type, nameEn: _nameEn.text.trim())
+          .nameSi(_nameSi.text.trim())
+          .nameTa(_nameTa.text.trim())
+          .execute();
       setState(() => _date = null);
       _nameEn.clear();
       _nameSi.clear();
@@ -79,7 +76,7 @@ class _HolidaysAdminPageState extends State<HolidaysAdminPage> {
 
   Future<void> _remove(String id) async {
     try {
-      await supabase.from('holidays').delete().eq('id', id);
+      await db.deleteHoliday(id: id).execute();
       await _load();
     } catch (e) {
       setState(() => _error = e.toString());
@@ -112,10 +109,12 @@ class _HolidaysAdminPageState extends State<HolidaysAdminPage> {
                         : _date!.toIso8601String().substring(0, 10),
                   ),
                 ),
-                DropdownButton<String>(
+                DropdownButton<HolidayType>(
                   value: _type,
-                  items: _types
-                      .map((t) => DropdownMenuItem(value: t, child: Text(t)))
+                  items: HolidayType.values
+                      .map(
+                        (t) => DropdownMenuItem(value: t, child: Text(t.name)),
+                      )
                       .toList(),
                   onChanged: (v) => setState(() => _type = v!),
                 ),
@@ -168,11 +167,13 @@ class _HolidaysAdminPageState extends State<HolidaysAdminPage> {
               children: _holidays
                   .map(
                     (h) => ListTile(
-                      title: Text(h['name_en'] as String),
-                      subtitle: Text('${h['date']} · ${h['type']}'),
+                      title: Text(h.nameEn),
+                      subtitle: Text(
+                        '${h.date.toIso8601String().substring(0, 10)} · ${h.type.stringValue}',
+                      ),
                       trailing: IconButton(
                         icon: const Icon(Icons.delete_outline),
-                        onPressed: () => _remove(h['id'] as String),
+                        onPressed: () => _remove(h.id),
                       ),
                     ),
                   )

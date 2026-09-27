@@ -1,0 +1,199 @@
+# Write operations. Anything that needs "is the caller the household
+# owner?" runs as a @transaction whose first step is a @check query, so the
+# write only happens if the check passes.
+
+# ── profile ──────────────────────────────────────────────────────────────
+
+# First phone login of a maid an owner already invited: attach this Firebase
+# account to the row created for her phone number.
+mutation ClaimInvitedProfile @auth(level: USER) {
+  user_updateMany(
+    where: {
+      authUid: { isNull: true }
+      phone: { eq_expr: "auth.token.phone_number" }
+    }
+    data: { authUid_expr: "auth.uid" }
+  )
+}
+
+mutation CreateMyProfile @auth(level: USER) {
+  user_insert(
+    data: {
+      authUid_expr: "auth.uid"
+      phone_expr: "auth.token.phone_number"
+      name_expr: "auth.token.phone_number"
+    }
+  )
+}
+
+mutation SetMyLanguage($language: AppLanguage!) @auth(level: USER) {
+  user_updateMany(
+    where: { authUid: { eq_expr: "auth.uid" } }
+    data: { language: $language }
+  )
+}
+
+# ── households & membership ─────────────────────────────────────────────
+
+# Creates the household and makes the caller its owner.
+mutation CreateHousehold($name: String!, $address: String)
+@auth(level: USER)
+@transaction {
+  query @redact {
+    users(where: { authUid: { eq_expr: "auth.uid" } })
+      @check(expr: "this.size() == 1", message: "Profile not found") {
+      id
+    }
+  }
+  household_insert(
+    data: {
+      name: $name
+      address: $address
+      ownerId_expr: "response.query.users[0].id"
+    }
+  )
+  householdMember_insert(
+    data: {
+      householdId_expr: "response.household_insert.id"
+      userId_expr: "response.query.users[0].id"
+      role: owner
+    }
+  )
+}
+
+# Owner adds someone who already has a user row (see UserIdByPhone).
+mutation AddHouseholdMember(
+  $householdId: UUID!
+  $userId: UUID!
+  $role: MemberRole!
+) @auth(level: USER) @transaction {
+  query @redact {
+    households(
+      where: {
+        id: { eq: $householdId }
+        owner: { authUid: { eq_expr: "auth.uid" } }
+      }
+    )
+      @check(
+        expr: "this.size() == 1"
+        message: "Only the household owner can add members"
+      ) {
+      id
+    }
+  }
+  householdMember_insert(
+    data: { householdId: $householdId, userId: $userId, role: $role }
+  )
+}
+
+# Owner adds someone who has never used the app: pre-creates their user row
+# (claimed on their first login) and links it into the household.
+mutation InviteHouseholdMember(
+  $householdId: UUID!
+  $phone: String!
+  $role: MemberRole!
+) @auth(level: USER) @transaction {
+  query @redact {
+    households(
+      where: {
+        id: { eq: $householdId }
+        owner: { authUid: { eq_expr: "auth.uid" } }
+      }
+    )
+      @check(
+        expr: "this.size() == 1"
+        message: "Only the household owner can add members"
+      ) {
+      id
+    }
+  }
+  user_insert(data: { phone: $phone, name: $phone })
+  householdMember_insert(
+    data: {
+      householdId: $householdId
+      userId_expr: "response.user_insert.id"
+      role: $role
+    }
+  )
+}
+
+# ── contracts ────────────────────────────────────────────────────────────
+
+# Closes the member's open contract and inserts a new one — a raise or a
+# changed schedule is a new contract row, not an edit, so past months still
+# calculate at the old rate.
+mutation SaveContract(
+  $memberId: UUID!
+  $payType: PayType!
+  $rate: Float!
+  $offDays: String
+  $workingHours: String
+) @auth(level: USER) @transaction {
+  query @redact {
+    householdMembers(
+      where: {
+        id: { eq: $memberId }
+        household: { owner: { authUid: { eq_expr: "auth.uid" } } }
+      }
+    )
+      @check(
+        expr: "this.size() == 1"
+        message: "Only the household owner can change contracts"
+      ) {
+      id
+    }
+  }
+  contract_updateMany(
+    where: { memberId: { eq: $memberId }, endDate: { isNull: true } }
+    data: { endDate_expr: "request.time" }
+  )
+  contract_insert(
+    data: {
+      memberId: $memberId
+      payType: $payType
+      rate: $rate
+      offDays: $offDays
+      workingHours: $workingHours
+    }
+  )
+}
+
+# ── admin panel (staff accounts only) ────────────────────────────────────
+
+mutation AddLibraryTask(
+  $category: TaskCategory!
+  $nameEn: String!
+  $nameSi: String
+  $nameTa: String
+) @auth(expr: "auth.token.is_staff == true") {
+  libraryTask_insert(
+    data: { category: $category, nameEn: $nameEn, nameSi: $nameSi, nameTa: $nameTa }
+  )
+}
+
+mutation DeleteLibraryTask($id: UUID!)
+@auth(expr: "auth.token.is_staff == true") {
+  libraryTask_delete(id: $id)
+}
+
+mutation AddHoliday(
+  $date: Date!
+  $type: HolidayType!
+  $nameEn: String!
+  $nameSi: String
+  $nameTa: String
+) @auth(expr: "auth.token.is_staff == true") {
+  holiday_insert(
+    data: {
+      date: $date
+      type: $type
+      nameEn: $nameEn
+      nameSi: $nameSi
+      nameTa: $nameTa
+    }
+  )
+}
+
+mutation DeleteHoliday($id: UUID!) @auth(expr: "auth.token.is_staff == true") {
+  holiday_delete(id: $id)
+}

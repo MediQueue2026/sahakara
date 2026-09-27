@@ -10,37 +10,43 @@ One Flutter codebase, two front doors:
 `lib/main.dart` picks between them with `kIsWeb` — there's no separate
 project to maintain.
 
-## 1. Set up Supabase first
+## 1. Connect to Firebase
 
-This app has no backend of its own — see [`../supabase/README.md`](../supabase/README.md)
-to create a Supabase project and run the schema. You need its **Project URL**
-and **anon/publishable key** before the app will do anything useful.
-
-## 2. Configure credentials
+The backend is Firebase Data Connect + Firebase Auth — see
+[`../dataconnect/README.md`](../dataconnect/README.md). Generate this app's
+Firebase config (once, from this folder):
 
 ```bash
-cp env.example.json env.json
+dart pub global activate flutterfire_cli
+flutterfire configure --project=sahakara-f78dd
 ```
 
-Fill in `env.json` with your Supabase URL and anon key (it's gitignored —
-never commit it).
+That overwrites the placeholder `lib/firebase_options.dart` and registers the
+Android/iOS/web apps in the Firebase project.
 
-## 3. Run it
+## 2. Run it
 
-Mobile, on a simulator/emulator or a connected device:
+Against the **local emulators** (no cloud setup or SMS needed — start them
+with `firebase emulators:start` from the repo root):
 
 ```bash
+cp env.example.json env.json   # sets USE_EMULATORS=true; gitignored
 flutter run --dart-define-from-file=env.json
+flutter run -d chrome --dart-define-from-file=env.json   # admin panel
 ```
 
-Admin panel, in a browser:
+Phone OTP codes show up in the emulator UI (http://localhost:4000 →
+Authentication) instead of arriving by SMS. For a staff login in the
+emulator, add a user there and set its custom claims to `{"is_staff": true}`.
 
-```bash
-flutter run -d chrome --dart-define-from-file=env.json
-```
+Against the **real Firebase project**, just leave out `--dart-define-from-file`.
 
-Then sign in with a staff account (see step 5 of the Supabase README to
-create one).
+## Data access
+
+Screens call `AppData` (`lib/core/app_data.dart`), which wraps the typed SDK
+generated from `dataconnect/connector/` into `lib/dataconnect_generated/`.
+Don't edit the generated folder — change the `.gql` files and run
+`firebase dataconnect:sdk:generate` from the repo root.
 
 ## Toolchain status
 
@@ -59,7 +65,8 @@ Run `flutter doctor` any time to recheck.
 
 ```
 lib/
-  core/            Supabase client, env config, i18n strings, theme
+  core/            Firebase client, data access, env config, i18n strings, theme
+  dataconnect_generated/  Typed Data Connect SDK (generated — don't edit)
   mobile_app.dart  Routes signed-out -> login, no household -> setup, else -> home
   features/
     auth/          Phone OTP login

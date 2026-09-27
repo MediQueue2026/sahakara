@@ -1,141 +1,108 @@
-import 'supabase_client.dart';
+import '../dataconnect_generated/sahakara.dart';
+import 'firebase_client.dart';
 
-/// Small data-access helpers shared across the mobile screens. Kept as plain
-/// static functions over raw maps (no model classes yet) — the schema is in
-/// supabase/migrations, this just mirrors it thinly.
+// Shorter names for the generated Data Connect result types the screens use.
+typedef Profile = MyProfileUsers;
+typedef Membership = MyMembershipHouseholdMembers;
+typedef Member = HouseholdMembersHouseholdMembers;
+typedef CurrentContract = CurrentContractContracts;
+typedef LibraryTask = LibraryTasksLibraryTasks;
+
+/// Small data-access helpers shared across the mobile screens. Each one
+/// calls an operation from dataconnect/connector/ — that's where the schema
+/// and the access rules live; this just wraps them thinly.
 class AppData {
-  /// Finds or creates the `users` row for the signed-in phone number.
+  /// Finds or creates the `User` row for the signed-in phone number.
   ///
   /// An owner can add a maid by phone before she has ever logged in
-  /// (see [addMaidByPhone]), which creates a `users` row with no
-  /// `auth_user_id` yet. The first time that phone number actually signs
-  /// in, this claims that row instead of creating a duplicate one.
-  static Future<Map<String, dynamic>> ensureUserProfile() async {
-    final authUser = supabase.auth.currentUser!;
-    final phone = authUser.phone ?? '';
-
-    final existing = await supabase
-        .from('users')
-        .select()
-        .eq('phone', phone)
-        .maybeSingle();
-
-    if (existing != null) {
-      if (existing['auth_user_id'] == null) {
-        return await supabase
-            .from('users')
-            .update({'auth_user_id': authUser.id})
-            .eq('id', existing['id'])
-            .select()
-            .single();
-      }
-      return existing;
+  /// (see [addMaidByPhone]), which creates a `User` row with no `authUid`
+  /// yet. The first time that phone number actually signs in, this claims
+  /// that row instead of creating a duplicate one.
+  static Future<Profile> ensureUserProfile() async {
+    var profile = await _myProfile();
+    if (profile != null && profile.authUid == null) {
+      await db.claimInvitedProfile().execute();
+      profile = await _myProfile();
     }
-
-    return await supabase
-        .from('users')
-        .insert({
-          'auth_user_id': authUser.id,
-          'phone': phone,
-          'name': phone,
-          'language': 'en',
-        })
-        .select()
-        .single();
+    if (profile == null) {
+      await db.createMyProfile().execute();
+      profile = await _myProfile();
+    }
+    return profile!;
   }
 
-  static Future<void> setLanguage(String userId, String language) async {
-    await supabase
-        .from('users')
-        .update({'language': language})
-        .eq('id', userId);
+  static Future<Profile?> _myProfile() async {
+    final result = await db.myProfile().execute();
+    return result.data.users.firstOrNull;
+  }
+
+  /// [language] is an app language code: 'en', 'si' or 'ta'.
+  static Future<void> setLanguage(String language) async {
+    await db
+        .setMyLanguage(language: AppLanguage.values.byName(language))
+        .execute();
   }
 
   /// The signed-in user's first active household membership. The schema
   /// supports several (multi-house, Phase 3) — the basics here just use
   /// the first one.
-  static Future<Map<String, dynamic>?> fetchMyMembership(String userId) async {
-    final rows = await supabase
-        .from('household_members')
-        .select('*, households(*)')
-        .eq('user_id', userId)
-        .eq('active', true)
-        .order('joined_on')
-        .limit(1);
-    if (rows.isEmpty) return null;
-    return rows.first;
+  static Future<Membership?> fetchMyMembership() async {
+    final result = await db.myMembership().execute();
+    return result.data.householdMembers.firstOrNull;
   }
 
-  static Future<Map<String, dynamic>> createHousehold({
-    required String ownerId,
+  /// Creates the household with the signed-in user as its owner.
+  static Future<void> createHousehold({
     required String name,
     required String address,
   }) async {
-    final household = await supabase
-        .from('households')
-        .insert({'name': name, 'address': address, 'owner_id': ownerId})
-        .select()
-        .single();
-
-    await supabase.from('household_members').insert({
-      'household_id': household['id'],
-      'user_id': ownerId,
-      'role': 'owner',
-    });
-
-    return household;
+    await db.createHousehold(name: name).address(address).execute();
   }
 
-  static Future<List<Map<String, dynamic>>> fetchHouseholdMembers(
-    String householdId,
-  ) async {
-    final rows = await supabase
-        .from('household_members')
-        .select('*, users(*)')
-        .eq('household_id', householdId)
-        .order('joined_on');
-    return List<Map<String, dynamic>>.from(rows);
+  static Future<List<Member>> fetchHouseholdMembers(String householdId) async {
+    final result = await db
+        .householdMembers(householdId: householdId)
+        .execute();
+    return result.data.householdMembers;
   }
 
-  /// Owner adds a maid by phone number — finds or creates her `users` row
-  /// (see [ensureUserProfile] for the matching claim-on-login side) and
-  /// links her into the household.
+  /// Owner adds a maid by phone number — links her existing `User` row, or
+  /// pre-creates one (see [ensureUserProfile] for the matching
+  /// claim-on-login side), into the household.
   static Future<void> addMaidByPhone({
     required String householdId,
     required String phone,
   }) async {
-    var user = await supabase
-        .from('users')
-        .select()
-        .eq('phone', phone)
-        .maybeSingle();
-    user ??= await supabase
-        .from('users')
-        .insert({'phone': phone, 'name': phone, 'language': 'en'})
-        .select()
-        .single();
-
-    await supabase.from('household_members').insert({
-      'household_id': householdId,
-      'user_id': user['id'],
-      'role': 'maid',
-    });
+    final existing = await db.userIdByPhone(phone: phone).execute();
+    final userId = existing.data.users.firstOrNull?.id;
+    if (userId != null) {
+      await db
+          .addHouseholdMember(
+            householdId: householdId,
+            userId: userId,
+            role: MemberRole.maid,
+          )
+          .execute();
+    } else {
+      await db
+          .inviteHouseholdMember(
+            householdId: householdId,
+            phone: phone,
+            role: MemberRole.maid,
+          )
+          .execute();
+    }
   }
 
-  static Future<Map<String, dynamic>?> fetchCurrentContract(
-    String memberId,
-  ) async {
-    return await supabase
-        .from('contracts')
-        .select()
-        .eq('member_id', memberId)
-        .isFilter('end_date', null)
-        .maybeSingle();
+  static Future<CurrentContract?> fetchCurrentContract(String memberId) async {
+    final result = await db.currentContract(memberId: memberId).execute();
+    return result.data.contracts.firstOrNull;
   }
 
   /// Closes any open contract for [memberId] and inserts a new one — a raise
   /// or a changed schedule is a new contract row, not an edit, so past
-  /// months still calculate at the old rate.
+  /// months still calculate at the old rate. Both happen in one transaction
+  /// (see SaveContract in dataconnect/connector/mutations.gql).
   static Future<void> saveContract({
     required String memberId,
     required String payType,
@@ -143,27 +110,19 @@ class AppData {
     required String offDays,
     required String workingHours,
   }) async {
-    await supabase
-        .from('contracts')
-        .update({'end_date': DateTime.now().toIso8601String().substring(0, 10)})
-        .eq('member_id', memberId)
-        .isFilter('end_date', null);
-
-    await supabase.from('contracts').insert({
-      'member_id': memberId,
-      'pay_type': payType,
-      'rate': rate,
-      'off_days': offDays,
-      'working_hours': workingHours,
-    });
+    await db
+        .saveContract(
+          memberId: memberId,
+          payType: PayType.values.byName(payType),
+          rate: rate,
+        )
+        .offDays(offDays)
+        .workingHours(workingHours)
+        .execute();
   }
 
-  static Future<List<Map<String, dynamic>>> fetchTaskLibrary() async {
-    final rows = await supabase
-        .from('task_library')
-        .select()
-        .order('category')
-        .order('name_en');
-    return List<Map<String, dynamic>>.from(rows);
+  static Future<List<LibraryTask>> fetchTaskLibrary() async {
+    final result = await db.libraryTasks().execute();
+    return result.data.libraryTasks;
   }
 }
