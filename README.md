@@ -37,8 +37,26 @@ A localized, accessible, and offline-first household operations platform built t
 
 ## 🛠️ Architecture & Tech Stack
 
-- **Frontend:** React / React Native (Optimized for low-end Android devices)
-- **Backend:** Node.js / Express
-- **Database:** PostgreSQL 
-- **Offline Sync:** Local-first caching layer for low-connectivity environments
-- **Audio & Media:** Localized TTS / Audio blob storage
+- **App:** Flutter — one codebase for the owner/maid mobile app (Android/iOS)
+  and the staff admin panel (Flutter Web), optimized for low-end devices.
+- **Backend:** [Supabase](https://supabase.com) — Postgres database, phone
+  OTP auth, storage, realtime, row-level security per household.
+- **Offline Sync:** local-first caching layer for low-connectivity
+  environments (planned — see `app/README.md`).
+- **Notifications:** Firebase Cloud Messaging, triggered by Supabase Edge
+  Functions (planned).
+- **Audio & Media:** localized audio clips / image assets in Supabase
+  Storage, linked from the task library.
+
+## 🚀 Getting started
+
+1. [`supabase/README.md`](supabase/README.md) — create a Supabase project
+   and run the database schema.
+2. [`app/README.md`](app/README.md) — configure credentials and run the
+   Flutter app (mobile) or the admin panel (`flutter run -d chrome`).
+
+```
+sahakara/
+  app/         Flutter app — mobile (owner/maid) + web (admin panel)
+  supabase/    Database schema, RLS policies, seed data
+```
