@@ -52,7 +52,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                   ),
                   const SizedBox(height: 4),
                   const Text(
-                    'Sign in with your staff account.',
+                    'Sign in with your admin account.',
                     style: TextStyle(color: Colors.grey),
                   ),
                   const SizedBox(height: 20),

@@ -37,8 +37,8 @@ flutter run -d chrome --dart-define-from-file=env.json   # admin panel
 
 Sign up with any email and password — there's no email verification, so
 emulator accounts don't need a real inbox. You can see and delete accounts in
-the emulator UI (http://localhost:4000 → Authentication). For a staff login in
-the emulator, add a user there and set its custom claims to `{"is_staff": true}`.
+the emulator UI (http://localhost:4000 → Authentication). For an admin-panel
+login, see "Creating an admin account" in `../dataconnect/README.md`.
 
 Against the **real Firebase project**, just leave out `--dart-define-from-file`.
 

@@ -30,7 +30,10 @@ queries. Each operation is its own access rule:
 - Owner-only writes (`SaveContract`, `AddHouseholdMember`, …) are
   `@transaction`s. Their first step is a `@check` that the caller owns the
   household, so the write never happens if the check fails.
-- Admin operations use `@auth(expr: "auth.token.is_staff == true")`.
+- Every `User` row has an `accountType`: `owner`, `maid` or `admin`. Admin
+  operations first `@check` that the caller's row is an `admin`, so a signed-in
+  owner or maid calling one gets "Admins only". `CreateMyProfile` refuses
+  `admin`, so nobody can sign themselves up as one.
 
 Adding a feature means adding an operation to `connector/` and then
 regenerating the SDK (see below).
@@ -77,30 +80,33 @@ regenerates automatically on save while the emulator is running.
    `dataconnect.yaml` (region `asia-southeast1`) and migrates the schema.
 4. **Seed** by opening `seed_data.gql` and clicking **Run (production)**.
 
-## Creating a staff (admin panel) account
+## Creating an admin (admin panel) account
 
-The admin panel is for your own team, not a household. It signs in with an
-email/password account that has the `is_staff` custom claim.
+The admin panel is for your own team, not a household. An admin is a normal
+email/password login whose `User` row has `accountType = admin`. That can't
+be chosen when signing up in the app, only set in the database.
 
-1. Firebase console → Authentication → Users → **Add user**, with an email
-   and password.
-2. Set the claim with the Admin SDK. Custom claims can't be set from the
-   console. Download a service-account key (Project settings → Service
-   accounts), then:
+1. Create the login: Firebase console → Authentication → Users → **Add
+   user**, with an email and password. (In the emulator: the Auth tab at
+   http://localhost:4000.)
+2. Give it the admin role, from the repo root:
 
    ```bash
-   npm install firebase-admin
-   GOOGLE_APPLICATION_CREDENTIALS=key.json node -e "
-     const admin = require('firebase-admin');
-     admin.initializeApp();
-     admin.auth().getUserByEmail('you@example.com')
-       .then(u => admin.auth().setCustomUserClaims(u.uid, { is_staff: true }))
-       .then(() => console.log('done'));
-   "
+   firebase dataconnect:sql:shell
    ```
 
-   Never commit the key file.
-3. Sign in to the admin panel with that email and password.
+   ```sql
+   -- A new admin (no user row yet). The first admin-panel sign-in links it.
+   insert into "user" (email, name, account_type, created_at)
+   values ('admin@example.com', 'Admin', 'admin', now());
+
+   -- Or promote an account that already has a row:
+   update "user" set account_type = 'admin' where email = 'admin@example.com';
+   ```
+
+   Use the email in lower case, the way Firebase Auth stores it.
+3. Sign in to the admin panel (`flutter run -d chrome`) with that email and
+   password.
 
 ## Design rules (keep following these)
 

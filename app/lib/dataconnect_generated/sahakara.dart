@@ -52,6 +52,8 @@ part 'admin_households.dart';
     
       maid,
     
+      admin,
+    
   }
   
   String accountTypeSerializer(EnumValue<AccountType> e) {
@@ -65,6 +67,9 @@ part 'admin_households.dart';
       
       case 'maid':
         return const Known(AccountType.maid);
+      
+      case 'admin':
+        return const Known(AccountType.admin);
       
       default:
         return Unknown(data);

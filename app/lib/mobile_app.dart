@@ -52,10 +52,14 @@ class _MobileAppState extends State<MobileApp> {
               _intent = intent;
               _rejectedAs = null;
             },
-            initialAccountType: rejectedAs,
+            // An admin has no mobile form to go back to.
+            initialAccountType: rejectedAs == AccountType.admin
+                ? null
+                : rejectedAs,
             initialErrorKey: switch (rejectedAs) {
               AccountType.owner => 'registeredAsOwner',
               AccountType.maid => 'registeredAsMaid',
+              AccountType.admin => 'adminUseWebPanel',
               null => null,
             },
           );
@@ -164,6 +168,9 @@ class _AuthedRouterState extends State<_AuthedRouter> {
           );
         }
         final (profile, membership) = data;
+        if (profile.accountType.stringValue == AccountType.admin.name) {
+          return _AdminOnMobileScreen(lang: widget.lang);
+        }
         if (membership == null) {
           if (profile.accountType.stringValue == AccountType.maid.name) {
             return WaitingForHouseholdScreen(
@@ -216,6 +223,44 @@ class _AccountTypeScreen extends StatelessWidget {
                     ],
                   ),
                 ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+/// An admin account opened in the mobile app (a remembered session, since
+/// the login screen turns admins away). Admins use the web panel instead.
+class _AdminOnMobileScreen extends StatelessWidget {
+  final LanguageController lang;
+
+  const _AdminOnMobileScreen({required this.lang});
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<AppLanguage>(
+      valueListenable: lang,
+      builder: (context, lang, _) {
+        return Scaffold(
+          body: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    Strings.of('adminUseWebPanel', lang),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  OutlinedButton(
+                    onPressed: () => auth.signOut(),
+                    child: Text(Strings.of('signOut', lang)),
+                  ),
+                ],
               ),
             ),
           ),
