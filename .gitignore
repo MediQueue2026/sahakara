@@ -4,3 +4,6 @@ node_modules/
 # Firebase local/emulator artifacts
 .firebase/
 .dataconnect/
+
+# Firebase emulator logs
+*-debug.log
