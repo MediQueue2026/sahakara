@@ -8,6 +8,8 @@ part 'claim_invited_profile.dart';
 
 part 'create_my_profile.dart';
 
+part 'set_my_name.dart';
+
 part 'set_my_language.dart';
 
 part 'create_household.dart';
@@ -43,6 +45,32 @@ part 'holidays.dart';
 part 'admin_households.dart';
 
 
+
+  enum AccountType {
+    
+      owner,
+    
+      maid,
+    
+  }
+  
+  String accountTypeSerializer(EnumValue<AccountType> e) {
+    return e.stringValue;
+  }
+  EnumValue<AccountType> accountTypeDeserializer(dynamic data) {
+    switch (data) {
+      
+      case 'owner':
+        return const Known(AccountType.owner);
+      
+      case 'maid':
+        return const Known(AccountType.maid);
+      
+      default:
+        return Unknown(data);
+    }
+  }
+  
 
   enum AppLanguage {
     
@@ -288,8 +316,13 @@ class SahakaraConnector {
   }
   
   
-  CreateMyProfileVariablesBuilder createMyProfile () {
-    return CreateMyProfileVariablesBuilder(dataConnect, );
+  CreateMyProfileVariablesBuilder createMyProfile ({required String name, required AccountType accountType, }) {
+    return CreateMyProfileVariablesBuilder(dataConnect, name: name,accountType: accountType,);
+  }
+  
+  
+  SetMyNameVariablesBuilder setMyName ({required String name, }) {
+    return SetMyNameVariablesBuilder(dataConnect, name: name,);
   }
   
   

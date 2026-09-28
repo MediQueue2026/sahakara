@@ -411,14 +411,18 @@ ref.execute();
 ### CreateMyProfile
 #### Required Arguments
 ```dart
-// No required arguments
-SahakaraConnector.instance.createMyProfile().execute();
+String name = ...;
+AccountType accountType = ...;
+SahakaraConnector.instance.createMyProfile(
+  name: name,
+  accountType: accountType,
+).execute();
 ```
 
 
 
 #### Return Type
-`execute()` returns a `OperationResult<CreateMyProfileData, void>`
+`execute()` returns a `OperationResult<CreateMyProfileData, CreateMyProfileVariables>`
 ```dart
 /// Result of an Operation Request (query/mutation).
 class OperationResult<Data, Variables> {
@@ -428,7 +432,10 @@ class OperationResult<Data, Variables> {
   FirebaseDataConnect dataConnect;
 }
 
-final result = await SahakaraConnector.instance.createMyProfile();
+final result = await SahakaraConnector.instance.createMyProfile(
+  name: name,
+  accountType: accountType,
+);
 CreateMyProfileData data = result.data;
 final ref = result.ref;
 ```
@@ -437,7 +444,55 @@ final ref = result.ref;
 Each builder returns an `execute` function, which is a helper function that creates a `Ref` object, and executes the underlying operation.
 An example of how to use the `Ref` object is shown below:
 ```dart
-final ref = SahakaraConnector.instance.createMyProfile().ref();
+String name = ...;
+AccountType accountType = ...;
+
+final ref = SahakaraConnector.instance.createMyProfile(
+  name: name,
+  accountType: accountType,
+).ref();
+ref.execute();
+```
+
+
+### SetMyName
+#### Required Arguments
+```dart
+String name = ...;
+SahakaraConnector.instance.setMyName(
+  name: name,
+).execute();
+```
+
+
+
+#### Return Type
+`execute()` returns a `OperationResult<SetMyNameData, SetMyNameVariables>`
+```dart
+/// Result of an Operation Request (query/mutation).
+class OperationResult<Data, Variables> {
+  OperationResult(this.dataConnect, this.data, this.ref);
+  Data data;
+  OperationRef<Data, Variables> ref;
+  FirebaseDataConnect dataConnect;
+}
+
+final result = await SahakaraConnector.instance.setMyName(
+  name: name,
+);
+SetMyNameData data = result.data;
+final ref = result.ref;
+```
+
+#### Getting the Ref
+Each builder returns an `execute` function, which is a helper function that creates a `Ref` object, and executes the underlying operation.
+An example of how to use the `Ref` object is shown below:
+```dart
+String name = ...;
+
+final ref = SahakaraConnector.instance.setMyName(
+  name: name,
+).ref();
 ref.execute();
 ```
 

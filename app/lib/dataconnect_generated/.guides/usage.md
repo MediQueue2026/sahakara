@@ -2,7 +2,8 @@
 
 ```dart
 SahakaraConnector.instance.ClaimInvitedProfile().execute();
-SahakaraConnector.instance.CreateMyProfile().execute();
+SahakaraConnector.instance.CreateMyProfile(createMyProfileVariables).execute();
+SahakaraConnector.instance.SetMyName(setMyNameVariables).execute();
 SahakaraConnector.instance.SetMyLanguage(setMyLanguageVariables).execute();
 SahakaraConnector.instance.CreateHousehold(createHouseholdVariables).execute();
 SahakaraConnector.instance.AddHouseholdMember(addHouseholdMemberVariables).execute();
@@ -10,7 +11,6 @@ SahakaraConnector.instance.InviteHouseholdMember(inviteHouseholdMemberVariables)
 SahakaraConnector.instance.SaveContract(saveContractVariables).execute();
 SahakaraConnector.instance.AddLibraryTask(addLibraryTaskVariables).execute();
 SahakaraConnector.instance.DeleteLibraryTask(deleteLibraryTaskVariables).execute();
-SahakaraConnector.instance.AddHoliday(addHolidayVariables).execute();
 
 ```
 
