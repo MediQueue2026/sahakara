@@ -16,8 +16,9 @@ mutation ClaimInvitedProfile @auth(level: USER) {
 }
 
 # Saves the signed-in Firebase account as a `User` row, right after sign-up.
+# Nobody can make themselves an admin this way.
 mutation CreateMyProfile($name: String!, $accountType: AccountType!)
-@auth(level: USER) {
+@auth(expr: "auth.uid != '' && vars.accountType != 'admin'") {
   user_insert(
     data: {
       authUid_expr: "auth.uid"
@@ -167,21 +168,36 @@ mutation SaveContract(
   )
 }
 
-# ── admin panel (staff accounts only) ────────────────────────────────────
+# ── admin panel (admin accounts only) ────────────────────────────────────
+# Each one first checks that the caller's user row is an admin.
 
 mutation AddLibraryTask(
   $category: TaskCategory!
   $nameEn: String!
   $nameSi: String
   $nameTa: String
-) @auth(expr: "auth.token.is_staff == true") {
+) @auth(level: USER) @transaction {
+  query @redact {
+    users(
+      where: { authUid: { eq_expr: "auth.uid" }, accountType: { eq: admin } }
+    ) @check(expr: "this.size() == 1", message: "Admins only") {
+      id
+    }
+  }
   libraryTask_insert(
     data: { category: $category, nameEn: $nameEn, nameSi: $nameSi, nameTa: $nameTa }
   )
 }
 
 mutation DeleteLibraryTask($id: UUID!)
-@auth(expr: "auth.token.is_staff == true") {
+@auth(level: USER) @transaction {
+  query @redact {
+    users(
+      where: { authUid: { eq_expr: "auth.uid" }, accountType: { eq: admin } }
+    ) @check(expr: "this.size() == 1", message: "Admins only") {
+      id
+    }
+  }
   libraryTask_delete(id: $id)
 }
 
@@ -191,7 +207,14 @@ mutation AddHoliday(
   $nameEn: String!
   $nameSi: String
   $nameTa: String
-) @auth(expr: "auth.token.is_staff == true") {
+) @auth(level: USER) @transaction {
+  query @redact {
+    users(
+      where: { authUid: { eq_expr: "auth.uid" }, accountType: { eq: admin } }
+    ) @check(expr: "this.size() == 1", message: "Admins only") {
+      id
+    }
+  }
   holiday_insert(
     data: {
       date: $date
@@ -203,6 +226,13 @@ mutation AddHoliday(
   )
 }
 
-mutation DeleteHoliday($id: UUID!) @auth(expr: "auth.token.is_staff == true") {
+mutation DeleteHoliday($id: UUID!) @auth(level: USER) @transaction {
+  query @redact {
+    users(
+      where: { authUid: { eq_expr: "auth.uid" }, accountType: { eq: admin } }
+    ) @check(expr: "this.size() == 1", message: "Admins only") {
+      id
+    }
+  }
   holiday_delete(id: $id)
 }

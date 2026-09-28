@@ -93,6 +93,12 @@ class Strings {
           'මෙම ගිණුම සහායිකාවක් ලෙස ලියාපදිංචි කර ඇත. මෙතැනින් පිවිසෙන්න.',
       AppLanguage.ta: 'இந்தக் கணக்கு வீட்டுப் பணியாளராகப் பதிவு செய்யப்பட்டுள்ளது. இங்கே உள்நுழையவும்.',
     },
+    'adminUseWebPanel': {
+      AppLanguage.en:
+          'This is an admin account. Please use the Sahakara web admin panel.',
+      AppLanguage.si: 'මෙය පරිපාලක ගිණුමකි. කරුණාකර සහකාර වෙබ් පරිපාලන පුවරුව භාවිතා කරන්න.',
+      AppLanguage.ta: 'இது ஒரு நிர்வாகி கணக்கு. சஹகார இணைய நிர்வாகப் பலகத்தைப் பயன்படுத்தவும்.',
+    },
     'waitingForHousehold': {
       AppLanguage.en: 'Waiting to join a household',
       AppLanguage.si: 'නිවසකට එක්වීමට රැඳී සිටී',

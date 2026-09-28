@@ -134,9 +134,16 @@ query Holidays @auth(level: USER) {
   }
 }
 
-# ── admin panel (staff accounts only) ────────────────────────────────────
+# ── admin panel (admin accounts only) ────────────────────────────────────
 
-query AdminHouseholds @auth(expr: "auth.token.is_staff == true") {
+query AdminHouseholds @auth(level: USER) {
+  # Returns an error instead of the households unless the caller's user row
+  # is an admin.
+  users(where: { authUid: { eq_expr: "auth.uid" }, accountType: { eq: admin } })
+    @redact
+    @check(expr: "this.size() == 1", message: "Admins only") {
+    id
+  }
   households(orderBy: [{ createdAt: DESC }]) {
     id
     name

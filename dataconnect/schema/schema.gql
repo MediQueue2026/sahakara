@@ -16,9 +16,11 @@
 # ── enums ────────────────────────────────────────────────────────────────
 
 enum AppLanguage { si ta en }
-# Which of the two sign-up paths an account came through. Household staff
-# (maid/driver/cook/gardener) all sign up as `maid`.
-enum AccountType { owner maid }
+# What kind of user this is. Owners and maids pick their type when signing
+# up in the mobile app; household staff (maid/driver/cook/gardener) all sign
+# up as `maid`. `admin` is the Sahakara team using the web admin panel — it
+# can't be chosen at sign-up, only set directly in the database.
+enum AccountType { owner maid admin }
 enum MemberRole { owner adult maid driver cook gardener }
 enum PayType { monthly daily hourly per_visit }
 enum TaskCategory { kitchen cleaning laundry cooking other }

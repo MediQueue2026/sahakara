@@ -136,15 +136,22 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                             .toList(),
                       ),
                       const SizedBox(height: 32),
-                      if (_accountType == null)
+                      if (_accountType == null) ...[
                         AccountTypeChoice(
                           lang: lang,
                           onSelected: (type) => setState(() {
                             _accountType = type;
                             _error = null;
                           }),
-                        )
-                      else
+                        ),
+                        if (_error != null) ...[
+                          const SizedBox(height: 16),
+                          Text(
+                            _error!,
+                            style: const TextStyle(color: Colors.red),
+                          ),
+                        ],
+                      ] else
                         ..._form(context, lang),
                     ],
                   ),
