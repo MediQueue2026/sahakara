@@ -2,8 +2,8 @@
 
 One Flutter codebase, two front doors:
 
-- **Mobile** (Android/iOS) — the owner and maid experience: phone OTP login,
-  household setup, contracts, the task library.
+- **Mobile** (Android/iOS) — the owner and maid experience: email sign in /
+  sign up, household setup, contracts, the task library.
 - **Web** (`flutter run -d chrome`) — the staff admin panel: manage the
   shared task library and holiday calendar, see all households.
 
@@ -26,7 +26,7 @@ Android/iOS/web apps in the Firebase project.
 
 ## 2. Run it
 
-Against the **local emulators** (no cloud setup or SMS needed — start them
+Against the **local emulators** (no cloud setup needed — start them
 with `firebase emulators:start` from the repo root):
 
 ```bash
@@ -35,9 +35,10 @@ flutter run --dart-define-from-file=env.json
 flutter run -d chrome --dart-define-from-file=env.json   # admin panel
 ```
 
-Phone OTP codes show up in the emulator UI (http://localhost:4000 →
-Authentication) instead of arriving by SMS. For a staff login in the
-emulator, add a user there and set its custom claims to `{"is_staff": true}`.
+Sign up with any email and password — there's no email verification, so
+emulator accounts don't need a real inbox. You can see and delete accounts in
+the emulator UI (http://localhost:4000 → Authentication). For a staff login in
+the emulator, add a user there and set its custom claims to `{"is_staff": true}`.
 
 Against the **real Firebase project**, just leave out `--dart-define-from-file`.
 
@@ -69,7 +70,7 @@ lib/
   dataconnect_generated/  Typed Data Connect SDK (generated — don't edit)
   mobile_app.dart  Routes signed-out -> login, no household -> setup, else -> home
   features/
-    auth/          Phone OTP login
+    auth/          Email sign in / sign up
     onboarding/    First-run household creation
     home/          Bottom-nav shell + household tab
     contract/      View/edit a household member's contract
@@ -80,8 +81,8 @@ lib/
 
 ## What's here vs. what's next
 
-This covers the **Sprint 1 basics** from the project plan: phone OTP login,
+This covers the **Sprint 1 basics** from the project plan: email sign in / sign up,
 per-user language (Sinhala/Tamil/English), household creation, adding a maid
-by phone, contracts, and browsing the task library. Sprints 2–5 (daily task
+by email, contracts, and browsing the task library. Sprints 2–5 (daily task
 assignment, attendance, payroll, rewards, offline sync, notifications) build
 on top of this schema and structure but aren't implemented yet.

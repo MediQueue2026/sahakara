@@ -2,11 +2,11 @@ part of 'sahakara.dart';
 
 class InviteHouseholdMemberVariablesBuilder {
   String householdId;
-  String phone;
+  String email;
   MemberRole role;
 
   final FirebaseDataConnect _dataConnect;
-  InviteHouseholdMemberVariablesBuilder(this._dataConnect, {required  this.householdId,required  this.phone,required  this.role,});
+  InviteHouseholdMemberVariablesBuilder(this._dataConnect, {required  this.householdId,required  this.email,required  this.role,});
   Deserializer<InviteHouseholdMemberData> dataDeserializer = (dynamic json)  => InviteHouseholdMemberData.fromJson(jsonDecode(json));
   Serializer<InviteHouseholdMemberVariables> varsSerializer = (InviteHouseholdMemberVariables vars) => jsonEncode(vars.toJson());
   Future<OperationResult<InviteHouseholdMemberData, InviteHouseholdMemberVariables>> execute() {
@@ -14,7 +14,7 @@ class InviteHouseholdMemberVariablesBuilder {
   }
 
   MutationRef<InviteHouseholdMemberData, InviteHouseholdMemberVariables> ref() {
-    InviteHouseholdMemberVariables vars= InviteHouseholdMemberVariables(householdId: householdId,phone: phone,role: role,);
+    InviteHouseholdMemberVariables vars= InviteHouseholdMemberVariables(householdId: householdId,email: email,role: role,);
     return _dataConnect.mutation("InviteHouseholdMember", dataDeserializer, varsSerializer, vars);
   }
 }
@@ -129,13 +129,13 @@ class InviteHouseholdMemberData {
 @immutable
 class InviteHouseholdMemberVariables {
   final String householdId;
-  final String phone;
+  final String email;
   final MemberRole role;
   @Deprecated('fromJson is deprecated for Variable classes as they are no longer required for deserialization.')
   InviteHouseholdMemberVariables.fromJson(Map<String, dynamic> json):
   
   householdId = nativeFromJson<String>(json['householdId']),
-  phone = nativeFromJson<String>(json['phone']),
+  email = nativeFromJson<String>(json['email']),
   role = MemberRole.values.byName(json['role']);
   @override
   bool operator ==(Object other) {
@@ -148,18 +148,18 @@ class InviteHouseholdMemberVariables {
 
     final InviteHouseholdMemberVariables otherTyped = other as InviteHouseholdMemberVariables;
     return householdId == otherTyped.householdId && 
-    phone == otherTyped.phone && 
+    email == otherTyped.email && 
     role == otherTyped.role;
     
   }
   @override
-  int get hashCode => Object.hashAll([householdId.hashCode, phone.hashCode, role.hashCode]);
+  int get hashCode => Object.hashAll([householdId.hashCode, email.hashCode, role.hashCode]);
   
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> json = {};
     json['householdId'] = nativeToJson<String>(householdId);
-    json['phone'] = nativeToJson<String>(phone);
+    json['email'] = nativeToJson<String>(email);
     json['role'] = 
     role.name
     ;
@@ -168,7 +168,7 @@ class InviteHouseholdMemberVariables {
 
   InviteHouseholdMemberVariables({
     required this.householdId,
-    required this.phone,
+    required this.email,
     required this.role,
   });
 }

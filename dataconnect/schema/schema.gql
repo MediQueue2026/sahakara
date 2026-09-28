@@ -40,10 +40,10 @@ enum SubscriptionPlan { free basic premium }
 
 type User @table {
   id: UUID! @default(expr: "uuidV4()")
-  # Firebase Auth uid. Null for a maid an owner invited by phone who hasn't
-  # signed in yet — her first phone login claims the row (ClaimInvitedProfile).
+  # Firebase Auth uid. Null for a maid an owner invited by email who hasn't
+  # signed up yet — her first login claims the row (ClaimInvitedProfile).
   authUid: String @unique
-  phone: String! @unique
+  email: String! @unique
   name: String!
   language: AppLanguage! @default(value: en)
   profilePhoto: String

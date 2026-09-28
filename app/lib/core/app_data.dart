@@ -12,11 +12,11 @@ typedef LibraryTask = LibraryTasksLibraryTasks;
 /// calls an operation from dataconnect/connector/ — that's where the schema
 /// and the access rules live; this just wraps them thinly.
 class AppData {
-  /// Finds or creates the `User` row for the signed-in phone number.
+  /// Finds or creates the `User` row for the signed-in email address.
   ///
-  /// An owner can add a maid by phone before she has ever logged in
-  /// (see [addMaidByPhone]), which creates a `User` row with no `authUid`
-  /// yet. The first time that phone number actually signs in, this claims
+  /// An owner can add a maid by email before she has ever logged in
+  /// (see [addMaidByEmail]), which creates a `User` row with no `authUid`
+  /// yet. The first time that email address actually signs in, this claims
   /// that row instead of creating a duplicate one.
   static Future<Profile> ensureUserProfile() async {
     var profile = await _myProfile();
@@ -66,14 +66,17 @@ class AppData {
     return result.data.householdMembers;
   }
 
-  /// Owner adds a maid by phone number — links her existing `User` row, or
+  /// Owner adds a maid by email address — links her existing `User` row, or
   /// pre-creates one (see [ensureUserProfile] for the matching
   /// claim-on-login side), into the household.
-  static Future<void> addMaidByPhone({
+  static Future<void> addMaidByEmail({
     required String householdId,
-    required String phone,
+    required String email,
   }) async {
-    final existing = await db.userIdByPhone(phone: phone).execute();
+    // Firebase Auth lower-cases emails, so match that when looking up and
+    // pre-creating rows.
+    email = email.trim().toLowerCase();
+    final existing = await db.userIdByEmail(email: email).execute();
     final userId = existing.data.users.firstOrNull?.id;
     if (userId != null) {
       await db
@@ -87,7 +90,7 @@ class AppData {
       await db
           .inviteHouseholdMember(
             householdId: householdId,
-            phone: phone,
+            email: email,
             role: MemberRole.maid,
           )
           .execute();

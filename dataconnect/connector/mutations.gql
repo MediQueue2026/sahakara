@@ -4,13 +4,13 @@
 
 # ── profile ──────────────────────────────────────────────────────────────
 
-# First phone login of a maid an owner already invited: attach this Firebase
-# account to the row created for her phone number.
+# First login of a maid an owner already invited: attach this Firebase
+# account to the row created for her email address.
 mutation ClaimInvitedProfile @auth(level: USER) {
   user_updateMany(
     where: {
       authUid: { isNull: true }
-      phone: { eq_expr: "auth.token.phone_number" }
+      email: { eq_expr: "auth.token.email" }
     }
     data: { authUid_expr: "auth.uid" }
   )
@@ -20,8 +20,8 @@ mutation CreateMyProfile @auth(level: USER) {
   user_insert(
     data: {
       authUid_expr: "auth.uid"
-      phone_expr: "auth.token.phone_number"
-      name_expr: "auth.token.phone_number"
+      email_expr: "auth.token.email"
+      name_expr: "auth.token.email"
     }
   )
 }
@@ -61,7 +61,7 @@ mutation CreateHousehold($name: String!, $address: String)
   )
 }
 
-# Owner adds someone who already has a user row (see UserIdByPhone).
+# Owner adds someone who already has a user row (see UserIdByEmail).
 mutation AddHouseholdMember(
   $householdId: UUID!
   $userId: UUID!
@@ -90,7 +90,7 @@ mutation AddHouseholdMember(
 # (claimed on their first login) and links it into the household.
 mutation InviteHouseholdMember(
   $householdId: UUID!
-  $phone: String!
+  $email: String!
   $role: MemberRole!
 ) @auth(level: USER) @transaction {
   query @redact {
@@ -107,7 +107,7 @@ mutation InviteHouseholdMember(
       id
     }
   }
-  user_insert(data: { phone: $phone, name: $phone })
+  user_insert(data: { email: $email, name: $email })
   householdMember_insert(
     data: {
       householdId: $householdId

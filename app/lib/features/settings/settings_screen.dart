@@ -20,7 +20,7 @@ class SettingsScreen extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           children: [
             Text(profile.name, style: Theme.of(context).textTheme.titleMedium),
-            Text(profile.phone, style: const TextStyle(color: Colors.grey)),
+            Text(profile.email, style: const TextStyle(color: Colors.grey)),
             const SizedBox(height: 24),
             Text(
               Strings.of('language', current),

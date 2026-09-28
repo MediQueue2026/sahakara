@@ -32,7 +32,7 @@ part 'my_membership.dart';
 
 part 'household_members.dart';
 
-part 'user_id_by_phone.dart';
+part 'user_id_by_email.dart';
 
 part 'current_contract.dart';
 
@@ -308,8 +308,8 @@ class SahakaraConnector {
   }
   
   
-  InviteHouseholdMemberVariablesBuilder inviteHouseholdMember ({required String householdId, required String phone, required MemberRole role, }) {
-    return InviteHouseholdMemberVariablesBuilder(dataConnect, householdId: householdId,phone: phone,role: role,);
+  InviteHouseholdMemberVariablesBuilder inviteHouseholdMember ({required String householdId, required String email, required MemberRole role, }) {
+    return InviteHouseholdMemberVariablesBuilder(dataConnect, householdId: householdId,email: email,role: role,);
   }
   
   
@@ -353,8 +353,8 @@ class SahakaraConnector {
   }
   
   
-  UserIdByPhoneVariablesBuilder userIdByPhone ({required String phone, }) {
-    return UserIdByPhoneVariablesBuilder(dataConnect, phone: phone,);
+  UserIdByEmailVariablesBuilder userIdByEmail ({required String email, }) {
+    return UserIdByEmailVariablesBuilder(dataConnect, email: email,);
   }
   
   

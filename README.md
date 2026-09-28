@@ -41,7 +41,7 @@ A localized, accessible, and offline-first household operations platform built t
   and the staff admin panel (Flutter Web), optimized for low-end devices.
 - **Backend:** [Firebase](https://firebase.google.com) — Data Connect
   (PostgreSQL on Cloud SQL, schema and access rules in GraphQL) and Auth
-  (phone OTP, email/password for staff).
+  (email/password for owners, maids and staff).
 - **Offline Sync:** local-first caching layer for low-connectivity
   environments (planned — see `app/README.md`).
 - **Notifications:** Firebase Cloud Messaging (planned).

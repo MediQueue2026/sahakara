@@ -10,25 +10,45 @@ class Strings {
       AppLanguage.si: 'සහකාර',
       AppLanguage.ta: 'சஹகார',
     },
-    'phoneNumber': {
-      AppLanguage.en: 'Phone number',
-      AppLanguage.si: 'දුරකථන අංකය',
-      AppLanguage.ta: 'தொலைபேசி எண்',
+    'email': {
+      AppLanguage.en: 'Email',
+      AppLanguage.si: 'ඊමේල් ලිපිනය',
+      AppLanguage.ta: 'மின்னஞ்சல்',
     },
-    'sendCode': {
-      AppLanguage.en: 'Send code',
-      AppLanguage.si: 'කේතය යවන්න',
-      AppLanguage.ta: 'குறியீட்டை அனுப்பு',
+    'password': {
+      AppLanguage.en: 'Password',
+      AppLanguage.si: 'මුරපදය',
+      AppLanguage.ta: 'கடவுச்சொல்',
     },
-    'enterCode': {
-      AppLanguage.en: 'Enter the code sent to your phone',
-      AppLanguage.si: 'ඔබේ දුරකථනයට එවූ කේතය ඇතුළත් කරන්න',
-      AppLanguage.ta: 'உங்கள் தொலைபேசிக்கு அனுப்பப்பட்ட குறியீட்டை உள்ளிடவும்',
+    'confirmPassword': {
+      AppLanguage.en: 'Confirm password',
+      AppLanguage.si: 'මුරපදය තහවුරු කරන්න',
+      AppLanguage.ta: 'கடவுச்சொல்லை உறுதிப்படுத்தவும்',
     },
-    'verify': {
-      AppLanguage.en: 'Verify',
-      AppLanguage.si: 'තහවුරු කරන්න',
-      AppLanguage.ta: 'சரிபார்க்கவும்',
+    'passwordsDontMatch': {
+      AppLanguage.en: 'Passwords do not match',
+      AppLanguage.si: 'මුරපද නොගැලපේ',
+      AppLanguage.ta: 'கடவுச்சொற்கள் பொருந்தவில்லை',
+    },
+    'signIn': {
+      AppLanguage.en: 'Sign in',
+      AppLanguage.si: 'පිවිසෙන්න',
+      AppLanguage.ta: 'உள்நுழை',
+    },
+    'signUp': {
+      AppLanguage.en: 'Sign up',
+      AppLanguage.si: 'ලියාපදිංචි වන්න',
+      AppLanguage.ta: 'பதிவு செய்',
+    },
+    'noAccount': {
+      AppLanguage.en: "Don't have an account? Sign up",
+      AppLanguage.si: 'ගිණුමක් නැද්ද? ලියාපදිංචි වන්න',
+      AppLanguage.ta: 'கணக்கு இல்லையா? பதிவு செய்யவும்',
+    },
+    'haveAccount': {
+      AppLanguage.en: 'Already have an account? Sign in',
+      AppLanguage.si: 'දැනටමත් ගිණුමක් තිබේද? පිවිසෙන්න',
+      AppLanguage.ta: 'ஏற்கனவே கணக்கு உள்ளதா? உள்நுழையவும்',
     },
     'language': {
       AppLanguage.en: 'Language',
@@ -56,9 +76,9 @@ class Strings {
       AppLanguage.ta: 'உருவாக்கு',
     },
     'addMaid': {
-      AppLanguage.en: 'Add a maid by phone number',
-      AppLanguage.si: 'දුරකථන අංකයෙන් සහායිකාවක් එක් කරන්න',
-      AppLanguage.ta: 'தொலைபேசி எண் மூலம் உதவியாளரைச் சேர்க்கவும்',
+      AppLanguage.en: 'Add a maid by email',
+      AppLanguage.si: 'ඊමේල් මගින් සහායිකාවක් එක් කරන්න',
+      AppLanguage.ta: 'மின்னஞ்சல் மூலம் உதவியாளரைச் சேர்க்கவும்',
     },
     'add': {
       AppLanguage.en: 'Add',

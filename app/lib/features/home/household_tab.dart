@@ -22,7 +22,7 @@ class HouseholdTab extends StatefulWidget {
 
 class _HouseholdTabState extends State<HouseholdTab> {
   late Future<List<Member>> _members;
-  final _phoneController = TextEditingController(text: '+94');
+  final _emailController = TextEditingController();
   bool _busy = false;
   String? _error;
 
@@ -36,17 +36,17 @@ class _HouseholdTabState extends State<HouseholdTab> {
   }
 
   Future<void> _addMaid() async {
-    if (_phoneController.text.trim().isEmpty) return;
+    if (_emailController.text.trim().isEmpty) return;
     setState(() {
       _busy = true;
       _error = null;
     });
     try {
-      await AppData.addMaidByPhone(
+      await AppData.addMaidByEmail(
         householdId: _householdId,
-        phone: _phoneController.text.trim(),
+        email: _emailController.text,
       );
-      _phoneController.text = '+94';
+      _emailController.clear();
       setState(() => _members = AppData.fetchHouseholdMembers(_householdId));
     } catch (e) {
       setState(() => _error = e.toString());
@@ -103,10 +103,11 @@ class _HouseholdTabState extends State<HouseholdTab> {
               ),
               const SizedBox(height: 8),
               TextField(
-                controller: _phoneController,
-                keyboardType: TextInputType.phone,
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
+                autocorrect: false,
                 decoration: InputDecoration(
-                  labelText: Strings.of('phoneNumber', lang),
+                  labelText: Strings.of('email', lang),
                 ),
               ),
               const SizedBox(height: 8),

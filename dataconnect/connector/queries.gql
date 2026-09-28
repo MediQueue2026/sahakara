@@ -4,8 +4,8 @@
 
 # ── profile & membership ─────────────────────────────────────────────────
 
-# The signed-in user's row — or, on their first phone login, the row an
-# owner pre-created for their phone number (see ClaimInvitedProfile).
+# The signed-in user's row — or, on their first login, the row an owner
+# pre-created for their email address (see ClaimInvitedProfile).
 query MyProfile @auth(level: USER) {
   users(
     where: {
@@ -13,7 +13,7 @@ query MyProfile @auth(level: USER) {
         { authUid: { eq_expr: "auth.uid" } }
         {
           authUid: { isNull: true }
-          phone: { eq_expr: "auth.token.phone_number" }
+          email: { eq_expr: "auth.token.email" }
         }
       ]
     }
@@ -21,7 +21,7 @@ query MyProfile @auth(level: USER) {
   ) {
     id
     authUid
-    phone
+    email
     name
     language
   }
@@ -69,15 +69,15 @@ query HouseholdMembers($householdId: UUID!) @auth(level: USER) {
     user {
       id
       name
-      phone
+      email
     }
   }
 }
 
-# Used when an owner adds staff by phone, to link an existing user rather
+# Used when an owner adds staff by email, to link an existing user rather
 # than create a duplicate. Returns only the id.
-query UserIdByPhone($phone: String!) @auth(level: USER) {
-  users(where: { phone: { eq: $phone } }, limit: 1) {
+query UserIdByEmail($email: String!) @auth(level: USER) {
+  users(where: { email: { eq: $email } }, limit: 1) {
     id
   }
 }

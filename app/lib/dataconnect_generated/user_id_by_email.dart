@@ -1,26 +1,26 @@
 part of 'sahakara.dart';
 
-class UserIdByPhoneVariablesBuilder {
-  String phone;
+class UserIdByEmailVariablesBuilder {
+  String email;
 
   final FirebaseDataConnect _dataConnect;
-  UserIdByPhoneVariablesBuilder(this._dataConnect, {required  this.phone,});
-  Deserializer<UserIdByPhoneData> dataDeserializer = (dynamic json)  => UserIdByPhoneData.fromJson(jsonDecode(json));
-  Serializer<UserIdByPhoneVariables> varsSerializer = (UserIdByPhoneVariables vars) => jsonEncode(vars.toJson());
-  Future<QueryResult<UserIdByPhoneData, UserIdByPhoneVariables>> execute() {
+  UserIdByEmailVariablesBuilder(this._dataConnect, {required  this.email,});
+  Deserializer<UserIdByEmailData> dataDeserializer = (dynamic json)  => UserIdByEmailData.fromJson(jsonDecode(json));
+  Serializer<UserIdByEmailVariables> varsSerializer = (UserIdByEmailVariables vars) => jsonEncode(vars.toJson());
+  Future<QueryResult<UserIdByEmailData, UserIdByEmailVariables>> execute() {
     return ref().execute();
   }
 
-  QueryRef<UserIdByPhoneData, UserIdByPhoneVariables> ref() {
-    UserIdByPhoneVariables vars= UserIdByPhoneVariables(phone: phone,);
-    return _dataConnect.query("UserIdByPhone", dataDeserializer, varsSerializer, vars);
+  QueryRef<UserIdByEmailData, UserIdByEmailVariables> ref() {
+    UserIdByEmailVariables vars= UserIdByEmailVariables(email: email,);
+    return _dataConnect.query("UserIdByEmail", dataDeserializer, varsSerializer, vars);
   }
 }
 
 @immutable
-class UserIdByPhoneUsers {
+class UserIdByEmailUsers {
   final String id;
-  UserIdByPhoneUsers.fromJson(dynamic json):
+  UserIdByEmailUsers.fromJson(dynamic json):
   
   id = nativeFromJson<String>(json['id']);
   @override
@@ -32,7 +32,7 @@ class UserIdByPhoneUsers {
       return false;
     }
 
-    final UserIdByPhoneUsers otherTyped = other as UserIdByPhoneUsers;
+    final UserIdByEmailUsers otherTyped = other as UserIdByEmailUsers;
     return id == otherTyped.id;
     
   }
@@ -46,18 +46,18 @@ class UserIdByPhoneUsers {
     return json;
   }
 
-  UserIdByPhoneUsers({
+  UserIdByEmailUsers({
     required this.id,
   });
 }
 
 @immutable
-class UserIdByPhoneData {
-  final List<UserIdByPhoneUsers> users;
-  UserIdByPhoneData.fromJson(dynamic json):
+class UserIdByEmailData {
+  final List<UserIdByEmailUsers> users;
+  UserIdByEmailData.fromJson(dynamic json):
   
   users = (json['users'] as List<dynamic>)
-        .map((e) => UserIdByPhoneUsers.fromJson(e))
+        .map((e) => UserIdByEmailUsers.fromJson(e))
         .toList();
   @override
   bool operator ==(Object other) {
@@ -68,7 +68,7 @@ class UserIdByPhoneData {
       return false;
     }
 
-    final UserIdByPhoneData otherTyped = other as UserIdByPhoneData;
+    final UserIdByEmailData otherTyped = other as UserIdByEmailData;
     return users == otherTyped.users;
     
   }
@@ -82,18 +82,18 @@ class UserIdByPhoneData {
     return json;
   }
 
-  UserIdByPhoneData({
+  UserIdByEmailData({
     required this.users,
   });
 }
 
 @immutable
-class UserIdByPhoneVariables {
-  final String phone;
+class UserIdByEmailVariables {
+  final String email;
   @Deprecated('fromJson is deprecated for Variable classes as they are no longer required for deserialization.')
-  UserIdByPhoneVariables.fromJson(Map<String, dynamic> json):
+  UserIdByEmailVariables.fromJson(Map<String, dynamic> json):
   
-  phone = nativeFromJson<String>(json['phone']);
+  email = nativeFromJson<String>(json['email']);
   @override
   bool operator ==(Object other) {
     if(identical(this, other)) {
@@ -103,22 +103,22 @@ class UserIdByPhoneVariables {
       return false;
     }
 
-    final UserIdByPhoneVariables otherTyped = other as UserIdByPhoneVariables;
-    return phone == otherTyped.phone;
+    final UserIdByEmailVariables otherTyped = other as UserIdByEmailVariables;
+    return email == otherTyped.email;
     
   }
   @override
-  int get hashCode => phone.hashCode;
+  int get hashCode => email.hashCode;
   
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> json = {};
-    json['phone'] = nativeToJson<String>(phone);
+    json['email'] = nativeToJson<String>(email);
     return json;
   }
 
-  UserIdByPhoneVariables({
-    required this.phone,
+  UserIdByEmailVariables({
+    required this.email,
   });
 }
 

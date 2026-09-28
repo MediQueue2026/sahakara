@@ -20,14 +20,14 @@ class MyProfileVariablesBuilder {
 class MyProfileUsers {
   final String id;
   final String? authUid;
-  final String phone;
+  final String email;
   final String name;
   final EnumValue<AppLanguage> language;
   MyProfileUsers.fromJson(dynamic json):
   
   id = nativeFromJson<String>(json['id']),
   authUid = json['authUid'] == null ? null : nativeFromJson<String>(json['authUid']),
-  phone = nativeFromJson<String>(json['phone']),
+  email = nativeFromJson<String>(json['email']),
   name = nativeFromJson<String>(json['name']),
   language = appLanguageDeserializer(json['language']);
   @override
@@ -42,13 +42,13 @@ class MyProfileUsers {
     final MyProfileUsers otherTyped = other as MyProfileUsers;
     return id == otherTyped.id && 
     authUid == otherTyped.authUid && 
-    phone == otherTyped.phone && 
+    email == otherTyped.email && 
     name == otherTyped.name && 
     language == otherTyped.language;
     
   }
   @override
-  int get hashCode => Object.hashAll([id.hashCode, authUid.hashCode, phone.hashCode, name.hashCode, language.hashCode]);
+  int get hashCode => Object.hashAll([id.hashCode, authUid.hashCode, email.hashCode, name.hashCode, language.hashCode]);
   
 
   Map<String, dynamic> toJson() {
@@ -57,7 +57,7 @@ class MyProfileUsers {
     if (authUid != null) {
       json['authUid'] = nativeToJson<String?>(authUid);
     }
-    json['phone'] = nativeToJson<String>(phone);
+    json['email'] = nativeToJson<String>(email);
     json['name'] = nativeToJson<String>(name);
     json['language'] = 
     appLanguageSerializer(language)
@@ -68,7 +68,7 @@ class MyProfileUsers {
   MyProfileUsers({
     required this.id,
     this.authUid,
-    required this.phone,
+    required this.email,
     required this.name,
     required this.language,
   });

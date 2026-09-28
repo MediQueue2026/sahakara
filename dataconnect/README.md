@@ -4,8 +4,8 @@ The app has no custom server. Firebase is the backend:
 
 - **Firebase Data Connect**: a PostgreSQL database (Cloud SQL) that you
   define in GraphQL and that the app reaches through generated, typed Dart code.
-- **Firebase Auth**: phone OTP for owners and maids, and email/password for
-  staff using the admin panel.
+- **Firebase Auth**: email/password for owners, maids and staff using the
+  admin panel (no email verification).
 
 ```
 dataconnect/
@@ -44,8 +44,8 @@ firebase emulators:start
 ```
 
 This runs the Auth and Data Connect emulators. The UI is at
-http://localhost:4000, and phone OTP codes appear there instead of being
-sent by SMS. Load the starter tasks by opening `seed_data.gql` in VS Code
+http://localhost:4000, where you can see the accounts that have signed up.
+Load the starter tasks by opening `seed_data.gql` in VS Code
 (Firebase Data Connect extension) and clicking **Run (local)**.
 
 Then run the app with `USE_EMULATORS` set (see `app/README.md`).
@@ -66,9 +66,7 @@ regenerates automatically on save while the emulator is running.
    enabled (Firebase console → Upgrade). New projects get a free Cloud SQL
    trial.
 2. **Enable Auth providers.** In Firebase console → Authentication → Sign-in
-   method, turn on **Phone** and **Email/Password**. For phone auth on iOS
-   you also need APNs set up, and on Android the app's SHA-1/SHA-256
-   fingerprints (`flutterfire configure` walks you through both).
+   method, turn on **Email/Password**.
 3. **Deploy the schema and connector:**
 
    ```bash

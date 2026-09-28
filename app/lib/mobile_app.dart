@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'core/app_data.dart';
 import 'core/app_language.dart';
 import 'core/firebase_client.dart';
-import 'features/auth/phone_login_screen.dart';
+import 'features/auth/email_login_screen.dart';
 import 'features/home/home_shell.dart';
 import 'features/onboarding/household_setup_screen.dart';
 
-/// Routes a signed-out phone to login, a signed-in phone with no household
+/// Routes a signed-out user to login, a signed-in user with no household
 /// yet to setup, and everyone else into the home shell.
 class MobileApp extends StatefulWidget {
   const MobileApp({super.key});
@@ -27,7 +27,7 @@ class _MobileAppState extends State<MobileApp> {
       builder: (context, snapshot) {
         final user = snapshot.data;
         if (user == null) {
-          return PhoneLoginScreen(lang: lang);
+          return EmailLoginScreen(lang: lang);
         }
         return _AuthedRouter(key: ValueKey(user.uid), lang: lang);
       },

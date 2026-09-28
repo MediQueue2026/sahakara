@@ -152,19 +152,19 @@ ref.subscribe(...);
 ```
 
 
-### UserIdByPhone
+### UserIdByEmail
 #### Required Arguments
 ```dart
-String phone = ...;
-SahakaraConnector.instance.userIdByPhone(
-  phone: phone,
+String email = ...;
+SahakaraConnector.instance.userIdByEmail(
+  email: email,
 ).execute();
 ```
 
 
 
 #### Return Type
-`execute()` returns a `QueryResult<UserIdByPhoneData, UserIdByPhoneVariables>`
+`execute()` returns a `QueryResult<UserIdByEmailData, UserIdByEmailVariables>`
 ```dart
 /// Result of an Operation Request (query/mutation).
 class OperationResult<Data, Variables> {
@@ -179,10 +179,10 @@ class QueryResult<Data, Variables> extends OperationResult<Data, Variables> {
   QueryResult(super.dataConnect, super.data, super.ref);
 }
 
-final result = await SahakaraConnector.instance.userIdByPhone(
-  phone: phone,
+final result = await SahakaraConnector.instance.userIdByEmail(
+  email: email,
 );
-UserIdByPhoneData data = result.data;
+UserIdByEmailData data = result.data;
 final ref = result.ref;
 ```
 
@@ -190,10 +190,10 @@ final ref = result.ref;
 Each builder returns an `execute` function, which is a helper function that creates a `Ref` object, and executes the underlying operation.
 An example of how to use the `Ref` object is shown below:
 ```dart
-String phone = ...;
+String email = ...;
 
-final ref = SahakaraConnector.instance.userIdByPhone(
-  phone: phone,
+final ref = SahakaraConnector.instance.userIdByEmail(
+  email: email,
 ).ref();
 ref.execute();
 
@@ -600,11 +600,11 @@ ref.execute();
 #### Required Arguments
 ```dart
 String householdId = ...;
-String phone = ...;
+String email = ...;
 MemberRole role = ...;
 SahakaraConnector.instance.inviteHouseholdMember(
   householdId: householdId,
-  phone: phone,
+  email: email,
   role: role,
 ).execute();
 ```
@@ -624,7 +624,7 @@ class OperationResult<Data, Variables> {
 
 final result = await SahakaraConnector.instance.inviteHouseholdMember(
   householdId: householdId,
-  phone: phone,
+  email: email,
   role: role,
 );
 InviteHouseholdMemberData data = result.data;
@@ -636,12 +636,12 @@ Each builder returns an `execute` function, which is a helper function that crea
 An example of how to use the `Ref` object is shown below:
 ```dart
 String householdId = ...;
-String phone = ...;
+String email = ...;
 MemberRole role = ...;
 
 final ref = SahakaraConnector.instance.inviteHouseholdMember(
   householdId: householdId,
-  phone: phone,
+  email: email,
   role: role,
 ).ref();
 ref.execute();

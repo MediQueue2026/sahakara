@@ -72,12 +72,12 @@ class HouseholdMembersHouseholdMembers {
 class HouseholdMembersHouseholdMembersUser {
   final String id;
   final String name;
-  final String phone;
+  final String email;
   HouseholdMembersHouseholdMembersUser.fromJson(dynamic json):
   
   id = nativeFromJson<String>(json['id']),
   name = nativeFromJson<String>(json['name']),
-  phone = nativeFromJson<String>(json['phone']);
+  email = nativeFromJson<String>(json['email']);
   @override
   bool operator ==(Object other) {
     if(identical(this, other)) {
@@ -90,25 +90,25 @@ class HouseholdMembersHouseholdMembersUser {
     final HouseholdMembersHouseholdMembersUser otherTyped = other as HouseholdMembersHouseholdMembersUser;
     return id == otherTyped.id && 
     name == otherTyped.name && 
-    phone == otherTyped.phone;
+    email == otherTyped.email;
     
   }
   @override
-  int get hashCode => Object.hashAll([id.hashCode, name.hashCode, phone.hashCode]);
+  int get hashCode => Object.hashAll([id.hashCode, name.hashCode, email.hashCode]);
   
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> json = {};
     json['id'] = nativeToJson<String>(id);
     json['name'] = nativeToJson<String>(name);
-    json['phone'] = nativeToJson<String>(phone);
+    json['email'] = nativeToJson<String>(email);
     return json;
   }
 
   HouseholdMembersHouseholdMembersUser({
     required this.id,
     required this.name,
-    required this.phone,
+    required this.email,
   });
 }
 
