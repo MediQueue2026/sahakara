@@ -4,25 +4,34 @@
 
 # ── profile ──────────────────────────────────────────────────────────────
 
-# First login of a maid an owner already invited: attach this Firebase
-# account to the row created for her email address.
+# Attaches this Firebase account to the row for its email address: a maid
+# an owner already invited (no authUid yet), or a row whose old Firebase
+# account was deleted. Firebase Auth allows one account per email, so a
+# token carrying this email means this account owns it now.
 mutation ClaimInvitedProfile @auth(level: USER) {
   user_updateMany(
-    where: {
-      authUid: { isNull: true }
-      email: { eq_expr: "auth.token.email" }
-    }
+    where: { email: { eq_expr: "auth.token.email" } }
     data: { authUid_expr: "auth.uid" }
   )
 }
 
-mutation CreateMyProfile @auth(level: USER) {
+# Saves the signed-in Firebase account as a `User` row, right after sign-up.
+mutation CreateMyProfile($name: String!, $accountType: AccountType!)
+@auth(level: USER) {
   user_insert(
     data: {
       authUid_expr: "auth.uid"
       email_expr: "auth.token.email"
-      name_expr: "auth.token.email"
+      name: $name
+      accountType: $accountType
     }
+  )
+}
+
+mutation SetMyName($name: String!) @auth(level: USER) {
+  user_updateMany(
+    where: { authUid: { eq_expr: "auth.uid" } }
+    data: { name: $name }
   )
 }
 
@@ -107,7 +116,7 @@ mutation InviteHouseholdMember(
       id
     }
   }
-  user_insert(data: { email: $email, name: $email })
+  user_insert(data: { email: $email, name: $email, accountType: maid })
   householdMember_insert(
     data: {
       householdId: $householdId

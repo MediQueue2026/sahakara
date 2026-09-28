@@ -16,6 +16,9 @@
 # ── enums ────────────────────────────────────────────────────────────────
 
 enum AppLanguage { si ta en }
+# Which of the two sign-up paths an account came through. Household staff
+# (maid/driver/cook/gardener) all sign up as `maid`.
+enum AccountType { owner maid }
 enum MemberRole { owner adult maid driver cook gardener }
 enum PayType { monthly daily hourly per_visit }
 enum TaskCategory { kitchen cleaning laundry cooking other }
@@ -45,6 +48,7 @@ type User @table {
   authUid: String @unique
   email: String! @unique
   name: String!
+  accountType: AccountType! @default(value: owner)
   language: AppLanguage! @default(value: en)
   profilePhoto: String
   createdAt: Timestamp! @default(expr: "request.time")

@@ -50,6 +50,65 @@ class Strings {
       AppLanguage.si: 'දැනටමත් ගිණුමක් තිබේද? පිවිසෙන්න',
       AppLanguage.ta: 'ஏற்கனவே கணக்கு உள்ளதா? உள்நுழையவும்',
     },
+    'imOwner': {
+      AppLanguage.en: 'I\'m a house owner',
+      AppLanguage.si: 'මම නිවස් හිමිකරුවෙක්',
+      AppLanguage.ta: 'நான் வீட்டு உரிமையாளர்',
+    },
+    'ownerBlurb': {
+      AppLanguage.en: 'Manage your household and staff',
+      AppLanguage.si: 'ඔබේ නිවස සහ සේවකයින් කළමනාකරණය කරන්න',
+      AppLanguage.ta: 'உங்கள் வீட்டையும் பணியாளர்களையும் நிர்வகிக்கவும்',
+    },
+    'imMaid': {
+      AppLanguage.en: 'I\'m a maid',
+      AppLanguage.si: 'මම සහායිකාවක්',
+      AppLanguage.ta: 'நான் வீட்டுப் பணியாளர்',
+    },
+    'maidBlurb': {
+      AppLanguage.en: 'See your tasks, contract and pay',
+      AppLanguage.si: 'ඔබේ කාර්යයන්, ගිවිසුම සහ වැටුප බලන්න',
+      AppLanguage.ta: 'உங்கள் பணிகள், ஒப்பந்தம் மற்றும் ஊதியத்தைப் பாருங்கள்',
+    },
+    'name': {
+      AppLanguage.en: 'Your name',
+      AppLanguage.si: 'ඔබේ නම',
+      AppLanguage.ta: 'உங்கள் பெயர்',
+    },
+    'nameRequired': {
+      AppLanguage.en: 'Please enter your name',
+      AppLanguage.si: 'කරුණාකර ඔබේ නම ඇතුළත් කරන්න',
+      AppLanguage.ta: 'உங்கள் பெயரை உள்ளிடவும்',
+    },
+    'registeredAsOwner': {
+      AppLanguage.en:
+          'This account is registered as a house owner. Sign in here instead.',
+      AppLanguage.si: 'මෙම ගිණුම නිවස් හිමිකරුවෙකු ලෙස ලියාපදිංචි කර ඇත. මෙතැනින් පිවිසෙන්න.',
+      AppLanguage.ta: 'இந்தக் கணக்கு வீட்டு உரிமையாளராகப் பதிவு செய்யப்பட்டுள்ளது. இங்கே உள்நுழையவும்.',
+    },
+    'registeredAsMaid': {
+      AppLanguage.en:
+          'This account is registered as a maid. Sign in here instead.',
+      AppLanguage.si:
+          'මෙම ගිණුම සහායිකාවක් ලෙස ලියාපදිංචි කර ඇත. මෙතැනින් පිවිසෙන්න.',
+      AppLanguage.ta: 'இந்தக் கணக்கு வீட்டுப் பணியாளராகப் பதிவு செய்யப்பட்டுள்ளது. இங்கே உள்நுழையவும்.',
+    },
+    'waitingForHousehold': {
+      AppLanguage.en: 'Waiting to join a household',
+      AppLanguage.si: 'නිවසකට එක්වීමට රැඳී සිටී',
+      AppLanguage.ta: 'ஒரு வீட்டில் சேரக் காத்திருக்கிறது',
+    },
+    'waitingForHouseholdBody': {
+      AppLanguage.en:
+          'Ask the house owner to add you in Sahakara using this email:',
+      AppLanguage.si: 'මෙම ඊමේල් ලිපිනය භාවිතයෙන් ඔබව සහකාර වෙත එක් කරන ලෙස නිවස් හිමිකරුගෙන් ඉල්ලන්න:',
+      AppLanguage.ta: 'இந்த மின்னஞ்சலைப் பயன்படுத்தி உங்களை சஹகாரவில் சேர்க்க வீட்டு உரிமையாளரிடம் கேளுங்கள்:',
+    },
+    'checkAgain': {
+      AppLanguage.en: 'Check again',
+      AppLanguage.si: 'නැවත පරීක්ෂා කරන්න',
+      AppLanguage.ta: 'மீண்டும் சரிபார்க்கவும்',
+    },
     'language': {
       AppLanguage.en: 'Language',
       AppLanguage.si: 'භාෂාව',

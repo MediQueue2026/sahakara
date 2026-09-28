@@ -22,6 +22,7 @@ class MyProfileUsers {
   final String? authUid;
   final String email;
   final String name;
+  final EnumValue<AccountType> accountType;
   final EnumValue<AppLanguage> language;
   MyProfileUsers.fromJson(dynamic json):
   
@@ -29,6 +30,7 @@ class MyProfileUsers {
   authUid = json['authUid'] == null ? null : nativeFromJson<String>(json['authUid']),
   email = nativeFromJson<String>(json['email']),
   name = nativeFromJson<String>(json['name']),
+  accountType = accountTypeDeserializer(json['accountType']),
   language = appLanguageDeserializer(json['language']);
   @override
   bool operator ==(Object other) {
@@ -44,11 +46,12 @@ class MyProfileUsers {
     authUid == otherTyped.authUid && 
     email == otherTyped.email && 
     name == otherTyped.name && 
+    accountType == otherTyped.accountType && 
     language == otherTyped.language;
     
   }
   @override
-  int get hashCode => Object.hashAll([id.hashCode, authUid.hashCode, email.hashCode, name.hashCode, language.hashCode]);
+  int get hashCode => Object.hashAll([id.hashCode, authUid.hashCode, email.hashCode, name.hashCode, accountType.hashCode, language.hashCode]);
   
 
   Map<String, dynamic> toJson() {
@@ -59,6 +62,9 @@ class MyProfileUsers {
     }
     json['email'] = nativeToJson<String>(email);
     json['name'] = nativeToJson<String>(name);
+    json['accountType'] = 
+    accountTypeSerializer(accountType)
+    ;
     json['language'] = 
     appLanguageSerializer(language)
     ;
@@ -70,6 +76,7 @@ class MyProfileUsers {
     this.authUid,
     required this.email,
     required this.name,
+    required this.accountType,
     required this.language,
   });
 }

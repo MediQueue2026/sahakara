@@ -4,17 +4,15 @@
 
 # ── profile & membership ─────────────────────────────────────────────────
 
-# The signed-in user's row — or, on their first login, the row an owner
-# pre-created for their email address (see ClaimInvitedProfile).
+# The signed-in user's row, or the row for their email address that isn't
+# linked to this account yet — one an owner pre-created, or one left by a
+# deleted Firebase account (see ClaimInvitedProfile).
 query MyProfile @auth(level: USER) {
   users(
     where: {
       _or: [
         { authUid: { eq_expr: "auth.uid" } }
-        {
-          authUid: { isNull: true }
-          email: { eq_expr: "auth.token.email" }
-        }
+        { email: { eq_expr: "auth.token.email" } }
       ]
     }
     limit: 1
@@ -23,6 +21,7 @@ query MyProfile @auth(level: USER) {
     authUid
     email
     name
+    accountType
     language
   }
 }

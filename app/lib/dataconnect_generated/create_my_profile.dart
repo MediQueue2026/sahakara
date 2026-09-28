@@ -1,18 +1,20 @@
 part of 'sahakara.dart';
 
 class CreateMyProfileVariablesBuilder {
-  
+  String name;
+  AccountType accountType;
+
   final FirebaseDataConnect _dataConnect;
-  CreateMyProfileVariablesBuilder(this._dataConnect, );
+  CreateMyProfileVariablesBuilder(this._dataConnect, {required  this.name,required  this.accountType,});
   Deserializer<CreateMyProfileData> dataDeserializer = (dynamic json)  => CreateMyProfileData.fromJson(jsonDecode(json));
-  
-  Future<OperationResult<CreateMyProfileData, void>> execute() {
+  Serializer<CreateMyProfileVariables> varsSerializer = (CreateMyProfileVariables vars) => jsonEncode(vars.toJson());
+  Future<OperationResult<CreateMyProfileData, CreateMyProfileVariables>> execute() {
     return ref().execute();
   }
 
-  MutationRef<CreateMyProfileData, void> ref() {
-    
-    return _dataConnect.mutation("CreateMyProfile", dataDeserializer, emptySerializer, null);
+  MutationRef<CreateMyProfileData, CreateMyProfileVariables> ref() {
+    CreateMyProfileVariables vars= CreateMyProfileVariables(name: name,accountType: accountType,);
+    return _dataConnect.mutation("CreateMyProfile", dataDeserializer, varsSerializer, vars);
   }
 }
 
@@ -81,6 +83,48 @@ class CreateMyProfileData {
 
   CreateMyProfileData({
     required this.user_insert,
+  });
+}
+
+@immutable
+class CreateMyProfileVariables {
+  final String name;
+  final AccountType accountType;
+  @Deprecated('fromJson is deprecated for Variable classes as they are no longer required for deserialization.')
+  CreateMyProfileVariables.fromJson(Map<String, dynamic> json):
+  
+  name = nativeFromJson<String>(json['name']),
+  accountType = AccountType.values.byName(json['accountType']);
+  @override
+  bool operator ==(Object other) {
+    if(identical(this, other)) {
+      return true;
+    }
+    if(other.runtimeType != runtimeType) {
+      return false;
+    }
+
+    final CreateMyProfileVariables otherTyped = other as CreateMyProfileVariables;
+    return name == otherTyped.name && 
+    accountType == otherTyped.accountType;
+    
+  }
+  @override
+  int get hashCode => Object.hashAll([name.hashCode, accountType.hashCode]);
+  
+
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> json = {};
+    json['name'] = nativeToJson<String>(name);
+    json['accountType'] = 
+    accountType.name
+    ;
+    return json;
+  }
+
+  CreateMyProfileVariables({
+    required this.name,
+    required this.accountType,
   });
 }
 
