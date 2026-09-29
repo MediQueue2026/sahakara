@@ -20,6 +20,14 @@ part 'invite_household_member.dart';
 
 part 'save_contract.dart';
 
+part 'add_daily_task.dart';
+
+part 'assign_daily_task.dart';
+
+part 'delete_daily_task.dart';
+
+part 'update_my_task_status.dart';
+
 part 'add_library_task.dart';
 
 part 'delete_library_task.dart';
@@ -37,6 +45,10 @@ part 'household_members.dart';
 part 'user_id_by_email.dart';
 
 part 'current_contract.dart';
+
+part 'household_tasks_for_day.dart';
+
+part 'my_tasks_for_day.dart';
 
 part 'library_tasks.dart';
 
@@ -101,6 +113,52 @@ part 'admin_households.dart';
       
       case 'en':
         return const Known(AppLanguage.en);
+      
+      default:
+        return Unknown(data);
+    }
+  }
+  
+
+  enum CantDoReason {
+    
+      no_supplies,
+    
+      power_cut,
+    
+      water_cut,
+    
+      sick,
+    
+      no_time,
+    
+      other,
+    
+  }
+  
+  String cantDoReasonSerializer(EnumValue<CantDoReason> e) {
+    return e.stringValue;
+  }
+  EnumValue<CantDoReason> cantDoReasonDeserializer(dynamic data) {
+    switch (data) {
+      
+      case 'no_supplies':
+        return const Known(CantDoReason.no_supplies);
+      
+      case 'power_cut':
+        return const Known(CantDoReason.power_cut);
+      
+      case 'water_cut':
+        return const Known(CantDoReason.water_cut);
+      
+      case 'sick':
+        return const Known(CantDoReason.sick);
+      
+      case 'no_time':
+        return const Known(CantDoReason.no_time);
+      
+      case 'other':
+        return const Known(CantDoReason.other);
       
       default:
         return Unknown(data);
@@ -262,6 +320,119 @@ part 'admin_households.dart';
   }
   
 
+  enum TaskLogAction {
+    
+      started,
+    
+      done,
+    
+      help,
+    
+      cant_do,
+    
+  }
+  
+  String taskLogActionSerializer(EnumValue<TaskLogAction> e) {
+    return e.stringValue;
+  }
+  EnumValue<TaskLogAction> taskLogActionDeserializer(dynamic data) {
+    switch (data) {
+      
+      case 'started':
+        return const Known(TaskLogAction.started);
+      
+      case 'done':
+        return const Known(TaskLogAction.done);
+      
+      case 'help':
+        return const Known(TaskLogAction.help);
+      
+      case 'cant_do':
+        return const Known(TaskLogAction.cant_do);
+      
+      default:
+        return Unknown(data);
+    }
+  }
+  
+
+  enum TaskPriority {
+    
+      high,
+    
+      medium,
+    
+      low,
+    
+  }
+  
+  String taskPrioritySerializer(EnumValue<TaskPriority> e) {
+    return e.stringValue;
+  }
+  EnumValue<TaskPriority> taskPriorityDeserializer(dynamic data) {
+    switch (data) {
+      
+      case 'high':
+        return const Known(TaskPriority.high);
+      
+      case 'medium':
+        return const Known(TaskPriority.medium);
+      
+      case 'low':
+        return const Known(TaskPriority.low);
+      
+      default:
+        return Unknown(data);
+    }
+  }
+  
+
+  enum TaskStatus {
+    
+      pending,
+    
+      started,
+    
+      done,
+    
+      need_help,
+    
+      cant_do,
+    
+      carried_forward,
+    
+  }
+  
+  String taskStatusSerializer(EnumValue<TaskStatus> e) {
+    return e.stringValue;
+  }
+  EnumValue<TaskStatus> taskStatusDeserializer(dynamic data) {
+    switch (data) {
+      
+      case 'pending':
+        return const Known(TaskStatus.pending);
+      
+      case 'started':
+        return const Known(TaskStatus.started);
+      
+      case 'done':
+        return const Known(TaskStatus.done);
+      
+      case 'need_help':
+        return const Known(TaskStatus.need_help);
+      
+      case 'cant_do':
+        return const Known(TaskStatus.cant_do);
+      
+      case 'carried_forward':
+        return const Known(TaskStatus.carried_forward);
+      
+      default:
+        return Unknown(data);
+    }
+  }
+  
+
 
 
 String enumSerializer(Enum e) {
@@ -356,6 +527,26 @@ class SahakaraConnector {
   }
   
   
+  AddDailyTaskVariablesBuilder addDailyTask ({required String householdId, required DateTime dueDate, required TaskPriority priority, }) {
+    return AddDailyTaskVariablesBuilder(dataConnect, householdId: householdId,dueDate: dueDate,priority: priority,);
+  }
+  
+  
+  AssignDailyTaskVariablesBuilder assignDailyTask ({required String id, required String assignedToId, }) {
+    return AssignDailyTaskVariablesBuilder(dataConnect, id: id,assignedToId: assignedToId,);
+  }
+  
+  
+  DeleteDailyTaskVariablesBuilder deleteDailyTask ({required String id, }) {
+    return DeleteDailyTaskVariablesBuilder(dataConnect, id: id,);
+  }
+  
+  
+  UpdateMyTaskStatusVariablesBuilder updateMyTaskStatus ({required String id, required TaskStatus status, required TaskLogAction action, }) {
+    return UpdateMyTaskStatusVariablesBuilder(dataConnect, id: id,status: status,action: action,);
+  }
+  
+  
   AddLibraryTaskVariablesBuilder addLibraryTask ({required TaskCategory category, required String nameEn, }) {
     return AddLibraryTaskVariablesBuilder(dataConnect, category: category,nameEn: nameEn,);
   }
@@ -398,6 +589,16 @@ class SahakaraConnector {
   
   CurrentContractVariablesBuilder currentContract ({required String memberId, }) {
     return CurrentContractVariablesBuilder(dataConnect, memberId: memberId,);
+  }
+  
+  
+  HouseholdTasksForDayVariablesBuilder householdTasksForDay ({required String householdId, required DateTime dueDate, }) {
+    return HouseholdTasksForDayVariablesBuilder(dataConnect, householdId: householdId,dueDate: dueDate,);
+  }
+  
+  
+  MyTasksForDayVariablesBuilder myTasksForDay ({required DateTime dueDate, }) {
+    return MyTasksForDayVariablesBuilder(dataConnect, dueDate: dueDate,);
   }
   
   

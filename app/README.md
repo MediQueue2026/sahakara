@@ -3,7 +3,7 @@
 One Flutter codebase, two front doors:
 
 - **Mobile** (Android/iOS) — the owner and maid experience: email sign in /
-  sign up, household setup, contracts, the task library.
+  sign up, household setup, contracts, daily tasks, the task library.
 - **Web** (`flutter run -d chrome`) — the staff admin panel: manage the
   shared task library and holiday calendar, see all households.
 
@@ -74,7 +74,7 @@ lib/
     onboarding/    First-run household creation
     home/          Bottom-nav shell + household tab
     contract/      View/edit a household member's contract
-    tasks/         Read-only task library browser
+    tasks/         Daily tasks (owner assigns, staff report status), task library browser
     settings/      Language switch, sign out
     admin/         Web-only staff panel (households, task library, holidays)
 ```
@@ -83,6 +83,11 @@ lib/
 
 This covers the **Sprint 1 basics** from the project plan: email sign in / sign up,
 per-user language (Sinhala/Tamil/English), household creation, adding a maid
-by email, contracts, and browsing the task library. Sprints 2–5 (daily task
-assignment, attendance, payroll, rewards, offline sync, notifications) build
-on top of this schema and structure but aren't implemented yet.
+by email, contracts, and browsing the task library — plus the start of
+Sprint 2: owners add one-off tasks for a day (from the library or typed in)
+and assign them to staff — straight away, or later, so tasks can be planned
+before any staff are added — who see their own list for the day and mark each
+task started / done / need help / can't do (with a reason) — the owner sees
+the status on their view. Recurring tasks, photo proof, and Sprints 3–5 (attendance, payroll,
+rewards, offline sync, notifications) build on this schema and structure but
+aren't implemented yet.

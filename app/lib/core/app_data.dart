@@ -7,6 +7,8 @@ typedef Membership = MyMembershipHouseholdMembers;
 typedef Member = HouseholdMembersHouseholdMembers;
 typedef CurrentContract = CurrentContractContracts;
 typedef LibraryTask = LibraryTasksLibraryTasks;
+typedef HouseholdTask = HouseholdTasksForDayTasks;
+typedef MyTask = MyTasksForDayTasks;
 
 /// The account type and (on sign-up) name picked on the login screen,
 /// handed to [AppData.ensureUserProfile] once Firebase Auth has signed in.
@@ -166,5 +168,85 @@ class AppData {
   static Future<List<LibraryTask>> fetchTaskLibrary() async {
     final result = await db.libraryTasks().execute();
     return result.data.libraryTasks;
+  }
+
+  /// Every task due on [day] in the household (owner only).
+  static Future<List<HouseholdTask>> fetchHouseholdTasks({
+    required String householdId,
+    required DateTime day,
+  }) async {
+    final result = await db
+        .householdTasksForDay(householdId: householdId, dueDate: day)
+        .execute();
+    return result.data.tasks;
+  }
+
+  /// The signed-in staff member's own tasks due on [day].
+  static Future<List<MyTask>> fetchMyTasks(DateTime day) async {
+    final result = await db.myTasksForDay(dueDate: day).execute();
+    return result.data.tasks;
+  }
+
+  /// Owner adds a task for [day], assigned to the staff member
+  /// [assignedToId] — or to nobody yet when that's null (see
+  /// [assignDailyTask]). Pass either [libraryId] (a task from the shared
+  /// library) or [customTitle].
+  static Future<void> addDailyTask({
+    required String householdId,
+    String? assignedToId,
+    required DateTime day,
+    String? libraryId,
+    String? customTitle,
+    int? estMinutes,
+    required String priority,
+  }) async {
+    await db
+        .addDailyTask(
+          householdId: householdId,
+          dueDate: day,
+          priority: TaskPriority.values.byName(priority),
+        )
+        .assignedToId(assignedToId)
+        .libraryId(libraryId)
+        .customTitle(customTitle)
+        .estMinutes(estMinutes)
+        .execute();
+  }
+
+  /// Owner assigns a task to [assignedToId], or moves it to them from
+  /// someone else. The task starts over as pending.
+  static Future<void> assignDailyTask({
+    required String taskId,
+    required String assignedToId,
+  }) async {
+    await db.assignDailyTask(id: taskId, assignedToId: assignedToId).execute();
+  }
+
+  static Future<void> deleteDailyTask(String taskId) async {
+    await db.deleteDailyTask(id: taskId).execute();
+  }
+
+  /// Staff member reports progress on their own task: [status] is one of
+  /// 'started', 'done', 'need_help' or 'cant_do', and [cantDoReason] is
+  /// required for 'cant_do' (and only then). Also logged in TaskLog.
+  static Future<void> updateMyTaskStatus({
+    required String taskId,
+    required String status,
+    String? cantDoReason,
+  }) async {
+    await db
+        .updateMyTaskStatus(
+          id: taskId,
+          status: TaskStatus.values.byName(status),
+          action: TaskLogAction.values.byName(
+            status == 'need_help' ? 'help' : status,
+          ),
+        )
+        .cantDoReason(
+          cantDoReason == null
+              ? null
+              : CantDoReason.values.byName(cantDoReason),
+        )
+        .execute();
   }
 }

@@ -9,8 +9,8 @@ SahakaraConnector.instance.CreateHousehold(createHouseholdVariables).execute();
 SahakaraConnector.instance.AddHouseholdMember(addHouseholdMemberVariables).execute();
 SahakaraConnector.instance.InviteHouseholdMember(inviteHouseholdMemberVariables).execute();
 SahakaraConnector.instance.SaveContract(saveContractVariables).execute();
-SahakaraConnector.instance.AddLibraryTask(addLibraryTaskVariables).execute();
-SahakaraConnector.instance.DeleteLibraryTask(deleteLibraryTaskVariables).execute();
+SahakaraConnector.instance.AddDailyTask(addDailyTaskVariables).execute();
+SahakaraConnector.instance.AssignDailyTask(assignDailyTaskVariables).execute();
 
 ```
 

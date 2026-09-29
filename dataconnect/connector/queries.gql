@@ -111,6 +111,79 @@ query CurrentContract($memberId: UUID!) @auth(level: USER) {
   }
 }
 
+# ── daily tasks ──────────────────────────────────────────────────────────
+
+# Every task due on one day in a household, for the owner's planning view —
+# including ones not assigned to anyone yet (assignedTo is null). Owner only — staff see just their own (MyTasksForDay).
+query HouseholdTasksForDay($householdId: UUID!, $dueDate: Date!)
+@auth(level: USER) {
+  tasks(
+    where: {
+      dueDate: { eq: $dueDate }
+      template: {
+        household: {
+          id: { eq: $householdId }
+          owner: { authUid: { eq_expr: "auth.uid" } }
+        }
+      }
+    }
+    orderBy: [{ sortOrder: ASC }]
+  ) {
+    id
+    status
+    cantDoReason
+    completedAt
+    assignedTo {
+      id
+      user {
+        name
+      }
+    }
+    template {
+      customTitle
+      estMinutes
+      priority
+      library {
+        category
+        nameEn
+        nameSi
+        nameTa
+      }
+    }
+  }
+}
+
+# The signed-in staff member's tasks for one day, across their active
+# memberships.
+query MyTasksForDay($dueDate: Date!) @auth(level: USER) {
+  tasks(
+    where: {
+      dueDate: { eq: $dueDate }
+      assignedTo: {
+        active: { eq: true }
+        user: { authUid: { eq_expr: "auth.uid" } }
+      }
+    }
+    orderBy: [{ sortOrder: ASC }]
+  ) {
+    id
+    status
+    cantDoReason
+    completedAt
+    template {
+      customTitle
+      estMinutes
+      priority
+      library {
+        category
+        nameEn
+        nameSi
+        nameTa
+      }
+    }
+  }
+}
+
 # ── shared, admin-curated lists ──────────────────────────────────────────
 
 query LibraryTasks @auth(level: USER) {

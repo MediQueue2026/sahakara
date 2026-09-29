@@ -250,6 +250,109 @@ ref.subscribe(...);
 ```
 
 
+### HouseholdTasksForDay
+#### Required Arguments
+```dart
+String householdId = ...;
+DateTime dueDate = ...;
+SahakaraConnector.instance.householdTasksForDay(
+  householdId: householdId,
+  dueDate: dueDate,
+).execute();
+```
+
+
+
+#### Return Type
+`execute()` returns a `QueryResult<HouseholdTasksForDayData, HouseholdTasksForDayVariables>`
+```dart
+/// Result of an Operation Request (query/mutation).
+class OperationResult<Data, Variables> {
+  OperationResult(this.dataConnect, this.data, this.ref);
+  Data data;
+  OperationRef<Data, Variables> ref;
+  FirebaseDataConnect dataConnect;
+}
+
+/// Result of a query request. Created to hold extra variables in the future.
+class QueryResult<Data, Variables> extends OperationResult<Data, Variables> {
+  QueryResult(super.dataConnect, super.data, super.ref);
+}
+
+final result = await SahakaraConnector.instance.householdTasksForDay(
+  householdId: householdId,
+  dueDate: dueDate,
+);
+HouseholdTasksForDayData data = result.data;
+final ref = result.ref;
+```
+
+#### Getting the Ref
+Each builder returns an `execute` function, which is a helper function that creates a `Ref` object, and executes the underlying operation.
+An example of how to use the `Ref` object is shown below:
+```dart
+String householdId = ...;
+DateTime dueDate = ...;
+
+final ref = SahakaraConnector.instance.householdTasksForDay(
+  householdId: householdId,
+  dueDate: dueDate,
+).ref();
+ref.execute();
+
+ref.subscribe(...);
+```
+
+
+### MyTasksForDay
+#### Required Arguments
+```dart
+DateTime dueDate = ...;
+SahakaraConnector.instance.myTasksForDay(
+  dueDate: dueDate,
+).execute();
+```
+
+
+
+#### Return Type
+`execute()` returns a `QueryResult<MyTasksForDayData, MyTasksForDayVariables>`
+```dart
+/// Result of an Operation Request (query/mutation).
+class OperationResult<Data, Variables> {
+  OperationResult(this.dataConnect, this.data, this.ref);
+  Data data;
+  OperationRef<Data, Variables> ref;
+  FirebaseDataConnect dataConnect;
+}
+
+/// Result of a query request. Created to hold extra variables in the future.
+class QueryResult<Data, Variables> extends OperationResult<Data, Variables> {
+  QueryResult(super.dataConnect, super.data, super.ref);
+}
+
+final result = await SahakaraConnector.instance.myTasksForDay(
+  dueDate: dueDate,
+);
+MyTasksForDayData data = result.data;
+final ref = result.ref;
+```
+
+#### Getting the Ref
+Each builder returns an `execute` function, which is a helper function that creates a `Ref` object, and executes the underlying operation.
+An example of how to use the `Ref` object is shown below:
+```dart
+DateTime dueDate = ...;
+
+final ref = SahakaraConnector.instance.myTasksForDay(
+  dueDate: dueDate,
+).ref();
+ref.execute();
+
+ref.subscribe(...);
+```
+
+
 ### LibraryTasks
 #### Required Arguments
 ```dart
@@ -775,6 +878,254 @@ final ref = SahakaraConnector.instance.saveContract(
   memberId: memberId,
   payType: payType,
   rate: rate,
+).ref();
+ref.execute();
+```
+
+
+### AddDailyTask
+#### Required Arguments
+```dart
+String householdId = ...;
+DateTime dueDate = ...;
+TaskPriority priority = ...;
+SahakaraConnector.instance.addDailyTask(
+  householdId: householdId,
+  dueDate: dueDate,
+  priority: priority,
+).execute();
+```
+
+#### Optional Arguments
+We return a builder for each query. For AddDailyTask, we created `AddDailyTaskBuilder`. For queries and mutations with optional parameters, we return a builder class.
+The builder pattern allows Data Connect to distinguish between fields that haven't been set and fields that have been set to null. A field can be set by calling its respective setter method like below:
+```dart
+class AddDailyTaskVariablesBuilder {
+  ...
+   AddDailyTaskVariablesBuilder assignedToId(String? t) {
+   _assignedToId.value = t;
+   return this;
+  }
+  AddDailyTaskVariablesBuilder libraryId(String? t) {
+   _libraryId.value = t;
+   return this;
+  }
+  AddDailyTaskVariablesBuilder customTitle(String? t) {
+   _customTitle.value = t;
+   return this;
+  }
+  AddDailyTaskVariablesBuilder estMinutes(int? t) {
+   _estMinutes.value = t;
+   return this;
+  }
+
+  ...
+}
+SahakaraConnector.instance.addDailyTask(
+  householdId: householdId,
+  dueDate: dueDate,
+  priority: priority,
+)
+.assignedToId(assignedToId)
+.libraryId(libraryId)
+.customTitle(customTitle)
+.estMinutes(estMinutes)
+.execute();
+```
+
+#### Return Type
+`execute()` returns a `OperationResult<AddDailyTaskData, AddDailyTaskVariables>`
+```dart
+/// Result of an Operation Request (query/mutation).
+class OperationResult<Data, Variables> {
+  OperationResult(this.dataConnect, this.data, this.ref);
+  Data data;
+  OperationRef<Data, Variables> ref;
+  FirebaseDataConnect dataConnect;
+}
+
+final result = await SahakaraConnector.instance.addDailyTask(
+  householdId: householdId,
+  dueDate: dueDate,
+  priority: priority,
+);
+AddDailyTaskData data = result.data;
+final ref = result.ref;
+```
+
+#### Getting the Ref
+Each builder returns an `execute` function, which is a helper function that creates a `Ref` object, and executes the underlying operation.
+An example of how to use the `Ref` object is shown below:
+```dart
+String householdId = ...;
+DateTime dueDate = ...;
+TaskPriority priority = ...;
+
+final ref = SahakaraConnector.instance.addDailyTask(
+  householdId: householdId,
+  dueDate: dueDate,
+  priority: priority,
+).ref();
+ref.execute();
+```
+
+
+### AssignDailyTask
+#### Required Arguments
+```dart
+String id = ...;
+String assignedToId = ...;
+SahakaraConnector.instance.assignDailyTask(
+  id: id,
+  assignedToId: assignedToId,
+).execute();
+```
+
+
+
+#### Return Type
+`execute()` returns a `OperationResult<AssignDailyTaskData, AssignDailyTaskVariables>`
+```dart
+/// Result of an Operation Request (query/mutation).
+class OperationResult<Data, Variables> {
+  OperationResult(this.dataConnect, this.data, this.ref);
+  Data data;
+  OperationRef<Data, Variables> ref;
+  FirebaseDataConnect dataConnect;
+}
+
+final result = await SahakaraConnector.instance.assignDailyTask(
+  id: id,
+  assignedToId: assignedToId,
+);
+AssignDailyTaskData data = result.data;
+final ref = result.ref;
+```
+
+#### Getting the Ref
+Each builder returns an `execute` function, which is a helper function that creates a `Ref` object, and executes the underlying operation.
+An example of how to use the `Ref` object is shown below:
+```dart
+String id = ...;
+String assignedToId = ...;
+
+final ref = SahakaraConnector.instance.assignDailyTask(
+  id: id,
+  assignedToId: assignedToId,
+).ref();
+ref.execute();
+```
+
+
+### DeleteDailyTask
+#### Required Arguments
+```dart
+String id = ...;
+SahakaraConnector.instance.deleteDailyTask(
+  id: id,
+).execute();
+```
+
+
+
+#### Return Type
+`execute()` returns a `OperationResult<DeleteDailyTaskData, DeleteDailyTaskVariables>`
+```dart
+/// Result of an Operation Request (query/mutation).
+class OperationResult<Data, Variables> {
+  OperationResult(this.dataConnect, this.data, this.ref);
+  Data data;
+  OperationRef<Data, Variables> ref;
+  FirebaseDataConnect dataConnect;
+}
+
+final result = await SahakaraConnector.instance.deleteDailyTask(
+  id: id,
+);
+DeleteDailyTaskData data = result.data;
+final ref = result.ref;
+```
+
+#### Getting the Ref
+Each builder returns an `execute` function, which is a helper function that creates a `Ref` object, and executes the underlying operation.
+An example of how to use the `Ref` object is shown below:
+```dart
+String id = ...;
+
+final ref = SahakaraConnector.instance.deleteDailyTask(
+  id: id,
+).ref();
+ref.execute();
+```
+
+
+### UpdateMyTaskStatus
+#### Required Arguments
+```dart
+String id = ...;
+TaskStatus status = ...;
+TaskLogAction action = ...;
+SahakaraConnector.instance.updateMyTaskStatus(
+  id: id,
+  status: status,
+  action: action,
+).execute();
+```
+
+#### Optional Arguments
+We return a builder for each query. For UpdateMyTaskStatus, we created `UpdateMyTaskStatusBuilder`. For queries and mutations with optional parameters, we return a builder class.
+The builder pattern allows Data Connect to distinguish between fields that haven't been set and fields that have been set to null. A field can be set by calling its respective setter method like below:
+```dart
+class UpdateMyTaskStatusVariablesBuilder {
+  ...
+   UpdateMyTaskStatusVariablesBuilder cantDoReason(CantDoReason? t) {
+   _cantDoReason.value = t;
+   return this;
+  }
+
+  ...
+}
+SahakaraConnector.instance.updateMyTaskStatus(
+  id: id,
+  status: status,
+  action: action,
+)
+.cantDoReason(cantDoReason)
+.execute();
+```
+
+#### Return Type
+`execute()` returns a `OperationResult<UpdateMyTaskStatusData, UpdateMyTaskStatusVariables>`
+```dart
+/// Result of an Operation Request (query/mutation).
+class OperationResult<Data, Variables> {
+  OperationResult(this.dataConnect, this.data, this.ref);
+  Data data;
+  OperationRef<Data, Variables> ref;
+  FirebaseDataConnect dataConnect;
+}
+
+final result = await SahakaraConnector.instance.updateMyTaskStatus(
+  id: id,
+  status: status,
+  action: action,
+);
+UpdateMyTaskStatusData data = result.data;
+final ref = result.ref;
+```
+
+#### Getting the Ref
+Each builder returns an `execute` function, which is a helper function that creates a `Ref` object, and executes the underlying operation.
+An example of how to use the `Ref` object is shown below:
+```dart
+String id = ...;
+TaskStatus status = ...;
+TaskLogAction action = ...;
+
+final ref = SahakaraConnector.instance.updateMyTaskStatus(
+  id: id,
+  status: status,
+  action: action,
 ).ref();
 ref.execute();
 ```

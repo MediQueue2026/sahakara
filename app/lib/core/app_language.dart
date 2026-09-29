@@ -22,3 +22,18 @@ extension AppLanguageLabel on AppLanguage {
 class LanguageController extends ValueNotifier<AppLanguage> {
   LanguageController() : super(AppLanguage.en);
 }
+
+/// The [lang] version of a trilingual name, falling back to English when
+/// that translation hasn't been added yet.
+String pickName(
+  AppLanguage lang, {
+  required String en,
+  String? si,
+  String? ta,
+}) {
+  return switch (lang) {
+    AppLanguage.si => si ?? en,
+    AppLanguage.ta => ta ?? en,
+    AppLanguage.en => en,
+  };
+}

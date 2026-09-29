@@ -210,6 +210,156 @@ class Strings {
       AppLanguage.si: 'මිනිත්තු',
       AppLanguage.ta: 'நிமிடம்',
     },
+    'dailyTasks': {
+      AppLanguage.en: 'Daily tasks',
+      AppLanguage.si: 'දෛනික කාර්යයන්',
+      AppLanguage.ta: 'தினசரி பணிகள்',
+    },
+    'addTask': {
+      AppLanguage.en: 'Add task',
+      AppLanguage.si: 'කාර්යයක් එක් කරන්න',
+      AppLanguage.ta: 'பணியைச் சேர்',
+    },
+    'assignTo': {
+      AppLanguage.en: 'Assign to',
+      AppLanguage.si: 'පවරන්න',
+      AppLanguage.ta: 'ஒதுக்கவும்',
+    },
+    'task': {
+      AppLanguage.en: 'Task',
+      AppLanguage.si: 'කාර්යය',
+      AppLanguage.ta: 'பணி',
+    },
+    'customTask': {
+      AppLanguage.en: 'Other (type it in)',
+      AppLanguage.si: 'වෙනත් (ටයිප් කරන්න)',
+      AppLanguage.ta: 'மற்றவை (தட்டச்சு செய்யவும்)',
+    },
+    'customTaskTitle': {
+      AppLanguage.en: 'Task title',
+      AppLanguage.si: 'කාර්යයේ නම',
+      AppLanguage.ta: 'பணியின் பெயர்',
+    },
+    'estMinutes': {
+      AppLanguage.en: 'Estimated minutes',
+      AppLanguage.si: 'ඇස්තමේන්තුගත මිනිත්තු',
+      AppLanguage.ta: 'மதிப்பிடப்பட்ட நிமிடங்கள்',
+    },
+    'priority': {
+      AppLanguage.en: 'Priority',
+      AppLanguage.si: 'ප්‍රමුඛතාව',
+      AppLanguage.ta: 'முன்னுரிமை',
+    },
+    'priority_high': {
+      AppLanguage.en: 'High',
+      AppLanguage.si: 'ඉහළ',
+      AppLanguage.ta: 'அதிகம்',
+    },
+    'priority_medium': {
+      AppLanguage.en: 'Medium',
+      AppLanguage.si: 'මධ්‍යම',
+      AppLanguage.ta: 'நடுத்தரம்',
+    },
+    'priority_low': {
+      AppLanguage.en: 'Low',
+      AppLanguage.si: 'අඩු',
+      AppLanguage.ta: 'குறைவு',
+    },
+    'date': {
+      AppLanguage.en: 'Date',
+      AppLanguage.si: 'දිනය',
+      AppLanguage.ta: 'தேதி',
+    },
+    'noTasksForDay': {
+      AppLanguage.en: 'No tasks for this day.',
+      AppLanguage.si: 'මෙම දිනයට කාර්යයන් නැත.',
+      AppLanguage.ta: 'இந்த நாளுக்கு பணிகள் இல்லை.',
+    },
+    'noStaffYet': {
+      AppLanguage.en: 'Add household staff from the Household tab first.',
+      AppLanguage.si: 'පළමුව නිවස ටැබයෙන් සේවකයින් එක් කරන්න.',
+      AppLanguage.ta: 'முதலில் வீடு தாவலில் பணியாளர்களைச் சேர்க்கவும்.',
+    },
+    'status_pending': {
+      AppLanguage.en: 'Not started',
+      AppLanguage.si: 'ආරම්භ කර නැත',
+      AppLanguage.ta: 'தொடங்கவில்லை',
+    },
+    'status_started': {
+      AppLanguage.en: 'Started',
+      AppLanguage.si: 'ආරම්භ කළා',
+      AppLanguage.ta: 'தொடங்கியது',
+    },
+    'status_done': {
+      AppLanguage.en: 'Done',
+      AppLanguage.si: 'අවසන්',
+      AppLanguage.ta: 'முடிந்தது',
+    },
+    'status_need_help': {
+      AppLanguage.en: 'Need help',
+      AppLanguage.si: 'උදව් අවශ්‍යයි',
+      AppLanguage.ta: 'உதவி தேவை',
+    },
+    'status_cant_do': {
+      AppLanguage.en: "Can't do",
+      AppLanguage.si: 'කළ නොහැක',
+      AppLanguage.ta: 'செய்ய முடியாது',
+    },
+    'status_carried_forward': {
+      AppLanguage.en: 'Moved to next day',
+      AppLanguage.si: 'ඊළඟ දිනට ගෙන ගියා',
+      AppLanguage.ta: 'அடுத்த நாளுக்கு மாற்றப்பட்டது',
+    },
+    'whyCantDo': {
+      AppLanguage.en: "Why can't it be done?",
+      AppLanguage.si: 'එය කළ නොහැක්කේ ඇයි?',
+      AppLanguage.ta: 'ஏன் செய்ய முடியாது?',
+    },
+    'reason_no_supplies': {
+      AppLanguage.en: 'No supplies',
+      AppLanguage.si: 'අවශ්‍ය ද්‍රව්‍ය නැත',
+      AppLanguage.ta: 'பொருட்கள் இல்லை',
+    },
+    'reason_power_cut': {
+      AppLanguage.en: 'Power cut',
+      AppLanguage.si: 'විදුලිය විසන්ධි වී ඇත',
+      AppLanguage.ta: 'மின்வெட்டு',
+    },
+    'reason_water_cut': {
+      AppLanguage.en: 'Water cut',
+      AppLanguage.si: 'ජලය කපා ඇත',
+      AppLanguage.ta: 'தண்ணீர் இல்லை',
+    },
+    'reason_sick': {
+      AppLanguage.en: 'Sick',
+      AppLanguage.si: 'අසනීපයි',
+      AppLanguage.ta: 'உடல்நலமில்லை',
+    },
+    'reason_no_time': {
+      AppLanguage.en: 'No time',
+      AppLanguage.si: 'වේලාව නැත',
+      AppLanguage.ta: 'நேரம் இல்லை',
+    },
+    'reason_other': {
+      AppLanguage.en: 'Other',
+      AppLanguage.si: 'වෙනත්',
+      AppLanguage.ta: 'மற்றவை',
+    },
+    'unassigned': {
+      AppLanguage.en: 'Not assigned yet',
+      AppLanguage.si: 'තවම පවරා නැත',
+      AppLanguage.ta: 'இன்னும் ஒதுக்கப்படவில்லை',
+    },
+    'assignLaterHint': {
+      AppLanguage.en: 'No staff yet. Add them from the Household tab, then assign this task from the Daily tasks list.',
+      AppLanguage.si: 'තවම සේවකයින් නැත. නිවස ටැබයෙන් ඔවුන් එක් කර, පසුව දෛනික කාර්ය ලැයිස්තුවෙන් මෙම කාර්යය පවරන්න.',
+      AppLanguage.ta: 'இன்னும் பணியாளர்கள் இல்லை. வீடு தாவலில் அவர்களைச் சேர்த்து, பின்னர் தினசரி பணிகள் பட்டியலில் இந்தப் பணியை ஒதுக்கவும்.',
+    },
+    'save': {
+      AppLanguage.en: 'Save',
+      AppLanguage.si: 'සුරකින්න',
+      AppLanguage.ta: 'சேமி',
+    },
   };
 
   static String of(String key, AppLanguage lang) {
