@@ -168,6 +168,197 @@ mutation SaveContract(
   )
 }
 
+# ── daily tasks ──────────────────────────────────────────────────────────
+
+# Owner adds a task for one day, optionally assigning it to a staff member
+# straight away (see AssignDailyTask to assign it later). It's saved as a
+# one-off TaskTemplate (from the library, or a custom title) plus the Task
+# row for that day. An assignee must be active staff of the same household.
+mutation AddDailyTask(
+  $householdId: UUID!
+  $assignedToId: UUID
+  $dueDate: Date!
+  $libraryId: UUID
+  $customTitle: String
+  $estMinutes: Int
+  $priority: TaskPriority!
+)
+@auth(
+  expr: "auth.uid != '' && (vars.libraryId != null || (vars.customTitle != null && vars.customTitle != ''))"
+)
+@transaction {
+  query @redact {
+    households(
+      where: {
+        id: { eq: $householdId }
+        owner: { authUid: { eq_expr: "auth.uid" } }
+      }
+    )
+      @check(
+        expr: "this.size() == 1"
+        message: "Only the household owner can assign tasks"
+      ) {
+      owner {
+        id
+      }
+    }
+    householdMembers(
+      where: {
+        id: { eq: $assignedToId }
+        household: { id: { eq: $householdId } }
+        active: { eq: true }
+        role: { ne: owner }
+      }
+    )
+      @check(
+        expr: "vars.assignedToId == null || this.size() == 1"
+        message: "Tasks can only be assigned to this household's staff"
+      ) {
+      id
+    }
+  }
+  taskTemplate_insert(
+    data: {
+      householdId: $householdId
+      libraryId: $libraryId
+      customTitle: $customTitle
+      estMinutes: $estMinutes
+      priority: $priority
+      createdById_expr: "response.query.households[0].owner.id"
+    }
+  )
+  task_insert(
+    data: {
+      templateId_expr: "response.taskTemplate_insert.id"
+      assignedToId: $assignedToId
+      dueDate: $dueDate
+    }
+  )
+}
+
+# Owner assigns a task to a staff member, or moves it to someone else. The
+# task starts over as pending, since any progress was the previous
+# assignee's. The assignee must be active staff of the task's household.
+mutation AssignDailyTask($id: UUID!, $assignedToId: UUID!)
+@auth(level: USER)
+@transaction {
+  query @redact {
+    tasks(
+      where: {
+        id: { eq: $id }
+        template: {
+          household: {
+            owner: { authUid: { eq_expr: "auth.uid" } }
+            householdMembers_on_household: {
+              exist: {
+                id: { eq: $assignedToId }
+                active: { eq: true }
+                role: { ne: owner }
+              }
+            }
+          }
+        }
+      }
+    )
+      @check(
+        expr: "this.size() == 1"
+        message: "Only the household owner can assign tasks, and only to this household's staff"
+      ) {
+      id
+    }
+  }
+  task_update(
+    id: $id
+    data: {
+      assignedToId: $assignedToId
+      status: pending
+      cantDoReason: null
+      completedAt: null
+    }
+  )
+}
+
+# Owner removes a task added by mistake, together with its one-off template.
+mutation DeleteDailyTask($id: UUID!) @auth(level: USER) @transaction {
+  query @redact {
+    tasks(
+      where: {
+        id: { eq: $id }
+        template: {
+          recurrence: { eq: once }
+          household: { owner: { authUid: { eq_expr: "auth.uid" } } }
+        }
+      }
+    )
+      @check(
+        expr: "this.size() == 1"
+        message: "Only the household owner can remove tasks"
+      ) {
+      template {
+        id
+      }
+    }
+  }
+  task_delete(id: $id)
+  taskTemplate_deleteMany(
+    where: { id: { eq_expr: "response.query.tasks[0].template.id" } }
+  )
+}
+
+# The staff member a task is assigned to reports progress on it, and the
+# change is logged in TaskLog. $action must be the log entry matching
+# $status (need_help is logged as `help`), and a reason is required for
+# cant_do and only for cant_do. completedAt is set when the task becomes
+# done and cleared if it moves back out of done.
+mutation UpdateMyTaskStatus(
+  $id: UUID!
+  $status: TaskStatus!
+  $action: TaskLogAction!
+  $cantDoReason: CantDoReason
+)
+@auth(
+  expr: "auth.uid != '' && ((vars.status == 'started' && vars.action == 'started') || (vars.status == 'done' && vars.action == 'done') || (vars.status == 'need_help' && vars.action == 'help') || (vars.status == 'cant_do' && vars.action == 'cant_do')) && ((vars.status == 'cant_do') == (vars.cantDoReason != null))"
+)
+@transaction {
+  query @redact {
+    tasks(
+      where: {
+        id: { eq: $id }
+        assignedTo: {
+          active: { eq: true }
+          user: { authUid: { eq_expr: "auth.uid" } }
+        }
+      }
+    )
+      @check(
+        expr: "this.size() == 1"
+        message: "Only the person the task is assigned to can update it"
+      ) {
+      assignedTo {
+        user {
+          id
+        }
+      }
+    }
+  }
+  task_update(id: $id, data: { status: $status, cantDoReason: $cantDoReason })
+  done: task_updateMany(
+    where: { id: { eq: $id }, status: { eq: done } }
+    data: { completedAt_expr: "request.time" }
+  )
+  notDone: task_updateMany(
+    where: { id: { eq: $id }, status: { ne: done } }
+    data: { completedAt: null }
+  )
+  taskLog_insert(
+    data: {
+      taskId: $id
+      action: $action
+      byUserId_expr: "response.query.tasks[0].assignedTo.user.id"
+    }
+  )
+}
+
 # ── admin panel (admin accounts only) ────────────────────────────────────
 # Each one first checks that the caller's user row is an admin.
 

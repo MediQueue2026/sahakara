@@ -4,8 +4,8 @@ import '../../core/app_data.dart';
 import '../../core/app_language.dart';
 
 /// Read-only view of the shared task library, in the user's language.
-/// Turning a library entry into a household's recurring TaskTemplate is a
-/// Sprint 2 feature — this is the Sprint 1 basics: everyone can browse it.
+/// Owners assign library tasks to staff from the Daily tasks tab
+/// (see add_daily_task_screen.dart).
 class TaskLibraryScreen extends StatefulWidget {
   final LanguageController lang;
   const TaskLibraryScreen({super.key, required this.lang});
@@ -43,11 +43,12 @@ class _TaskLibraryScreenState extends State<TaskLibraryScreen> {
               itemCount: tasks.length,
               itemBuilder: (context, i) {
                 final t = tasks[i];
-                final name = switch (lang) {
-                  AppLanguage.si => t.nameSi ?? t.nameEn,
-                  AppLanguage.ta => t.nameTa ?? t.nameEn,
-                  AppLanguage.en => t.nameEn,
-                };
+                final name = pickName(
+                  lang,
+                  en: t.nameEn,
+                  si: t.nameSi,
+                  ta: t.nameTa,
+                );
                 return ListTile(
                   leading: const Icon(Icons.cleaning_services_outlined),
                   title: Text(name),

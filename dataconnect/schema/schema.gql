@@ -121,7 +121,9 @@ type TaskTemplate @table {
 type Task @table @index(fields: ["assignedToId", "dueDate"]) {
   id: UUID! @default(expr: "uuidV4()")
   template: TaskTemplate!
-  assignedTo: HouseholdMember!
+  # Null until the owner assigns it — an owner can plan tasks before adding
+  # any staff.
+  assignedTo: HouseholdMember
   dueDate: Date!
   sortOrder: Int! @default(value: 0)
   status: TaskStatus! @default(value: pending)

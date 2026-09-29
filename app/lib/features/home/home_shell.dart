@@ -5,11 +5,12 @@ import '../../core/app_language.dart';
 import '../../core/strings.dart';
 import '../contract/contract_screen.dart';
 import '../settings/settings_screen.dart';
+import '../tasks/daily_tasks_screen.dart';
 import '../tasks/task_library_screen.dart';
 import 'household_tab.dart';
 
 /// Bottom-nav shell shown once a signed-in user has a household. The same
-/// four tabs serve every role (owner/adult/maid/driver/cook/gardener) —
+/// five tabs serve every role (owner/adult/maid/driver/cook/gardener) —
 /// each tab decides internally what to show for the current role.
 class HomeShell extends StatefulWidget {
   final LanguageController lang;
@@ -41,6 +42,11 @@ class _HomeShellState extends State<HomeShell> {
             profile: widget.profile,
             membership: widget.membership,
           ),
+          DailyTasksScreen(
+            lang: widget.lang,
+            profile: widget.profile,
+            membership: widget.membership,
+          ),
           ContractScreen(
             lang: widget.lang,
             profile: widget.profile,
@@ -61,11 +67,15 @@ class _HomeShellState extends State<HomeShell> {
                 label: Strings.of('household', lang),
               ),
               NavigationDestination(
+                icon: const Icon(Icons.task_alt),
+                label: Strings.of('dailyTasks', lang),
+              ),
+              NavigationDestination(
                 icon: const Icon(Icons.description_outlined),
                 label: Strings.of('contract', lang),
               ),
               NavigationDestination(
-                icon: const Icon(Icons.checklist_outlined),
+                icon: const Icon(Icons.menu_book_outlined),
                 label: Strings.of('tasks', lang),
               ),
               NavigationDestination(
