@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/app_data.dart';
 import '../../core/app_language.dart';
 import '../../core/strings.dart';
+import '../../core/theme.dart';
 
 const _payTypes = ['monthly', 'daily', 'hourly', 'per_visit'];
 
@@ -123,7 +124,7 @@ class _ContractDetailScreenState extends State<ContractDetailScreen> {
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: const TextStyle(color: Colors.grey)),
+        Text(label, style: const TextStyle(color: mutedText)),
         Text(value),
       ],
     ),

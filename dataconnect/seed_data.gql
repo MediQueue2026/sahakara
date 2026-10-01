@@ -1,28 +1,74 @@
-# Starter task library (trilingual). Sprint 1 target is 40-50 tasks with
-# images and audio — this is the first batch to build the feature against;
-# extend it from the admin panel as content is produced.
+# Default task library (trilingual): the everyday household tasks owners pick
+# from on the Add task screen, so they don't have to type them in. Admins can
+# add more from the admin panel as content (images, audio) is produced.
 #
-# Not part of the connector (the app can't call it). Run it once from the
+# Not part of the connector (the app can't call it). Run it from the
 # Firebase Data Connect VS Code extension: open this file and click
 # "Run (local)" for the emulator or "Run (production)" for Cloud SQL.
+#
+# Every row has a fixed id and is upserted, so running this again updates the
+# names instead of adding duplicates. If you ran the earlier version of this
+# file (insertMany, random ids), delete those rows first or they'll show twice.
 
 mutation SeedTaskLibrary @transaction {
-  libraryTask_insertMany(
+  libraryTask_upsertMany(
     data: [
-      { category: cleaning, nameEn: "Sweep and mop the floors", nameSi: "බිම අතුගා පිස දැමීම", nameTa: "தரை பெருக்கி துடைத்தல்" }
-      { category: kitchen, nameEn: "Wash the dishes", nameSi: "පිඟන් සේදීම", nameTa: "பாத்திரம் கழுவுதல்" }
-      { category: kitchen, nameEn: "Kitchen deep clean", nameSi: "කුස්සිය හොඳින් පිරිසිදු කිරීම", nameTa: "சமையலறை ஆழ்ந்த சுத்தம்" }
-      { category: laundry, nameEn: "Wash the clothes", nameSi: "රෙදි සේදීම", nameTa: "துணி துவைத்தல்" }
-      { category: laundry, nameEn: "Iron the clothes", nameSi: "රෙදි ඉස්තිරික්ක කිරීම", nameTa: "துணி அயர்ன் செய்தல்" }
-      { category: cleaning, nameEn: "Clean the bathrooms", nameSi: "නාන කාමර පිරිසිදු කිරීම", nameTa: "குளியலறை சுத்தம்" }
-      { category: cleaning, nameEn: "Dust the furniture", nameSi: "ගෘහ භාණ්ඩ දූවිලි පිසදැමීම", nameTa: "மரச்சாமான் தூசி துடைத்தல்" }
-      { category: cooking, nameEn: "Cook lunch", nameSi: "දිවා ආහාරය පිසීම", nameTa: "மதிய உணவு சமைத்தல்" }
-      { category: cooking, nameEn: "Cook dinner", nameSi: "රාත්‍රී ආහාරය පිසීම", nameTa: "இரவு உணவு சமைத்தல்" }
-      { category: other, nameEn: "Water the garden", nameSi: "උද්‍යානයට වතුර දැමීම", nameTa: "தோட்டத்திற்கு நீர் ஊற்றுதல்" }
-      { category: other, nameEn: "Take out the rubbish", nameSi: "කසළ ඉවත් කිරීම", nameTa: "குப்பை அகற்றுதல்" }
-      { category: cleaning, nameEn: "Clean the windows", nameSi: "ජනෙල් පිරිසිදු කිරීම", nameTa: "ஜன்னல் சுத்தம்" }
-      { category: kitchen, nameEn: "Clean the fridge", nameSi: "ශීතකරණය පිරිසිදු කිරීම", nameTa: "குளிர்சாதனப்பெட்டி சுத்தம்" }
-      { category: cleaning, nameEn: "Change the bed linen", nameSi: "ඇඳ ඇතිරිලි මාරු කිරීම", nameTa: "படுக்கை விரிப்பு மாற்றுதல்" }
+      # cleaning
+      { id: "5a4a0000-0000-4000-8000-000000000001", category: cleaning, nameEn: "Sweep and mop the floors", nameSi: "බිම අතුගා පිස දැමීම", nameTa: "தரை பெருக்கி துடைத்தல்" }
+      { id: "5a4a0000-0000-4000-8000-000000000002", category: cleaning, nameEn: "Clean the bathrooms", nameSi: "නාන කාමර පිරිසිදු කිරීම", nameTa: "குளியலறை சுத்தம்" }
+      { id: "5a4a0000-0000-4000-8000-000000000003", category: cleaning, nameEn: "Dust the furniture", nameSi: "ගෘහ භාණ්ඩ දූවිලි පිසදැමීම", nameTa: "மரச்சாமான் தூசி துடைத்தல்" }
+      { id: "5a4a0000-0000-4000-8000-000000000004", category: cleaning, nameEn: "Clean the windows", nameSi: "ජනෙල් පිරිසිදු කිරීම", nameTa: "ஜன்னல் சுத்தம்" }
+      { id: "5a4a0000-0000-4000-8000-000000000005", category: cleaning, nameEn: "Change the bed linen", nameSi: "ඇඳ ඇතිරිලි මාරු කිරීම", nameTa: "படுக்கை விரிப்பு மாற்றுதல்" }
+      { id: "5a4a0000-0000-4000-8000-000000000006", category: cleaning, nameEn: "Make the beds", nameSi: "ඇඳන් සකස් කිරීම", nameTa: "படுக்கைகளை ஒழுங்குபடுத்துதல்" }
+      { id: "5a4a0000-0000-4000-8000-000000000007", category: cleaning, nameEn: "Vacuum the carpets", nameSi: "කාපට් වැකියුම් කිරීම", nameTa: "கம்பளங்களை வாக்யூம் செய்தல்" }
+      { id: "5a4a0000-0000-4000-8000-000000000008", category: cleaning, nameEn: "Clean the fans", nameSi: "පංකා පිරිසිදු කිරීම", nameTa: "மின்விசிறி சுத்தம்" }
+      { id: "5a4a0000-0000-4000-8000-000000000009", category: cleaning, nameEn: "Clean the doors and grilles", nameSi: "දොරවල් සහ ග්‍රිල් පිරිසිදු කිරීම", nameTa: "கதவுகள், கிரில்கள் சுத்தம்" }
+      { id: "5a4a0000-0000-4000-8000-000000000010", category: cleaning, nameEn: "Tidy the living room", nameSi: "සාලය පිළිවෙළ කිරීම", nameTa: "வரவேற்பறையை ஒழுங்குபடுத்துதல்" }
+      { id: "5a4a0000-0000-4000-8000-000000000011", category: cleaning, nameEn: "Clean the stairs", nameSi: "පඩිපෙළ පිරිසිදු කිරීම", nameTa: "படிக்கட்டு சுத்தம்" }
+      { id: "5a4a0000-0000-4000-8000-000000000012", category: cleaning, nameEn: "Remove the cobwebs", nameSi: "මකුළු දැල් ඉවත් කිරීම", nameTa: "சிலந்தி வலைகளை அகற்றுதல்" }
+
+      # kitchen
+      { id: "5a4a0000-0000-4000-8000-000000000101", category: kitchen, nameEn: "Wash the dishes", nameSi: "පිඟන් සේදීම", nameTa: "பாத்திரம் கழுவுதல்" }
+      { id: "5a4a0000-0000-4000-8000-000000000102", category: kitchen, nameEn: "Kitchen deep clean", nameSi: "කුස්සිය හොඳින් පිරිසිදු කිරීම", nameTa: "சமையலறை ஆழ்ந்த சுத்தம்" }
+      { id: "5a4a0000-0000-4000-8000-000000000103", category: kitchen, nameEn: "Clean the fridge", nameSi: "ශීතකරණය පිරිසිදු කිරීම", nameTa: "குளிர்சாதனப்பெட்டி சுத்தம்" }
+      { id: "5a4a0000-0000-4000-8000-000000000104", category: kitchen, nameEn: "Wipe the kitchen counters", nameSi: "කුස්සියේ මේස පිසදැමීම", nameTa: "சமையலறை மேடையை துடைத்தல்" }
+      { id: "5a4a0000-0000-4000-8000-000000000105", category: kitchen, nameEn: "Clean the stove", nameSi: "ලිප පිරිසිදු කිරීම", nameTa: "அடுப்பு சுத்தம்" }
+      { id: "5a4a0000-0000-4000-8000-000000000106", category: kitchen, nameEn: "Clean the microwave and oven", nameSi: "මයික්‍රෝවේව් සහ අවන් පිරිසිදු කිරීම", nameTa: "மைக்ரோவேவ், அவன் சுத்தம்" }
+      { id: "5a4a0000-0000-4000-8000-000000000107", category: kitchen, nameEn: "Boil drinking water", nameSi: "පානීය ජලය උණු කිරීම", nameTa: "குடிநீர் கொதிக்க வைத்தல்" }
+      { id: "5a4a0000-0000-4000-8000-000000000108", category: kitchen, nameEn: "Arrange the pantry", nameSi: "ආහාර ගබඩාව පිළිවෙළ කිරීම", nameTa: "சமையல் பொருட்களை ஒழுங்குபடுத்துதல்" }
+
+      # cooking
+      { id: "5a4a0000-0000-4000-8000-000000000201", category: cooking, nameEn: "Make breakfast", nameSi: "උදේ ආහාරය සෑදීම", nameTa: "காலை உணவு தயாரித்தல்" }
+      { id: "5a4a0000-0000-4000-8000-000000000202", category: cooking, nameEn: "Cook lunch", nameSi: "දිවා ආහාරය පිසීම", nameTa: "மதிய உணவு சமைத்தல்" }
+      { id: "5a4a0000-0000-4000-8000-000000000203", category: cooking, nameEn: "Cook dinner", nameSi: "රාත්‍රී ආහාරය පිසීම", nameTa: "இரவு உணவு சமைத்தல்" }
+      { id: "5a4a0000-0000-4000-8000-000000000204", category: cooking, nameEn: "Make tea", nameSi: "තේ සෑදීම", nameTa: "தேநீர் தயாரித்தல்" }
+      { id: "5a4a0000-0000-4000-8000-000000000205", category: cooking, nameEn: "Pack the lunch boxes", nameSi: "දිවා ආහාර පෙට්ටි සකස් කිරීම", nameTa: "மதிய உணவுப் பெட்டிகளை தயார் செய்தல்" }
+      { id: "5a4a0000-0000-4000-8000-000000000206", category: cooking, nameEn: "Wash and cut the vegetables", nameSi: "එළවළු සෝදා කැපීම", nameTa: "காய்கறிகளை கழுவி நறுக்குதல்" }
+      { id: "5a4a0000-0000-4000-8000-000000000207", category: cooking, nameEn: "Scrape the coconut", nameSi: "පොල් ගෑම", nameTa: "தேங்காய் துருவுதல்" }
+      { id: "5a4a0000-0000-4000-8000-000000000208", category: cooking, nameEn: "Clean the fish and meat", nameSi: "මාළු සහ මස් සුද්ද කිරීම", nameTa: "மீன், இறைச்சி சுத்தம் செய்தல்" }
+
+      # laundry
+      { id: "5a4a0000-0000-4000-8000-000000000301", category: laundry, nameEn: "Wash the clothes", nameSi: "රෙදි සේදීම", nameTa: "துணி துவைத்தல்" }
+      { id: "5a4a0000-0000-4000-8000-000000000302", category: laundry, nameEn: "Iron the clothes", nameSi: "රෙදි ඉස්තිරික්ක කිරීම", nameTa: "துணி அயர்ன் செய்தல்" }
+      { id: "5a4a0000-0000-4000-8000-000000000303", category: laundry, nameEn: "Hang the clothes to dry", nameSi: "රෙදි වියළීමට දැමීම", nameTa: "துணிகளை உலர்த்துதல்" }
+      { id: "5a4a0000-0000-4000-8000-000000000304", category: laundry, nameEn: "Fold and put away the clothes", nameSi: "රෙදි නවා තැන්පත් කිරීම", nameTa: "துணிகளை மடித்து வைத்தல்" }
+      { id: "5a4a0000-0000-4000-8000-000000000305", category: laundry, nameEn: "Wash the bed sheets and towels", nameSi: "ඇඳ ඇතිරිලි සහ තුවා සේදීම", nameTa: "படுக்கை விரிப்பு, துண்டுகள் துவைத்தல்" }
+      { id: "5a4a0000-0000-4000-8000-000000000306", category: laundry, nameEn: "Polish the school shoes", nameSi: "පාසල් සපත්තු ඔප දැමීම", nameTa: "பள்ளி காலணிகளை பாலிஷ் செய்தல்" }
+
+      # other: outdoors, errands, family care
+      { id: "5a4a0000-0000-4000-8000-000000000401", category: other, nameEn: "Water the garden", nameSi: "උද්‍යානයට වතුර දැමීම", nameTa: "தோட்டத்திற்கு நீர் ஊற்றுதல்" }
+      { id: "5a4a0000-0000-4000-8000-000000000402", category: other, nameEn: "Take out the rubbish", nameSi: "කසළ ඉවත් කිරීම", nameTa: "குப்பை அகற்றுதல்" }
+      { id: "5a4a0000-0000-4000-8000-000000000403", category: other, nameEn: "Sort the rubbish for collection", nameSi: "කසළ වර්ග කර වෙන් කිරීම", nameTa: "குப்பைகளை வகைப்படுத்துதல்" }
+      { id: "5a4a0000-0000-4000-8000-000000000404", category: other, nameEn: "Sweep the garden", nameSi: "මිදුල අතුගෑම", nameTa: "முற்றம் பெருக்குதல்" }
+      { id: "5a4a0000-0000-4000-8000-000000000405", category: other, nameEn: "Cut the grass", nameSi: "තණකොළ කැපීම", nameTa: "புல் வெட்டுதல்" }
+      { id: "5a4a0000-0000-4000-8000-000000000406", category: other, nameEn: "Clean the drains", nameSi: "කාණු පිරිසිදු කිරීම", nameTa: "வடிகால் சுத்தம்" }
+      { id: "5a4a0000-0000-4000-8000-000000000407", category: other, nameEn: "Wash the car", nameSi: "වාහනය සේදීම", nameTa: "வாகனம் கழுவுதல்" }
+      { id: "5a4a0000-0000-4000-8000-000000000408", category: other, nameEn: "Buy groceries", nameSi: "බඩු මිලදී ගැනීම", nameTa: "மளிகைப் பொருட்கள் வாங்குதல்" }
+      { id: "5a4a0000-0000-4000-8000-000000000409", category: other, nameEn: "Drop the children at school", nameSi: "දරුවන් පාසලට ඇරලීම", nameTa: "பிள்ளைகளை பாடசாலையில் விடுதல்" }
+      { id: "5a4a0000-0000-4000-8000-000000000410", category: other, nameEn: "Pick the children up from school", nameSi: "දරුවන් පාසලෙන් රැගෙන ඒම", nameTa: "பிள்ளைகளை பாடசாலையிலிருந்து அழைத்து வருதல்" }
+      { id: "5a4a0000-0000-4000-8000-000000000411", category: other, nameEn: "Look after the children", nameSi: "දරුවන් බලාගැනීම", nameTa: "பிள்ளைகளை கவனித்தல்" }
+      { id: "5a4a0000-0000-4000-8000-000000000412", category: other, nameEn: "Care for the elders", nameSi: "වැඩිහිටියන් රැකබලා ගැනීම", nameTa: "முதியவர்களை கவனித்தல்" }
+      { id: "5a4a0000-0000-4000-8000-000000000413", category: other, nameEn: "Feed the pets", nameSi: "සුරතල් සතුන්ට කෑම දීම", nameTa: "செல்லப் பிராணிகளுக்கு உணவளித்தல்" }
     ]
   )
 }

@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/firebase_client.dart';
+import '../../core/theme.dart';
 
 class AdminLoginScreen extends StatefulWidget {
   const AdminLoginScreen({super.key});
@@ -53,7 +54,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                   const SizedBox(height: 4),
                   const Text(
                     'Sign in with your admin account.',
-                    style: TextStyle(color: Colors.grey),
+                    style: TextStyle(color: mutedText),
                   ),
                   const SizedBox(height: 20),
                   TextField(
@@ -79,7 +80,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                   const SizedBox(height: 12),
                   const Text(
                     'Staff accounts are created by the team — see the README.',
-                    style: TextStyle(color: Colors.grey, fontSize: 12),
+                    style: TextStyle(color: mutedText, fontSize: 12),
                   ),
                 ],
               ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/firebase_client.dart';
 import '../../dataconnect_generated/sahakara.dart';
+import '../../core/theme.dart';
 
 class HouseholdsAdminPage extends StatefulWidget {
   const HouseholdsAdminPage({super.key});
@@ -39,7 +40,7 @@ class _HouseholdsAdminPageState extends State<HouseholdsAdminPage> {
         Text('Households', style: Theme.of(context).textTheme.titleLarge),
         const Text(
           'Every household registered through the mobile app.',
-          style: TextStyle(color: Colors.grey),
+          style: TextStyle(color: mutedText),
         ),
         const SizedBox(height: 16),
         if (_loading) const Center(child: CircularProgressIndicator()),
