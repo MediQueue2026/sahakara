@@ -4,33 +4,20 @@ import '../../core/app_data.dart';
 import '../../core/app_language.dart';
 import 'contract_detail_screen.dart';
 
-/// Owner: pick a household member to view/edit their contract.
-/// Everyone else: their own contract, straight away.
+/// Owner: pick a staff member to view/edit their contract. Staff see their
+/// own contract on the My contract tab instead (see HomeShell).
 class ContractScreen extends StatelessWidget {
   final LanguageController lang;
-  final Profile profile;
   final Membership membership;
 
   const ContractScreen({
     super.key,
     required this.lang,
-    required this.profile,
     required this.membership,
   });
 
   @override
   Widget build(BuildContext context) {
-    final isOwner = membership.role.stringValue == 'owner';
-
-    if (!isOwner) {
-      return ContractDetailScreen(
-        lang: lang,
-        memberId: membership.id,
-        memberName: profile.name,
-        editable: false,
-      );
-    }
-
     return FutureBuilder<List<Member>>(
       future: AppData.fetchHouseholdMembers(membership.household.id),
       builder: (context, snapshot) {

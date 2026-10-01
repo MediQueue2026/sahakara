@@ -4,50 +4,19 @@ import '../../core/app_data.dart';
 import '../../core/app_language.dart';
 import '../../core/strings.dart';
 import 'add_daily_task_screen.dart';
+import 'task_common.dart';
 
-/// Statuses a staff member can set on their own task (see
-/// UpdateMyTaskStatus in dataconnect/connector/mutations.gql).
-const _staffStatuses = ['started', 'done', 'need_help', 'cant_do'];
-
-const _cantDoReasons = [
-  'no_supplies',
-  'power_cut',
-  'water_cut',
-  'sick',
-  'no_time',
-  'other',
-];
-
-const _statusIcons = {
-  'pending': Icons.radio_button_unchecked,
-  'started': Icons.play_circle_outline,
-  'done': Icons.check_circle,
-  'need_help': Icons.help_outline,
-  'cant_do': Icons.block,
-  'carried_forward': Icons.redo,
-};
-
-Color? _statusColor(String status) => switch (status) {
-  'started' => Colors.blue,
-  'done' => Colors.green,
-  'need_help' => Colors.orange,
-  'cant_do' => Colors.red,
-  _ => null,
-};
-
-/// One day's tasks. Owner: every task in the household, grouped by the staff
-/// member it's assigned to (unassigned ones first), with a button to add
-/// more and each task's status; tapping a task assigns or reassigns it.
-/// Staff: their own tasks for the day, tapped to report progress.
+/// Owner: one day's tasks across the household, grouped by the staff member
+/// each is assigned to (unassigned ones first), with a button to add more
+/// and each task's status; tapping a task assigns or reassigns it.
+/// Staff see their own tasks on MyTasksScreen instead.
 class DailyTasksScreen extends StatefulWidget {
   final LanguageController lang;
-  final Profile profile;
   final Membership membership;
 
   const DailyTasksScreen({
     super.key,
     required this.lang,
-    required this.profile,
     required this.membership,
   });
 
@@ -55,46 +24,9 @@ class DailyTasksScreen extends StatefulWidget {
   State<DailyTasksScreen> createState() => _DailyTasksScreenState();
 }
 
-/// The fields the screen shows, from either the owner's or the staff
-/// member's query result.
-class _TaskRow {
-  final String id;
-  final String status;
-  final String? cantDoReason;
-  final String priority;
-  final int? estMinutes;
-  final String? customTitle;
-  final String? nameEn;
-  final String? nameSi;
-  final String? nameTa;
-  final String? assigneeId;
-  final String? assigneeName;
-
-  const _TaskRow({
-    required this.id,
-    required this.status,
-    this.cantDoReason,
-    required this.priority,
-    this.estMinutes,
-    this.customTitle,
-    this.nameEn,
-    this.nameSi,
-    this.nameTa,
-    this.assigneeId,
-    this.assigneeName,
-  });
-
-  String title(AppLanguage lang) {
-    if (nameEn == null) return customTitle ?? '';
-    return pickName(lang, en: nameEn!, si: nameSi, ta: nameTa);
-  }
-}
-
 class _DailyTasksScreenState extends State<DailyTasksScreen> {
   late DateTime _day;
-  late Future<List<_TaskRow>> _tasks;
-
-  bool get _isOwner => widget.membership.role.stringValue == 'owner';
+  late Future<List<TaskRow>> _tasks;
 
   @override
   void initState() {
@@ -105,17 +37,17 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
   }
 
   void _load() {
-    _tasks = _isOwner ? _fetchHouseholdTasks() : _fetchMyTasks();
+    _tasks = _fetchTasks();
   }
 
-  Future<List<_TaskRow>> _fetchHouseholdTasks() async {
+  Future<List<TaskRow>> _fetchTasks() async {
     final tasks = await AppData.fetchHouseholdTasks(
       householdId: widget.membership.household.id,
       day: _day,
     );
     return tasks
         .map(
-          (t) => _TaskRow(
+          (t) => TaskRow(
             id: t.id,
             status: t.status.stringValue,
             cantDoReason: t.cantDoReason?.stringValue,
@@ -132,40 +64,11 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
         .toList();
   }
 
-  Future<List<_TaskRow>> _fetchMyTasks() async {
-    final tasks = await AppData.fetchMyTasks(_day);
-    return tasks
-        .map(
-          (t) => _TaskRow(
-            id: t.id,
-            status: t.status.stringValue,
-            cantDoReason: t.cantDoReason?.stringValue,
-            priority: t.template.priority.stringValue,
-            estMinutes: t.template.estMinutes,
-            customTitle: t.template.customTitle,
-            nameEn: t.template.library?.nameEn,
-            nameSi: t.template.library?.nameSi,
-            nameTa: t.template.library?.nameTa,
-          ),
-        )
-        .toList();
-  }
-
   void _changeDay(DateTime day) {
     setState(() {
       _day = day;
       _load();
     });
-  }
-
-  Future<void> _pickDay() async {
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: _day,
-      firstDate: DateTime(_day.year - 1),
-      lastDate: DateTime(_day.year + 1, 12, 31),
-    );
-    if (picked != null) _changeDay(picked);
   }
 
   Future<void> _addTask() async {
@@ -192,8 +95,8 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
     }
   }
 
-  /// Owner: pick which staff member [t] is assigned to.
-  Future<void> _assign(_TaskRow t, AppLanguage lang) async {
+  /// Pick which staff member [t] is assigned to.
+  Future<void> _assign(TaskRow t, AppLanguage lang) async {
     try {
       final staff = (await AppData.fetchHouseholdMembers(
         widget.membership.household.id,
@@ -202,8 +105,10 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
         _showError(Strings.of('noStaffYet', lang));
         return;
       }
+      if (!mounted) return;
       final names = {for (final m in staff) m.id: m.user.name};
-      final memberId = await _pick(
+      final memberId = await pickOption(
+        context,
         title: '${Strings.of('assignTo', lang)}: ${t.title(lang)}',
         options: names.keys.toList(),
         label: (id) => names[id]!,
@@ -218,72 +123,6 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
     }
   }
 
-  /// Staff: pick a new status for [t] — and for "can't do", the reason.
-  Future<void> _changeStatus(_TaskRow t, AppLanguage lang) async {
-    final status = await _pick(
-      title: t.title(lang),
-      options: _staffStatuses,
-      label: (s) => Strings.of('status_$s', lang),
-      icon: (s) => Icon(_statusIcons[s], color: _statusColor(s)),
-      selected: t.status,
-    );
-    if (status == null) return;
-    String? reason;
-    if (status == 'cant_do') {
-      reason = await _pick(
-        title: Strings.of('whyCantDo', lang),
-        options: _cantDoReasons,
-        label: (r) => Strings.of('reason_$r', lang),
-        selected: t.cantDoReason,
-      );
-      if (reason == null) return;
-    }
-    try {
-      await AppData.updateMyTaskStatus(
-        taskId: t.id,
-        status: status,
-        cantDoReason: reason,
-      );
-      setState(_load);
-    } catch (e) {
-      _showError(e);
-    }
-  }
-
-  /// A bottom sheet listing [options]; returns the tapped one, or null if
-  /// dismissed.
-  Future<String?> _pick({
-    required String title,
-    required List<String> options,
-    required String Function(String) label,
-    Widget Function(String)? icon,
-    String? selected,
-  }) {
-    return showModalBottomSheet<String>(
-      context: context,
-      builder: (context) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              title: Text(
-                title,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-            ),
-            for (final o in options)
-              ListTile(
-                leading: icon?.call(o),
-                title: Text(label(o)),
-                selected: o == selected,
-                onTap: () => Navigator.of(context).pop(o),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
   void _showError(Object e) {
     if (!mounted) return;
     ScaffoldMessenger.of(context)
@@ -296,18 +135,16 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
       valueListenable: widget.lang,
       builder: (context, lang, _) {
         return Scaffold(
-          floatingActionButton: _isOwner
-              ? FloatingActionButton.extended(
-                  onPressed: _addTask,
-                  icon: const Icon(Icons.add),
-                  label: Text(Strings.of('addTask', lang)),
-                )
-              : null,
+          floatingActionButton: FloatingActionButton.extended(
+            onPressed: _addTask,
+            icon: const Icon(Icons.add),
+            label: Text(Strings.of('addTask', lang)),
+          ),
           body: Column(
             children: [
-              _buildDaySwitcher(),
+              DaySwitcher(day: _day, onChanged: _changeDay),
               Expanded(
-                child: FutureBuilder<List<_TaskRow>>(
+                child: FutureBuilder<List<TaskRow>>(
                   future: _tasks,
                   builder: (context, snapshot) {
                     if (snapshot.hasError) {
@@ -322,9 +159,7 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
                         child: Text(Strings.of('noTasksForDay', lang)),
                       );
                     }
-                    return _isOwner
-                        ? _buildGrouped(tasks, lang)
-                        : _buildList(tasks, lang);
+                    return _buildGrouped(tasks, lang);
                   },
                 ),
               ),
@@ -335,35 +170,11 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
     );
   }
 
-  Widget _buildDaySwitcher() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          IconButton(
-            icon: const Icon(Icons.chevron_left),
-            onPressed: () => _changeDay(_day.subtract(const Duration(days: 1))),
-          ),
-          TextButton.icon(
-            onPressed: _pickDay,
-            icon: const Icon(Icons.calendar_today_outlined),
-            label: Text(_day.toIso8601String().substring(0, 10)),
-          ),
-          IconButton(
-            icon: const Icon(Icons.chevron_right),
-            onPressed: () => _changeDay(_day.add(const Duration(days: 1))),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// Owner view: one card per staff member, headed by their name and the
-  /// day's total estimated time, after a card of tasks not assigned yet.
-  Widget _buildGrouped(List<_TaskRow> tasks, AppLanguage lang) {
+  /// One card per staff member, headed by their name and the day's total
+  /// estimated time, after a card of tasks not assigned yet.
+  Widget _buildGrouped(List<TaskRow> tasks, AppLanguage lang) {
     // '' holds the unassigned tasks, and goes first so they're noticed.
-    final byAssignee = <String, List<_TaskRow>>{
+    final byAssignee = <String, List<TaskRow>>{
       if (tasks.any((t) => t.assigneeId == null)) '': [],
     };
     for (final t in tasks) {
@@ -398,14 +209,7 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
     );
   }
 
-  Widget _buildList(List<_TaskRow> tasks, AppLanguage lang) {
-    return ListView(
-      padding: const EdgeInsets.all(8),
-      children: tasks.map((t) => Card(child: _taskTile(t, lang))).toList(),
-    );
-  }
-
-  Widget _taskTile(_TaskRow t, AppLanguage lang) {
+  Widget _taskTile(TaskRow t, AppLanguage lang) {
     final status = [
       Strings.of('status_${t.status}', lang),
       if (t.cantDoReason != null) Strings.of('reason_${t.cantDoReason}', lang),
@@ -417,8 +221,8 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
     ];
     return ListTile(
       leading: Icon(
-        _statusIcons[t.status] ?? Icons.radio_button_unchecked,
-        color: _statusColor(t.status),
+        statusIcons[t.status] ?? Icons.radio_button_unchecked,
+        color: statusColor(t.status),
       ),
       title: Text(t.title(lang)),
       subtitle: Text.rich(
@@ -426,19 +230,17 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
           children: [
             TextSpan(
               text: status,
-              style: TextStyle(color: _statusColor(t.status)),
+              style: TextStyle(color: statusColor(t.status)),
             ),
             TextSpan(text: ' · ${details.join(' · ')}'),
           ],
         ),
       ),
-      onTap: _isOwner ? () => _assign(t, lang) : () => _changeStatus(t, lang),
-      trailing: _isOwner
-          ? IconButton(
-              icon: const Icon(Icons.delete_outline),
-              onPressed: () => _remove(t.id),
-            )
-          : const Icon(Icons.chevron_right),
+      onTap: () => _assign(t, lang),
+      trailing: IconButton(
+        icon: const Icon(Icons.delete_outline),
+        onPressed: () => _remove(t.id),
+      ),
     );
   }
 }

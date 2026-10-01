@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/firebase_client.dart';
 import '../../dataconnect_generated/sahakara.dart';
+import '../../core/theme.dart';
 
 class TaskLibraryAdminPage extends StatefulWidget {
   const TaskLibraryAdminPage({super.key});
@@ -78,7 +79,7 @@ class _TaskLibraryAdminPageState extends State<TaskLibraryAdminPage> {
         Text('Task library', style: Theme.of(context).textTheme.titleLarge),
         const Text(
           'The shared, trilingual task list every household picks tasks from.',
-          style: TextStyle(color: Colors.grey),
+          style: TextStyle(color: mutedText),
         ),
         const SizedBox(height: 16),
         Card(

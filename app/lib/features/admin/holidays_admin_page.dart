@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/firebase_client.dart';
 import '../../dataconnect_generated/sahakara.dart';
+import '../../core/theme.dart';
 
 class HolidaysAdminPage extends StatefulWidget {
   const HolidaysAdminPage({super.key});
@@ -90,7 +91,7 @@ class _HolidaysAdminPageState extends State<HolidaysAdminPage> {
         Text('Holidays', style: Theme.of(context).textTheme.titleLarge),
         const Text(
           'Poya and public holiday calendar, preloaded once a year.',
-          style: TextStyle(color: Colors.grey),
+          style: TextStyle(color: mutedText),
         ),
         const SizedBox(height: 16),
         Card(

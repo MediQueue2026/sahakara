@@ -160,11 +160,6 @@ class Strings {
       AppLanguage.si: 'ගිවිසුම',
       AppLanguage.ta: 'ஒப்பந்தம்',
     },
-    'tasks': {
-      AppLanguage.en: 'Task library',
-      AppLanguage.si: 'කාර්ය ලැයිස්තුව',
-      AppLanguage.ta: 'பணி பட்டியல்',
-    },
     'settings': {
       AppLanguage.en: 'Settings',
       AppLanguage.si: 'සැකසුම්',
@@ -215,6 +210,26 @@ class Strings {
       AppLanguage.si: 'දෛනික කාර්යයන්',
       AppLanguage.ta: 'தினசரி பணிகள்',
     },
+    'myTasks': {
+      AppLanguage.en: 'My tasks',
+      AppLanguage.si: 'මගේ කාර්ය',
+      AppLanguage.ta: 'என் பணிகள்',
+    },
+    'myContract': {
+      AppLanguage.en: 'My contract',
+      AppLanguage.si: 'මගේ ගිවිසුම',
+      AppLanguage.ta: 'என் ஒப்பந்தம்',
+    },
+    'hello': {
+      AppLanguage.en: 'Hello',
+      AppLanguage.si: 'ආයුබෝවන්',
+      AppLanguage.ta: 'வணக்கம்',
+    },
+    'tasksDone': {
+      AppLanguage.en: '{done} of {total} tasks done',
+      AppLanguage.si: 'කාර්ය {total} න් {done} ක් අවසන්',
+      AppLanguage.ta: '{total} பணிகளில் {done} முடிந்தது',
+    },
     'addTask': {
       AppLanguage.en: 'Add task',
       AppLanguage.si: 'කාර්යයක් එක් කරන්න',
@@ -234,6 +249,47 @@ class Strings {
       AppLanguage.en: 'Other (type it in)',
       AppLanguage.si: 'වෙනත් (ටයිප් කරන්න)',
       AppLanguage.ta: 'மற்றவை (தட்டச்சு செய்யவும்)',
+    },
+    'noLibraryTasks': {
+      AppLanguage.en: 'No default tasks yet. Tap "Other" below to type one in.',
+      AppLanguage.si: 'තවම පෙරනිමි කාර්ය නැත. ටයිප් කිරීමට පහත "වෙනත්" ඔබන්න.',
+      AppLanguage.ta: 'இன்னும் இயல்புநிலை பணிகள் இல்லை. தட்டச்சு செய்ய கீழே "மற்றவை" அழுத்தவும்.',
+    },
+    'searchTasks': {
+      AppLanguage.en: 'Search tasks',
+      AppLanguage.si: 'කාර්ය සොයන්න',
+      AppLanguage.ta: 'பணிகளைத் தேடவும்',
+    },
+    'noTaskMatches': {
+      AppLanguage.en: 'No matching tasks. Tap "Other" below to type it in.',
+      AppLanguage.si: 'ගැළපෙන කාර්ය නැත. ටයිප් කිරීමට පහත "වෙනත්" ඔබන්න.',
+      AppLanguage.ta:
+          'பொருந்தும் பணிகள் இல்லை. தட்டச்சு செய்ய கீழே "மற்றவை" அழுத்தவும்.',
+    },
+    'category_cleaning': {
+      AppLanguage.en: 'Cleaning',
+      AppLanguage.si: 'පිරිසිදු කිරීම',
+      AppLanguage.ta: 'சுத்தம்',
+    },
+    'category_kitchen': {
+      AppLanguage.en: 'Kitchen',
+      AppLanguage.si: 'කුස්සිය',
+      AppLanguage.ta: 'சமையலறை',
+    },
+    'category_cooking': {
+      AppLanguage.en: 'Cooking',
+      AppLanguage.si: 'ආහාර පිසීම',
+      AppLanguage.ta: 'சமையல்',
+    },
+    'category_laundry': {
+      AppLanguage.en: 'Laundry',
+      AppLanguage.si: 'රෙදි සේදීම',
+      AppLanguage.ta: 'சலவை',
+    },
+    'category_other': {
+      AppLanguage.en: 'Outdoor, errands and family',
+      AppLanguage.si: 'එළිමහන, පණිවිඩ සහ පවුල',
+      AppLanguage.ta: 'வெளிப்புறம், வேலைகள், குடும்பம்',
     },
     'customTaskTitle': {
       AppLanguage.en: 'Task title',

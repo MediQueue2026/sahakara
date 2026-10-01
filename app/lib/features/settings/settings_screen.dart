@@ -4,6 +4,7 @@ import '../../core/app_data.dart';
 import '../../core/app_language.dart';
 import '../../core/strings.dart';
 import '../../core/firebase_client.dart';
+import '../../core/theme.dart';
 
 class SettingsScreen extends StatelessWidget {
   final LanguageController lang;
@@ -20,7 +21,7 @@ class SettingsScreen extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           children: [
             Text(profile.name, style: Theme.of(context).textTheme.titleMedium),
-            Text(profile.email, style: const TextStyle(color: Colors.grey)),
+            Text(profile.email, style: const TextStyle(color: mutedText)),
             const SizedBox(height: 24),
             Text(
               Strings.of('language', current),
