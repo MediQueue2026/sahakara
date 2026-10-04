@@ -9,6 +9,10 @@ typedef CurrentContract = CurrentContractContracts;
 typedef LibraryTask = LibraryTasksLibraryTasks;
 typedef HouseholdTask = HouseholdTasksForDayTasks;
 typedef MyTask = MyTasksForDayTasks;
+typedef AttendanceRecord = MyAttendanceAttendances;
+typedef LeaveRequest = MyLeaveRequestsLeaveRequests;
+typedef HouseholdAttendance = HouseholdAttendanceAttendances;
+typedef HouseholdLeaveRequest = HouseholdLeaveRequestsLeaveRequests;
 
 /// The account type and (on sign-up) name picked on the login screen,
 /// handed to [AppData.ensureUserProfile] once Firebase Auth has signed in.
@@ -248,5 +252,75 @@ class AppData {
               : CantDoReason.values.byName(cantDoReason),
         )
         .execute();
+  }
+
+  // ── Attendance and Leave Methods ──
+
+  static Future<void> checkIn({
+    required String memberId,
+    required DateTime day,
+    required String dayType,
+  }) async {
+    await db.checkIn(
+      memberId: memberId,
+      day: day,
+      dayType: AttendanceDayType.values.byName(dayType),
+    ).execute();
+  }
+
+  static Future<void> checkOut({
+    required String memberId,
+    required DateTime day,
+  }) async {
+    await db.checkOut(memberId: memberId, day: day).execute();
+  }
+
+  static Future<void> submitLeaveRequest({
+    required String memberId,
+    required DateTime fromDate,
+    required DateTime toDate,
+    required String leaveType,
+    String? reason,
+  }) async {
+    await db.submitLeaveRequest(
+      memberId: memberId,
+      fromDate: fromDate,
+      toDate: toDate,
+      leaveType: LeaveType.values.byName(leaveType),
+    ).reason(reason).execute();
+  }
+
+  static Future<void> reviewLeaveRequest({
+    required String id,
+    required String status,
+  }) async {
+    await db.reviewLeaveRequest(
+      id: id,
+      status: LeaveStatus.values.byName(status),
+    ).execute();
+  }
+
+  static Future<void> deleteLeaveRequest(String id) async {
+    await db.deleteLeaveRequest(id: id).execute();
+  }
+
+  static Future<List<AttendanceRecord>> fetchMyAttendance() async {
+    final result = await db.myAttendance().execute();
+    return result.data.attendances;
+  }
+
+  static Future<List<HouseholdAttendance>> fetchHouseholdAttendance(String householdId) async {
+    final result = await db.householdAttendance(householdId: householdId).execute();
+    return result.data.attendances;
+  }
+
+  static Future<List<LeaveRequest>> fetchMyLeaveRequests() async {
+    final result = await db.myLeaveRequests().execute();
+    return result.data.leaveRequests;
+  }
+
+  static Future<List<HouseholdLeaveRequest>> fetchHouseholdLeaveRequests(String householdId) async {
+    final result = await db.householdLeaveRequests(householdId: householdId).execute();
+    return result.data.leaveRequests;
   }
 }

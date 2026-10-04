@@ -427,3 +427,126 @@ mutation DeleteHoliday($id: UUID!) @auth(level: USER) @transaction {
   }
   holiday_delete(id: $id)
 }
+
+# ── attendance & leave ───────────────────────────────────────────────────
+
+mutation CheckIn(
+  $memberId: UUID!
+  $day: Date!
+  $dayType: AttendanceDayType!
+) @auth(level: USER) @transaction {
+  query @redact {
+    householdMembers(
+      where: {
+        id: { eq: $memberId }
+        user: { authUid: { eq_expr: "auth.uid" } }
+        active: { eq: true }
+      }
+    ) @check(expr: "this.size() == 1", message: "Only active members can check in") {
+      id
+    }
+  }
+  attendance_insert(
+    data: {
+      memberId: $memberId
+      day: $day
+      checkIn_expr: "request.time"
+      dayType: $dayType
+    }
+  )
+}
+
+mutation CheckOut(
+  $memberId: UUID!
+  $day: Date!
+) @auth(level: USER) @transaction {
+  query @redact {
+    householdMembers(
+      where: {
+        id: { eq: $memberId }
+        user: { authUid: { eq_expr: "auth.uid" } }
+        active: { eq: true }
+      }
+    ) @check(expr: "this.size() == 1", message: "Only active members can check out") {
+      id
+    }
+  }
+  attendance_updateMany(
+    where: { memberId: { eq: $memberId }, day: { eq: $day } }
+    data: { checkOut_expr: "request.time" }
+  )
+}
+
+mutation SubmitLeaveRequest(
+  $memberId: UUID!
+  $fromDate: Date!
+  $toDate: Date!
+  $leaveType: LeaveType!
+  $reason: String
+) @auth(level: USER) @transaction {
+  query @redact {
+    householdMembers(
+      where: {
+        id: { eq: $memberId }
+        user: { authUid: { eq_expr: "auth.uid" } }
+        active: { eq: true }
+      }
+    ) @check(expr: "this.size() == 1", message: "Only active members can request leave") {
+      id
+    }
+  }
+  leaveRequest_insert(
+    data: {
+      memberId: $memberId
+      fromDate: $fromDate
+      toDate: $toDate
+      leaveType: $leaveType
+      reason: $reason
+    }
+  )
+}
+
+mutation ReviewLeaveRequest(
+  $id: UUID!
+  $status: LeaveStatus!
+) @auth(level: USER) @transaction {
+  query @redact {
+    leaveRequests(
+      where: {
+        id: { eq: $id }
+        member: { household: { owner: { authUid: { eq_expr: "auth.uid" } } } }
+      }
+    ) @check(expr: "this.size() == 1", message: "Only the owner can review leave requests") {
+      id
+    }
+    users(
+      where: { authUid: { eq_expr: "auth.uid" } }
+    ) {
+      id
+    }
+  }
+  leaveRequest_update(
+    id: $id
+    data: {
+      status: $status
+      decidedById_expr: "response.query.users[0].id"
+    }
+  )
+}
+
+mutation DeleteLeaveRequest(
+  $id: UUID!
+) @auth(level: USER) @transaction {
+  query @redact {
+    leaveRequests(
+      where: {
+        id: { eq: $id }
+        member: { user: { authUid: { eq_expr: "auth.uid" } } }
+        status: { eq: pending }
+      }
+    ) @check(expr: "this.size() == 1", message: "Only the maid can delete their own pending request") {
+      id
+    }
+  }
+  leaveRequest_delete(id: $id)
+}

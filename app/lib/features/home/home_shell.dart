@@ -8,6 +8,7 @@ import '../contract/contract_screen.dart';
 import '../settings/settings_screen.dart';
 import '../tasks/daily_tasks_screen.dart';
 import '../tasks/my_tasks_screen.dart';
+import '../attendance/attendance_tab.dart';
 import 'household_tab.dart';
 
 /// Bottom-nav shell shown once a signed-in user has a household. The owner
@@ -77,6 +78,11 @@ class _HomeShellState extends State<HomeShell> {
       ContractScreen(lang: widget.lang, membership: widget.membership),
     ),
     _Tab(
+      Icons.event_available,
+      Strings.of('attendance', lang),
+      AttendanceTab(lang: widget.lang, membership: widget.membership, profile: widget.profile),
+    ),
+    _Tab(
       Icons.settings_outlined,
       Strings.of('settings', lang),
       SettingsScreen(lang: widget.lang, profile: widget.profile),
@@ -102,6 +108,11 @@ class _HomeShellState extends State<HomeShell> {
         memberName: widget.profile.name,
         editable: false,
       ),
+    ),
+    _Tab(
+      Icons.event_available,
+      Strings.of('attendance', lang),
+      AttendanceTab(lang: widget.lang, membership: widget.membership, profile: widget.profile),
     ),
     _Tab(
       Icons.settings_outlined,

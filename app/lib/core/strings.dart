@@ -416,6 +416,111 @@ class Strings {
       AppLanguage.si: 'සුරකින්න',
       AppLanguage.ta: 'சேமி',
     },
+    'attendance': {
+      AppLanguage.en: 'Attendance',
+      AppLanguage.si: 'පැමිණීම',
+      AppLanguage.ta: 'வருகை',
+    },
+    'checkIn': {
+      AppLanguage.en: 'Check In',
+      AppLanguage.si: 'පැමිණීම සටහන් කරන්න',
+      AppLanguage.ta: 'வருகையை பதிவு செய்',
+    },
+    'checkOut': {
+      AppLanguage.en: 'Check Out',
+      AppLanguage.si: 'පිටවීම සටහන් කරන්න',
+      AppLanguage.ta: 'வெளியேறுதலை பதிவு செய்',
+    },
+    'requestLeave': {
+      AppLanguage.en: 'Request Leave',
+      AppLanguage.si: 'නිවාඩු ඉල්ලුම් කරන්න',
+      AppLanguage.ta: 'விடுமுறை கோரு',
+    },
+    'leaveRequests': {
+      AppLanguage.en: 'Leave Requests',
+      AppLanguage.si: 'නිවාඩු ඉල්ලීම්',
+      AppLanguage.ta: 'விடுமுறை கோரிக்கைகள்',
+    },
+    'attendanceHistory': {
+      AppLanguage.en: 'Attendance History',
+      AppLanguage.si: 'පැමිණීම් ඉතිහාසය',
+      AppLanguage.ta: 'வருகை வரலாறு',
+    },
+    'leaveType': {
+      AppLanguage.en: 'Leave Type',
+      AppLanguage.si: 'නිවාඩු වර්ගය',
+      AppLanguage.ta: 'விடுமுறை வகை',
+    },
+    'leave_paid': {
+      AppLanguage.en: 'Paid',
+      AppLanguage.si: 'ගෙවන',
+      AppLanguage.ta: 'ஊதியத்துடன்',
+    },
+    'leave_unpaid': {
+      AppLanguage.en: 'Unpaid',
+      AppLanguage.si: 'නොගෙවන',
+      AppLanguage.ta: 'ஊதியமில்லா',
+    },
+    'leave_sick': {
+      AppLanguage.en: 'Sick',
+      AppLanguage.si: 'අසනීප',
+      AppLanguage.ta: 'மருத்துவ',
+    },
+    'startDate': {
+      AppLanguage.en: 'Start Date',
+      AppLanguage.si: 'ආරම්භක දිනය',
+      AppLanguage.ta: 'ஆரம்ப தேதி',
+    },
+    'endDate': {
+      AppLanguage.en: 'End Date',
+      AppLanguage.si: 'අවසන් දිනය',
+      AppLanguage.ta: 'முடிவு தேதி',
+    },
+    'reasonOptional': {
+      AppLanguage.en: 'Reason (Optional)',
+      AppLanguage.si: 'හේතුව (විකල්ප)',
+      AppLanguage.ta: 'காரணம் (விருப்பத்தேர்வு)',
+    },
+    'submit': {
+      AppLanguage.en: 'Submit',
+      AppLanguage.si: 'යොමු කරන්න',
+      AppLanguage.ta: 'சமர்ப்பி',
+    },
+    'cancel': {
+      AppLanguage.en: 'Cancel',
+      AppLanguage.si: 'අවලංගු කරන්න',
+      AppLanguage.ta: 'ரத்து செய்',
+    },
+    'leave_status_pending': {
+      AppLanguage.en: 'PENDING',
+      AppLanguage.si: 'පොරොත්තු',
+      AppLanguage.ta: 'நிலுவையில் உள்ளது',
+    },
+    'leave_status_approved': {
+      AppLanguage.en: 'APPROVED',
+      AppLanguage.si: 'අනුමතයි',
+      AppLanguage.ta: 'அங்கீகரிக்கப்பட்டது',
+    },
+    'leave_status_rejected': {
+      AppLanguage.en: 'REJECTED',
+      AppLanguage.si: 'ප්‍රතික්ෂේපිතයි',
+      AppLanguage.ta: 'நிராகரிக்கப்பட்டது',
+    },
+    'noLeaveRequests': {
+      AppLanguage.en: 'No leave requests.',
+      AppLanguage.si: 'නිවාඩු ඉල්ලීම් නැත.',
+      AppLanguage.ta: 'விடுமுறை கோரிக்கைகள் இல்லை.',
+    },
+    'noAttendanceRecords': {
+      AppLanguage.en: 'No attendance records.',
+      AppLanguage.si: 'පැමිණීම් වාර්තා නැත.',
+      AppLanguage.ta: 'வருகை பதிவுகள் இல்லை.',
+    },
+    'noReasonProvided': {
+      AppLanguage.en: 'No reason provided',
+      AppLanguage.si: 'හේතුවක් සපයා නැත',
+      AppLanguage.ta: 'காரணம் வழங்கப்படவில்லை',
+    },
   };
 
   static String of(String key, AppLanguage lang) {

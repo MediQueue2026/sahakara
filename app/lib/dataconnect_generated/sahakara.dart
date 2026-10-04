@@ -36,6 +36,16 @@ part 'add_holiday.dart';
 
 part 'delete_holiday.dart';
 
+part 'check_in.dart';
+
+part 'check_out.dart';
+
+part 'submit_leave_request.dart';
+
+part 'review_leave_request.dart';
+
+part 'delete_leave_request.dart';
+
 part 'my_profile.dart';
 
 part 'my_membership.dart';
@@ -53,6 +63,14 @@ part 'my_tasks_for_day.dart';
 part 'library_tasks.dart';
 
 part 'holidays.dart';
+
+part 'my_attendance.dart';
+
+part 'household_attendance.dart';
+
+part 'my_leave_requests.dart';
+
+part 'household_leave_requests.dart';
 
 part 'admin_households.dart';
 
@@ -113,6 +131,57 @@ part 'admin_households.dart';
       
       case 'en':
         return const Known(AppLanguage.en);
+      
+      default:
+        return Unknown(data);
+    }
+  }
+  
+
+  enum AttendanceDayType {
+    
+      full,
+    
+      half,
+    
+      late,
+    
+      early_leave,
+    
+      leave,
+    
+      absent,
+    
+      holiday,
+    
+  }
+  
+  String attendanceDayTypeSerializer(EnumValue<AttendanceDayType> e) {
+    return e.stringValue;
+  }
+  EnumValue<AttendanceDayType> attendanceDayTypeDeserializer(dynamic data) {
+    switch (data) {
+      
+      case 'full':
+        return const Known(AttendanceDayType.full);
+      
+      case 'half':
+        return const Known(AttendanceDayType.half);
+      
+      case 'late':
+        return const Known(AttendanceDayType.late);
+      
+      case 'early_leave':
+        return const Known(AttendanceDayType.early_leave);
+      
+      case 'leave':
+        return const Known(AttendanceDayType.leave);
+      
+      case 'absent':
+        return const Known(AttendanceDayType.absent);
+      
+      case 'holiday':
+        return const Known(AttendanceDayType.holiday);
       
       default:
         return Unknown(data);
@@ -190,6 +259,68 @@ part 'admin_households.dart';
       
       case 'festival':
         return const Known(HolidayType.festival);
+      
+      default:
+        return Unknown(data);
+    }
+  }
+  
+
+  enum LeaveStatus {
+    
+      pending,
+    
+      approved,
+    
+      rejected,
+    
+  }
+  
+  String leaveStatusSerializer(EnumValue<LeaveStatus> e) {
+    return e.stringValue;
+  }
+  EnumValue<LeaveStatus> leaveStatusDeserializer(dynamic data) {
+    switch (data) {
+      
+      case 'pending':
+        return const Known(LeaveStatus.pending);
+      
+      case 'approved':
+        return const Known(LeaveStatus.approved);
+      
+      case 'rejected':
+        return const Known(LeaveStatus.rejected);
+      
+      default:
+        return Unknown(data);
+    }
+  }
+  
+
+  enum LeaveType {
+    
+      paid,
+    
+      unpaid,
+    
+      sick,
+    
+  }
+  
+  String leaveTypeSerializer(EnumValue<LeaveType> e) {
+    return e.stringValue;
+  }
+  EnumValue<LeaveType> leaveTypeDeserializer(dynamic data) {
+    switch (data) {
+      
+      case 'paid':
+        return const Known(LeaveType.paid);
+      
+      case 'unpaid':
+        return const Known(LeaveType.unpaid);
+      
+      case 'sick':
+        return const Known(LeaveType.sick);
       
       default:
         return Unknown(data);
@@ -567,6 +698,31 @@ class SahakaraConnector {
   }
   
   
+  CheckInVariablesBuilder checkIn ({required String memberId, required DateTime day, required AttendanceDayType dayType, }) {
+    return CheckInVariablesBuilder(dataConnect, memberId: memberId,day: day,dayType: dayType,);
+  }
+  
+  
+  CheckOutVariablesBuilder checkOut ({required String memberId, required DateTime day, }) {
+    return CheckOutVariablesBuilder(dataConnect, memberId: memberId,day: day,);
+  }
+  
+  
+  SubmitLeaveRequestVariablesBuilder submitLeaveRequest ({required String memberId, required DateTime fromDate, required DateTime toDate, required LeaveType leaveType, }) {
+    return SubmitLeaveRequestVariablesBuilder(dataConnect, memberId: memberId,fromDate: fromDate,toDate: toDate,leaveType: leaveType,);
+  }
+  
+  
+  ReviewLeaveRequestVariablesBuilder reviewLeaveRequest ({required String id, required LeaveStatus status, }) {
+    return ReviewLeaveRequestVariablesBuilder(dataConnect, id: id,status: status,);
+  }
+  
+  
+  DeleteLeaveRequestVariablesBuilder deleteLeaveRequest ({required String id, }) {
+    return DeleteLeaveRequestVariablesBuilder(dataConnect, id: id,);
+  }
+  
+  
   MyProfileVariablesBuilder myProfile () {
     return MyProfileVariablesBuilder(dataConnect, );
   }
@@ -609,6 +765,26 @@ class SahakaraConnector {
   
   HolidaysVariablesBuilder holidays () {
     return HolidaysVariablesBuilder(dataConnect, );
+  }
+  
+  
+  MyAttendanceVariablesBuilder myAttendance () {
+    return MyAttendanceVariablesBuilder(dataConnect, );
+  }
+  
+  
+  HouseholdAttendanceVariablesBuilder householdAttendance ({required String householdId, }) {
+    return HouseholdAttendanceVariablesBuilder(dataConnect, householdId: householdId,);
+  }
+  
+  
+  MyLeaveRequestsVariablesBuilder myLeaveRequests () {
+    return MyLeaveRequestsVariablesBuilder(dataConnect, );
+  }
+  
+  
+  HouseholdLeaveRequestsVariablesBuilder householdLeaveRequests ({required String householdId, }) {
+    return HouseholdLeaveRequestsVariablesBuilder(dataConnect, householdId: householdId,);
   }
   
   

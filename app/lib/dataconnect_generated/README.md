@@ -435,6 +435,186 @@ ref.subscribe(...);
 ```
 
 
+### MyAttendance
+#### Required Arguments
+```dart
+// No required arguments
+SahakaraConnector.instance.myAttendance().execute();
+```
+
+
+
+#### Return Type
+`execute()` returns a `QueryResult<MyAttendanceData, void>`
+```dart
+/// Result of an Operation Request (query/mutation).
+class OperationResult<Data, Variables> {
+  OperationResult(this.dataConnect, this.data, this.ref);
+  Data data;
+  OperationRef<Data, Variables> ref;
+  FirebaseDataConnect dataConnect;
+}
+
+/// Result of a query request. Created to hold extra variables in the future.
+class QueryResult<Data, Variables> extends OperationResult<Data, Variables> {
+  QueryResult(super.dataConnect, super.data, super.ref);
+}
+
+final result = await SahakaraConnector.instance.myAttendance();
+MyAttendanceData data = result.data;
+final ref = result.ref;
+```
+
+#### Getting the Ref
+Each builder returns an `execute` function, which is a helper function that creates a `Ref` object, and executes the underlying operation.
+An example of how to use the `Ref` object is shown below:
+```dart
+final ref = SahakaraConnector.instance.myAttendance().ref();
+ref.execute();
+
+ref.subscribe(...);
+```
+
+
+### HouseholdAttendance
+#### Required Arguments
+```dart
+String householdId = ...;
+SahakaraConnector.instance.householdAttendance(
+  householdId: householdId,
+).execute();
+```
+
+
+
+#### Return Type
+`execute()` returns a `QueryResult<HouseholdAttendanceData, HouseholdAttendanceVariables>`
+```dart
+/// Result of an Operation Request (query/mutation).
+class OperationResult<Data, Variables> {
+  OperationResult(this.dataConnect, this.data, this.ref);
+  Data data;
+  OperationRef<Data, Variables> ref;
+  FirebaseDataConnect dataConnect;
+}
+
+/// Result of a query request. Created to hold extra variables in the future.
+class QueryResult<Data, Variables> extends OperationResult<Data, Variables> {
+  QueryResult(super.dataConnect, super.data, super.ref);
+}
+
+final result = await SahakaraConnector.instance.householdAttendance(
+  householdId: householdId,
+);
+HouseholdAttendanceData data = result.data;
+final ref = result.ref;
+```
+
+#### Getting the Ref
+Each builder returns an `execute` function, which is a helper function that creates a `Ref` object, and executes the underlying operation.
+An example of how to use the `Ref` object is shown below:
+```dart
+String householdId = ...;
+
+final ref = SahakaraConnector.instance.householdAttendance(
+  householdId: householdId,
+).ref();
+ref.execute();
+
+ref.subscribe(...);
+```
+
+
+### MyLeaveRequests
+#### Required Arguments
+```dart
+// No required arguments
+SahakaraConnector.instance.myLeaveRequests().execute();
+```
+
+
+
+#### Return Type
+`execute()` returns a `QueryResult<MyLeaveRequestsData, void>`
+```dart
+/// Result of an Operation Request (query/mutation).
+class OperationResult<Data, Variables> {
+  OperationResult(this.dataConnect, this.data, this.ref);
+  Data data;
+  OperationRef<Data, Variables> ref;
+  FirebaseDataConnect dataConnect;
+}
+
+/// Result of a query request. Created to hold extra variables in the future.
+class QueryResult<Data, Variables> extends OperationResult<Data, Variables> {
+  QueryResult(super.dataConnect, super.data, super.ref);
+}
+
+final result = await SahakaraConnector.instance.myLeaveRequests();
+MyLeaveRequestsData data = result.data;
+final ref = result.ref;
+```
+
+#### Getting the Ref
+Each builder returns an `execute` function, which is a helper function that creates a `Ref` object, and executes the underlying operation.
+An example of how to use the `Ref` object is shown below:
+```dart
+final ref = SahakaraConnector.instance.myLeaveRequests().ref();
+ref.execute();
+
+ref.subscribe(...);
+```
+
+
+### HouseholdLeaveRequests
+#### Required Arguments
+```dart
+String householdId = ...;
+SahakaraConnector.instance.householdLeaveRequests(
+  householdId: householdId,
+).execute();
+```
+
+
+
+#### Return Type
+`execute()` returns a `QueryResult<HouseholdLeaveRequestsData, HouseholdLeaveRequestsVariables>`
+```dart
+/// Result of an Operation Request (query/mutation).
+class OperationResult<Data, Variables> {
+  OperationResult(this.dataConnect, this.data, this.ref);
+  Data data;
+  OperationRef<Data, Variables> ref;
+  FirebaseDataConnect dataConnect;
+}
+
+/// Result of a query request. Created to hold extra variables in the future.
+class QueryResult<Data, Variables> extends OperationResult<Data, Variables> {
+  QueryResult(super.dataConnect, super.data, super.ref);
+}
+
+final result = await SahakaraConnector.instance.householdLeaveRequests(
+  householdId: householdId,
+);
+HouseholdLeaveRequestsData data = result.data;
+final ref = result.ref;
+```
+
+#### Getting the Ref
+Each builder returns an `execute` function, which is a helper function that creates a `Ref` object, and executes the underlying operation.
+An example of how to use the `Ref` object is shown below:
+```dart
+String householdId = ...;
+
+final ref = SahakaraConnector.instance.householdLeaveRequests(
+  householdId: householdId,
+).ref();
+ref.execute();
+
+ref.subscribe(...);
+```
+
+
 ### AdminHouseholds
 #### Required Arguments
 ```dart
@@ -1357,6 +1537,272 @@ An example of how to use the `Ref` object is shown below:
 String id = ...;
 
 final ref = SahakaraConnector.instance.deleteHoliday(
+  id: id,
+).ref();
+ref.execute();
+```
+
+
+### CheckIn
+#### Required Arguments
+```dart
+String memberId = ...;
+DateTime day = ...;
+AttendanceDayType dayType = ...;
+SahakaraConnector.instance.checkIn(
+  memberId: memberId,
+  day: day,
+  dayType: dayType,
+).execute();
+```
+
+
+
+#### Return Type
+`execute()` returns a `OperationResult<CheckInData, CheckInVariables>`
+```dart
+/// Result of an Operation Request (query/mutation).
+class OperationResult<Data, Variables> {
+  OperationResult(this.dataConnect, this.data, this.ref);
+  Data data;
+  OperationRef<Data, Variables> ref;
+  FirebaseDataConnect dataConnect;
+}
+
+final result = await SahakaraConnector.instance.checkIn(
+  memberId: memberId,
+  day: day,
+  dayType: dayType,
+);
+CheckInData data = result.data;
+final ref = result.ref;
+```
+
+#### Getting the Ref
+Each builder returns an `execute` function, which is a helper function that creates a `Ref` object, and executes the underlying operation.
+An example of how to use the `Ref` object is shown below:
+```dart
+String memberId = ...;
+DateTime day = ...;
+AttendanceDayType dayType = ...;
+
+final ref = SahakaraConnector.instance.checkIn(
+  memberId: memberId,
+  day: day,
+  dayType: dayType,
+).ref();
+ref.execute();
+```
+
+
+### CheckOut
+#### Required Arguments
+```dart
+String memberId = ...;
+DateTime day = ...;
+SahakaraConnector.instance.checkOut(
+  memberId: memberId,
+  day: day,
+).execute();
+```
+
+
+
+#### Return Type
+`execute()` returns a `OperationResult<CheckOutData, CheckOutVariables>`
+```dart
+/// Result of an Operation Request (query/mutation).
+class OperationResult<Data, Variables> {
+  OperationResult(this.dataConnect, this.data, this.ref);
+  Data data;
+  OperationRef<Data, Variables> ref;
+  FirebaseDataConnect dataConnect;
+}
+
+final result = await SahakaraConnector.instance.checkOut(
+  memberId: memberId,
+  day: day,
+);
+CheckOutData data = result.data;
+final ref = result.ref;
+```
+
+#### Getting the Ref
+Each builder returns an `execute` function, which is a helper function that creates a `Ref` object, and executes the underlying operation.
+An example of how to use the `Ref` object is shown below:
+```dart
+String memberId = ...;
+DateTime day = ...;
+
+final ref = SahakaraConnector.instance.checkOut(
+  memberId: memberId,
+  day: day,
+).ref();
+ref.execute();
+```
+
+
+### SubmitLeaveRequest
+#### Required Arguments
+```dart
+String memberId = ...;
+DateTime fromDate = ...;
+DateTime toDate = ...;
+LeaveType leaveType = ...;
+SahakaraConnector.instance.submitLeaveRequest(
+  memberId: memberId,
+  fromDate: fromDate,
+  toDate: toDate,
+  leaveType: leaveType,
+).execute();
+```
+
+#### Optional Arguments
+We return a builder for each query. For SubmitLeaveRequest, we created `SubmitLeaveRequestBuilder`. For queries and mutations with optional parameters, we return a builder class.
+The builder pattern allows Data Connect to distinguish between fields that haven't been set and fields that have been set to null. A field can be set by calling its respective setter method like below:
+```dart
+class SubmitLeaveRequestVariablesBuilder {
+  ...
+   SubmitLeaveRequestVariablesBuilder reason(String? t) {
+   _reason.value = t;
+   return this;
+  }
+
+  ...
+}
+SahakaraConnector.instance.submitLeaveRequest(
+  memberId: memberId,
+  fromDate: fromDate,
+  toDate: toDate,
+  leaveType: leaveType,
+)
+.reason(reason)
+.execute();
+```
+
+#### Return Type
+`execute()` returns a `OperationResult<SubmitLeaveRequestData, SubmitLeaveRequestVariables>`
+```dart
+/// Result of an Operation Request (query/mutation).
+class OperationResult<Data, Variables> {
+  OperationResult(this.dataConnect, this.data, this.ref);
+  Data data;
+  OperationRef<Data, Variables> ref;
+  FirebaseDataConnect dataConnect;
+}
+
+final result = await SahakaraConnector.instance.submitLeaveRequest(
+  memberId: memberId,
+  fromDate: fromDate,
+  toDate: toDate,
+  leaveType: leaveType,
+);
+SubmitLeaveRequestData data = result.data;
+final ref = result.ref;
+```
+
+#### Getting the Ref
+Each builder returns an `execute` function, which is a helper function that creates a `Ref` object, and executes the underlying operation.
+An example of how to use the `Ref` object is shown below:
+```dart
+String memberId = ...;
+DateTime fromDate = ...;
+DateTime toDate = ...;
+LeaveType leaveType = ...;
+
+final ref = SahakaraConnector.instance.submitLeaveRequest(
+  memberId: memberId,
+  fromDate: fromDate,
+  toDate: toDate,
+  leaveType: leaveType,
+).ref();
+ref.execute();
+```
+
+
+### ReviewLeaveRequest
+#### Required Arguments
+```dart
+String id = ...;
+LeaveStatus status = ...;
+SahakaraConnector.instance.reviewLeaveRequest(
+  id: id,
+  status: status,
+).execute();
+```
+
+
+
+#### Return Type
+`execute()` returns a `OperationResult<ReviewLeaveRequestData, ReviewLeaveRequestVariables>`
+```dart
+/// Result of an Operation Request (query/mutation).
+class OperationResult<Data, Variables> {
+  OperationResult(this.dataConnect, this.data, this.ref);
+  Data data;
+  OperationRef<Data, Variables> ref;
+  FirebaseDataConnect dataConnect;
+}
+
+final result = await SahakaraConnector.instance.reviewLeaveRequest(
+  id: id,
+  status: status,
+);
+ReviewLeaveRequestData data = result.data;
+final ref = result.ref;
+```
+
+#### Getting the Ref
+Each builder returns an `execute` function, which is a helper function that creates a `Ref` object, and executes the underlying operation.
+An example of how to use the `Ref` object is shown below:
+```dart
+String id = ...;
+LeaveStatus status = ...;
+
+final ref = SahakaraConnector.instance.reviewLeaveRequest(
+  id: id,
+  status: status,
+).ref();
+ref.execute();
+```
+
+
+### DeleteLeaveRequest
+#### Required Arguments
+```dart
+String id = ...;
+SahakaraConnector.instance.deleteLeaveRequest(
+  id: id,
+).execute();
+```
+
+
+
+#### Return Type
+`execute()` returns a `OperationResult<DeleteLeaveRequestData, DeleteLeaveRequestVariables>`
+```dart
+/// Result of an Operation Request (query/mutation).
+class OperationResult<Data, Variables> {
+  OperationResult(this.dataConnect, this.data, this.ref);
+  Data data;
+  OperationRef<Data, Variables> ref;
+  FirebaseDataConnect dataConnect;
+}
+
+final result = await SahakaraConnector.instance.deleteLeaveRequest(
+  id: id,
+);
+DeleteLeaveRequestData data = result.data;
+final ref = result.ref;
+```
+
+#### Getting the Ref
+Each builder returns an `execute` function, which is a helper function that creates a `Ref` object, and executes the underlying operation.
+An example of how to use the `Ref` object is shown below:
+```dart
+String id = ...;
+
+final ref = SahakaraConnector.instance.deleteLeaveRequest(
   id: id,
 ).ref();
 ref.execute();

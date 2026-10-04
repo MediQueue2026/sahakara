@@ -207,6 +207,104 @@ query Holidays @auth(level: USER) {
   }
 }
 
+# ── attendance & leave ───────────────────────────────────────────────────
+
+query MyAttendance @auth(level: USER) {
+  attendances(
+    where: {
+      member: {
+        active: { eq: true }
+        user: { authUid: { eq_expr: "auth.uid" } }
+      }
+    }
+    orderBy: [{ day: DESC }]
+  ) {
+    id
+    day
+    checkIn
+    checkOut
+    dayType
+    overtimeHours
+    note
+  }
+}
+
+query HouseholdAttendance($householdId: UUID!) @auth(level: USER) {
+  attendances(
+    where: {
+      member: {
+        household: {
+          id: { eq: $householdId }
+          owner: { authUid: { eq_expr: "auth.uid" } }
+        }
+      }
+    }
+    orderBy: [{ day: DESC }]
+  ) {
+    id
+    day
+    checkIn
+    checkOut
+    dayType
+    overtimeHours
+    note
+    member {
+      id
+      user {
+        name
+      }
+    }
+  }
+}
+
+query MyLeaveRequests @auth(level: USER) {
+  leaveRequests(
+    where: {
+      member: {
+        active: { eq: true }
+        user: { authUid: { eq_expr: "auth.uid" } }
+      }
+    }
+    orderBy: [{ createdAt: DESC }]
+  ) {
+    id
+    fromDate
+    toDate
+    leaveType
+    reason
+    status
+    createdAt
+  }
+}
+
+query HouseholdLeaveRequests($householdId: UUID!) @auth(level: USER) {
+  leaveRequests(
+    where: {
+      member: {
+        household: {
+          id: { eq: $householdId }
+          owner: { authUid: { eq_expr: "auth.uid" } }
+        }
+      }
+    }
+    orderBy: [{ createdAt: DESC }]
+  ) {
+    id
+    fromDate
+    toDate
+    leaveType
+    reason
+    status
+    createdAt
+    member {
+      id
+      user {
+        name
+      }
+    }
+  }
+}
+
 # ── admin panel (admin accounts only) ────────────────────────────────────
 
 query AdminHouseholds @auth(level: USER) {
