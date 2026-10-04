@@ -8,9 +8,9 @@ SahakaraConnector.instance.SetMyLanguage(setMyLanguageVariables).execute();
 SahakaraConnector.instance.CreateHousehold(createHouseholdVariables).execute();
 SahakaraConnector.instance.AddHouseholdMember(addHouseholdMemberVariables).execute();
 SahakaraConnector.instance.InviteHouseholdMember(inviteHouseholdMemberVariables).execute();
-SahakaraConnector.instance.SaveContract(saveContractVariables).execute();
-SahakaraConnector.instance.AddDailyTask(addDailyTaskVariables).execute();
-SahakaraConnector.instance.AssignDailyTask(assignDailyTaskVariables).execute();
+SahakaraConnector.instance.AcceptHouseholdInvite(acceptHouseholdInviteVariables).execute();
+SahakaraConnector.instance.DeclineHouseholdInvite(declineHouseholdInviteVariables).execute();
+SahakaraConnector.instance.CancelHouseholdInvite(cancelHouseholdInviteVariables).execute();
 
 ```
 

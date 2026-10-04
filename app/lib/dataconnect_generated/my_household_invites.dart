@@ -1,0 +1,249 @@
+part of 'sahakara.dart';
+
+class MyHouseholdInvitesVariablesBuilder {
+  
+  final FirebaseDataConnect _dataConnect;
+  MyHouseholdInvitesVariablesBuilder(this._dataConnect, );
+  Deserializer<MyHouseholdInvitesData> dataDeserializer = (dynamic json)  => MyHouseholdInvitesData.fromJson(jsonDecode(json));
+  
+  Future<QueryResult<MyHouseholdInvitesData, void>> execute() {
+    return ref().execute();
+  }
+
+  QueryRef<MyHouseholdInvitesData, void> ref() {
+    
+    return _dataConnect.query("MyHouseholdInvites", dataDeserializer, emptySerializer, null);
+  }
+}
+
+@immutable
+class MyHouseholdInvitesHouseholdMembers {
+  final String id;
+  final EnumValue<MemberRole> role;
+  final MyHouseholdInvitesHouseholdMembersHousehold household;
+  final List<MyHouseholdInvitesHouseholdMembersContractsOnMember> contracts_on_member;
+  MyHouseholdInvitesHouseholdMembers.fromJson(dynamic json):
+  
+  id = nativeFromJson<String>(json['id']),
+  role = memberRoleDeserializer(json['role']),
+  household = MyHouseholdInvitesHouseholdMembersHousehold.fromJson(json['household']),
+  contracts_on_member = (json['contracts_on_member'] as List<dynamic>)
+        .map((e) => MyHouseholdInvitesHouseholdMembersContractsOnMember.fromJson(e))
+        .toList();
+  @override
+  bool operator ==(Object other) {
+    if(identical(this, other)) {
+      return true;
+    }
+    if(other.runtimeType != runtimeType) {
+      return false;
+    }
+
+    final MyHouseholdInvitesHouseholdMembers otherTyped = other as MyHouseholdInvitesHouseholdMembers;
+    return id == otherTyped.id && 
+    role == otherTyped.role && 
+    household == otherTyped.household && 
+    contracts_on_member == otherTyped.contracts_on_member;
+    
+  }
+  @override
+  int get hashCode => Object.hashAll([id.hashCode, role.hashCode, household.hashCode, contracts_on_member.hashCode]);
+  
+
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> json = {};
+    json['id'] = nativeToJson<String>(id);
+    json['role'] = 
+    memberRoleSerializer(role)
+    ;
+    json['household'] = household.toJson();
+    json['contracts_on_member'] = contracts_on_member.map((e) => e.toJson()).toList();
+    return json;
+  }
+
+  MyHouseholdInvitesHouseholdMembers({
+    required this.id,
+    required this.role,
+    required this.household,
+    required this.contracts_on_member,
+  });
+}
+
+@immutable
+class MyHouseholdInvitesHouseholdMembersHousehold {
+  final String name;
+  final String? address;
+  final MyHouseholdInvitesHouseholdMembersHouseholdOwner owner;
+  MyHouseholdInvitesHouseholdMembersHousehold.fromJson(dynamic json):
+  
+  name = nativeFromJson<String>(json['name']),
+  address = json['address'] == null ? null : nativeFromJson<String>(json['address']),
+  owner = MyHouseholdInvitesHouseholdMembersHouseholdOwner.fromJson(json['owner']);
+  @override
+  bool operator ==(Object other) {
+    if(identical(this, other)) {
+      return true;
+    }
+    if(other.runtimeType != runtimeType) {
+      return false;
+    }
+
+    final MyHouseholdInvitesHouseholdMembersHousehold otherTyped = other as MyHouseholdInvitesHouseholdMembersHousehold;
+    return name == otherTyped.name && 
+    address == otherTyped.address && 
+    owner == otherTyped.owner;
+    
+  }
+  @override
+  int get hashCode => Object.hashAll([name.hashCode, address.hashCode, owner.hashCode]);
+  
+
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> json = {};
+    json['name'] = nativeToJson<String>(name);
+    if (address != null) {
+      json['address'] = nativeToJson<String?>(address);
+    }
+    json['owner'] = owner.toJson();
+    return json;
+  }
+
+  MyHouseholdInvitesHouseholdMembersHousehold({
+    required this.name,
+    this.address,
+    required this.owner,
+  });
+}
+
+@immutable
+class MyHouseholdInvitesHouseholdMembersHouseholdOwner {
+  final String name;
+  MyHouseholdInvitesHouseholdMembersHouseholdOwner.fromJson(dynamic json):
+  
+  name = nativeFromJson<String>(json['name']);
+  @override
+  bool operator ==(Object other) {
+    if(identical(this, other)) {
+      return true;
+    }
+    if(other.runtimeType != runtimeType) {
+      return false;
+    }
+
+    final MyHouseholdInvitesHouseholdMembersHouseholdOwner otherTyped = other as MyHouseholdInvitesHouseholdMembersHouseholdOwner;
+    return name == otherTyped.name;
+    
+  }
+  @override
+  int get hashCode => name.hashCode;
+  
+
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> json = {};
+    json['name'] = nativeToJson<String>(name);
+    return json;
+  }
+
+  MyHouseholdInvitesHouseholdMembersHouseholdOwner({
+    required this.name,
+  });
+}
+
+@immutable
+class MyHouseholdInvitesHouseholdMembersContractsOnMember {
+  final EnumValue<PayType> payType;
+  final double rate;
+  final double? allowance;
+  final String? offDays;
+  final String? workingHours;
+  MyHouseholdInvitesHouseholdMembersContractsOnMember.fromJson(dynamic json):
+  
+  payType = payTypeDeserializer(json['payType']),
+  rate = nativeFromJson<double>(json['rate']),
+  allowance = json['allowance'] == null ? null : nativeFromJson<double>(json['allowance']),
+  offDays = json['offDays'] == null ? null : nativeFromJson<String>(json['offDays']),
+  workingHours = json['workingHours'] == null ? null : nativeFromJson<String>(json['workingHours']);
+  @override
+  bool operator ==(Object other) {
+    if(identical(this, other)) {
+      return true;
+    }
+    if(other.runtimeType != runtimeType) {
+      return false;
+    }
+
+    final MyHouseholdInvitesHouseholdMembersContractsOnMember otherTyped = other as MyHouseholdInvitesHouseholdMembersContractsOnMember;
+    return payType == otherTyped.payType && 
+    rate == otherTyped.rate && 
+    allowance == otherTyped.allowance && 
+    offDays == otherTyped.offDays && 
+    workingHours == otherTyped.workingHours;
+    
+  }
+  @override
+  int get hashCode => Object.hashAll([payType.hashCode, rate.hashCode, allowance.hashCode, offDays.hashCode, workingHours.hashCode]);
+  
+
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> json = {};
+    json['payType'] = 
+    payTypeSerializer(payType)
+    ;
+    json['rate'] = nativeToJson<double>(rate);
+    if (allowance != null) {
+      json['allowance'] = nativeToJson<double?>(allowance);
+    }
+    if (offDays != null) {
+      json['offDays'] = nativeToJson<String?>(offDays);
+    }
+    if (workingHours != null) {
+      json['workingHours'] = nativeToJson<String?>(workingHours);
+    }
+    return json;
+  }
+
+  MyHouseholdInvitesHouseholdMembersContractsOnMember({
+    required this.payType,
+    required this.rate,
+    this.allowance,
+    this.offDays,
+    this.workingHours,
+  });
+}
+
+@immutable
+class MyHouseholdInvitesData {
+  final List<MyHouseholdInvitesHouseholdMembers> householdMembers;
+  MyHouseholdInvitesData.fromJson(dynamic json):
+  
+  householdMembers = (json['householdMembers'] as List<dynamic>)
+        .map((e) => MyHouseholdInvitesHouseholdMembers.fromJson(e))
+        .toList();
+  @override
+  bool operator ==(Object other) {
+    if(identical(this, other)) {
+      return true;
+    }
+    if(other.runtimeType != runtimeType) {
+      return false;
+    }
+
+    final MyHouseholdInvitesData otherTyped = other as MyHouseholdInvitesData;
+    return householdMembers == otherTyped.householdMembers;
+    
+  }
+  @override
+  int get hashCode => householdMembers.hashCode;
+  
+
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> json = {};
+    json['householdMembers'] = householdMembers.map((e) => e.toJson()).toList();
+    return json;
+  }
+
+  MyHouseholdInvitesData({
+    required this.householdMembers,
+  });
+}
+

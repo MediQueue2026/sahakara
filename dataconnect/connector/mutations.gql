@@ -71,12 +71,19 @@ mutation CreateHousehold($name: String!, $address: String)
   )
 }
 
-# Owner adds someone who already has a user row (see UserIdByEmail).
+# Owner asks someone who already has a user row (see UserIdByEmail) to join
+# the household, proposing a contract. They join as a pending, inactive
+# member and only become staff once they accept (AcceptHouseholdInvite).
 mutation AddHouseholdMember(
   $householdId: UUID!
   $userId: UUID!
   $role: MemberRole!
-) @auth(level: USER) @transaction {
+  $payType: PayType!
+  $rate: Float!
+  $allowance: Float
+  $offDays: String
+  $workingHours: String
+) @auth(expr: "auth.uid != '' && vars.role != 'owner'") @transaction {
   query @redact {
     households(
       where: {
@@ -90,19 +97,53 @@ mutation AddHouseholdMember(
       ) {
       id
     }
+    householdMembers(
+      where: {
+        household: { id: { eq: $householdId } }
+        user: { id: { eq: $userId } }
+      }
+    )
+      @check(
+        expr: "this.size() == 0"
+        message: "This person is already in the household or has a request from it"
+      ) {
+      id
+    }
   }
   householdMember_insert(
-    data: { householdId: $householdId, userId: $userId, role: $role }
+    data: {
+      householdId: $householdId
+      userId: $userId
+      role: $role
+      active: false
+      status: pending
+    }
+  )
+  contract_insert(
+    data: {
+      memberId_expr: "response.householdMember_insert.id"
+      payType: $payType
+      rate: $rate
+      allowance: $allowance
+      offDays: $offDays
+      workingHours: $workingHours
+    }
   )
 }
 
-# Owner adds someone who has never used the app: pre-creates their user row
-# (claimed on their first login) and links it into the household.
+# Same as AddHouseholdMember, for someone who has never used the app:
+# pre-creates their user row (claimed on their first login), and they see
+# the request once they sign in.
 mutation InviteHouseholdMember(
   $householdId: UUID!
   $email: String!
   $role: MemberRole!
-) @auth(level: USER) @transaction {
+  $payType: PayType!
+  $rate: Float!
+  $allowance: Float
+  $offDays: String
+  $workingHours: String
+) @auth(expr: "auth.uid != '' && vars.role != 'owner'") @transaction {
   query @redact {
     households(
       where: {
@@ -123,8 +164,91 @@ mutation InviteHouseholdMember(
       householdId: $householdId
       userId_expr: "response.user_insert.id"
       role: $role
+      active: false
+      status: pending
     }
   )
+  contract_insert(
+    data: {
+      memberId_expr: "response.householdMember_insert.id"
+      payType: $payType
+      rate: $rate
+      allowance: $allowance
+      offDays: $offDays
+      workingHours: $workingHours
+    }
+  )
+}
+
+# The invited person accepts a pending request: they become an active member
+# of the household, and the proposed contract starts today.
+mutation AcceptHouseholdInvite($id: UUID!) @auth(level: USER) @transaction {
+  query @redact {
+    householdMembers(
+      where: {
+        id: { eq: $id }
+        status: { eq: pending }
+        user: { authUid: { eq_expr: "auth.uid" } }
+      }
+    )
+      @check(
+        expr: "this.size() == 1"
+        message: "This request is no longer waiting for you"
+      ) {
+      id
+    }
+  }
+  householdMember_update(
+    id: $id
+    data: { active: true, status: accepted, joinedOn_expr: "request.time" }
+  )
+  contract_updateMany(
+    where: { memberId: { eq: $id }, endDate: { isNull: true } }
+    data: { startDate_expr: "request.time" }
+  )
+}
+
+# The invited person turns a pending request down. The owner sees it as
+# declined and can remove it (CancelHouseholdInvite).
+mutation DeclineHouseholdInvite($id: UUID!) @auth(level: USER) @transaction {
+  query @redact {
+    householdMembers(
+      where: {
+        id: { eq: $id }
+        status: { eq: pending }
+        user: { authUid: { eq_expr: "auth.uid" } }
+      }
+    )
+      @check(
+        expr: "this.size() == 1"
+        message: "This request is no longer waiting for you"
+      ) {
+      id
+    }
+  }
+  householdMember_update(id: $id, data: { status: declined })
+}
+
+# Owner withdraws a pending request, or clears away a declined one, together
+# with its proposed contract. Accepted members can't be removed this way.
+mutation CancelHouseholdInvite($id: UUID!) @auth(level: USER) @transaction {
+  query @redact {
+    householdMembers(
+      where: {
+        id: { eq: $id }
+        status: { ne: accepted }
+        household: { owner: { authUid: { eq_expr: "auth.uid" } } }
+      }
+    )
+      @check(
+        expr: "this.size() == 1"
+        message: "Only the household owner can cancel a request that hasn't been accepted"
+      ) {
+      id
+    }
+  }
+  contract_deleteMany(where: { memberId: { eq: $id } })
+  householdMember_delete(id: $id)
 }
 
 # ── contracts ────────────────────────────────────────────────────────────
@@ -136,6 +260,7 @@ mutation SaveContract(
   $memberId: UUID!
   $payType: PayType!
   $rate: Float!
+  $allowance: Float
   $offDays: String
   $workingHours: String
 ) @auth(level: USER) @transaction {
@@ -162,6 +287,7 @@ mutation SaveContract(
       memberId: $memberId
       payType: $payType
       rate: $rate
+      allowance: $allowance
       offDays: $offDays
       workingHours: $workingHours
     }
@@ -174,6 +300,8 @@ mutation SaveContract(
 # straight away (see AssignDailyTask to assign it later). It's saved as a
 # one-off TaskTemplate (from the library, or a custom title) plus the Task
 # row for that day. An assignee must be active staff of the same household.
+# $photoUrl is an optional picture explaining the task, already uploaded to
+# Cloud Storage.
 mutation AddDailyTask(
   $householdId: UUID!
   $assignedToId: UUID
@@ -182,6 +310,7 @@ mutation AddDailyTask(
   $customTitle: String
   $estMinutes: Int
   $priority: TaskPriority!
+  $photoUrl: String
 )
 @auth(
   expr: "auth.uid != '' && (vars.libraryId != null || (vars.customTitle != null && vars.customTitle != ''))"
@@ -222,6 +351,7 @@ mutation AddDailyTask(
       householdId: $householdId
       libraryId: $libraryId
       customTitle: $customTitle
+      photoUrl: $photoUrl
       estMinutes: $estMinutes
       priority: $priority
       createdById_expr: "response.query.households[0].owner.id"

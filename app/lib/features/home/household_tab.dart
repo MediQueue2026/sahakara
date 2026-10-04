@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import '../../core/app_data.dart';
 import '../../core/app_language.dart';
 import '../../core/strings.dart';
+import '../../core/theme.dart';
+import 'add_maid_screen.dart';
 
-/// Owner: the household's details and members, and adding a maid by email.
+/// Owner: the household's details and members — including maids who
+/// haven't accepted their request yet — and asking a maid to join.
 class HouseholdTab extends StatefulWidget {
   final LanguageController lang;
   final Membership membership;
@@ -17,9 +20,6 @@ class HouseholdTab extends StatefulWidget {
 
 class _HouseholdTabState extends State<HouseholdTab> {
   late Future<List<Member>> _members;
-  final _emailController = TextEditingController();
-  bool _busy = false;
-  String? _error;
 
   String get _householdId => widget.membership.household.id;
 
@@ -29,26 +29,64 @@ class _HouseholdTabState extends State<HouseholdTab> {
     _members = AppData.fetchHouseholdMembers(_householdId);
   }
 
+  void _reload() => setState(() {
+    _members = AppData.fetchHouseholdMembers(_householdId);
+  });
+
   Future<void> _addMaid() async {
-    if (_emailController.text.trim().isEmpty) return;
-    setState(() {
-      _busy = true;
-      _error = null;
-    });
+    final sent = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (_) =>
+            AddMaidScreen(lang: widget.lang, householdId: _householdId),
+      ),
+    );
+    if (sent == true) _reload();
+  }
+
+  Future<void> _cancelInvite(Member m) async {
     try {
-      await AppData.addMaidByEmail(
-        householdId: _householdId,
-        email: _emailController.text,
-      );
-      _emailController.clear();
-      setState(() {
-        _members = AppData.fetchHouseholdMembers(_householdId);
-      });
+      await AppData.cancelHouseholdInvite(m.id);
+      _reload();
     } catch (e) {
-      setState(() => _error = e.toString());
-    } finally {
-      setState(() => _busy = false);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.toString())));
     }
+  }
+
+  /// A member's card: name and role, and for a request that hasn't been
+  /// accepted, where it stands and a button to cancel or remove it.
+  Widget _memberCard(Member m, AppLanguage lang) {
+    final status = m.status.stringValue;
+    final accepted = status == 'accepted';
+    return Card(
+      child: ListTile(
+        leading: accepted
+            ? null
+            : Icon(
+                status == 'pending'
+                    ? Icons.hourglass_empty
+                    : Icons.cancel_outlined,
+                color: mutedText,
+              ),
+        title: Text(m.user.name),
+        subtitle: Text(
+          accepted
+              ? m.role.stringValue
+              : Strings.of('invite_$status', lang),
+        ),
+        trailing: accepted
+            ? null
+            : IconButton(
+                tooltip: Strings.of(
+                  status == 'pending' ? 'cancelRequest' : 'remove',
+                  lang,
+                ),
+                icon: const Icon(Icons.close),
+                onPressed: () => _cancelInvite(m),
+              ),
+      ),
+    );
   }
 
   @override
@@ -79,39 +117,17 @@ class _HouseholdTabState extends State<HouseholdTab> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: snapshot.data!
-                      .map(
-                        (m) => Card(
-                          child: ListTile(
-                            title: Text(m.user.name),
-                            subtitle: Text(m.role.stringValue),
-                          ),
-                        ),
-                      )
+                      .map((m) => _memberCard(m, lang))
                       .toList(),
                 );
               },
             ),
-            const SizedBox(height: 24),
-            Text(
-              Strings.of('addMaid', lang),
-              style: Theme.of(context).textTheme.titleMedium,
+            const SizedBox(height: 16),
+            FilledButton.icon(
+              onPressed: _addMaid,
+              icon: const Icon(Icons.person_add_alt_1_outlined),
+              label: Text(Strings.of('addMaid', lang)),
             ),
-            const SizedBox(height: 8),
-            TextField(
-              controller: _emailController,
-              keyboardType: TextInputType.emailAddress,
-              autocorrect: false,
-              decoration: InputDecoration(labelText: Strings.of('email', lang)),
-            ),
-            const SizedBox(height: 8),
-            FilledButton(
-              onPressed: _busy ? null : _addMaid,
-              child: Text(Strings.of('add', lang)),
-            ),
-            if (_error != null) ...[
-              const SizedBox(height: 8),
-              Text(_error!, style: const TextStyle(color: Colors.red)),
-            ],
           ],
         );
       },

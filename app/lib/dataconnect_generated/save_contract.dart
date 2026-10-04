@@ -4,10 +4,15 @@ class SaveContractVariablesBuilder {
   String memberId;
   PayType payType;
   double rate;
+  Optional<double> _allowance = Optional.optional(nativeFromJson, nativeToJson);
   Optional<String> _offDays = Optional.optional(nativeFromJson, nativeToJson);
   Optional<String> _workingHours = Optional.optional(nativeFromJson, nativeToJson);
 
-  final FirebaseDataConnect _dataConnect;  SaveContractVariablesBuilder offDays(String? t) {
+  final FirebaseDataConnect _dataConnect;  SaveContractVariablesBuilder allowance(double? t) {
+   _allowance.value = t;
+   return this;
+  }
+  SaveContractVariablesBuilder offDays(String? t) {
    _offDays.value = t;
    return this;
   }
@@ -24,7 +29,7 @@ class SaveContractVariablesBuilder {
   }
 
   MutationRef<SaveContractData, SaveContractVariables> ref() {
-    SaveContractVariables vars= SaveContractVariables(memberId: memberId,payType: payType,rate: rate,offDays: _offDays,workingHours: _workingHours,);
+    SaveContractVariables vars= SaveContractVariables(memberId: memberId,payType: payType,rate: rate,allowance: _allowance,offDays: _offDays,workingHours: _workingHours,);
     return _dataConnect.mutation("SaveContract", dataDeserializer, varsSerializer, vars);
   }
 }
@@ -107,6 +112,7 @@ class SaveContractVariables {
   final String memberId;
   final PayType payType;
   final double rate;
+  late final Optional<double>allowance;
   late final Optional<String>offDays;
   late final Optional<String>workingHours;
   @Deprecated('fromJson is deprecated for Variable classes as they are no longer required for deserialization.')
@@ -118,6 +124,10 @@ class SaveContractVariables {
   
   
   
+  
+  
+    allowance = Optional.optional(nativeFromJson, nativeToJson);
+    allowance.value = json['allowance'] == null ? null : nativeFromJson<double>(json['allowance']);
   
   
     offDays = Optional.optional(nativeFromJson, nativeToJson);
@@ -141,12 +151,13 @@ class SaveContractVariables {
     return memberId == otherTyped.memberId && 
     payType == otherTyped.payType && 
     rate == otherTyped.rate && 
+    allowance == otherTyped.allowance && 
     offDays == otherTyped.offDays && 
     workingHours == otherTyped.workingHours;
     
   }
   @override
-  int get hashCode => Object.hashAll([memberId.hashCode, payType.hashCode, rate.hashCode, offDays.hashCode, workingHours.hashCode]);
+  int get hashCode => Object.hashAll([memberId.hashCode, payType.hashCode, rate.hashCode, allowance.hashCode, offDays.hashCode, workingHours.hashCode]);
   
 
   Map<String, dynamic> toJson() {
@@ -156,6 +167,9 @@ class SaveContractVariables {
     payType.name
     ;
     json['rate'] = nativeToJson<double>(rate);
+    if(allowance.state == OptionalState.set) {
+      json['allowance'] = allowance.toJson();
+    }
     if(offDays.state == OptionalState.set) {
       json['offDays'] = offDays.toJson();
     }
@@ -169,6 +183,7 @@ class SaveContractVariables {
     required this.memberId,
     required this.payType,
     required this.rate,
+    required this.allowance,
     required this.offDays,
     required this.workingHours,
   });

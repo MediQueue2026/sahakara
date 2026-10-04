@@ -18,6 +18,12 @@ part 'add_household_member.dart';
 
 part 'invite_household_member.dart';
 
+part 'accept_household_invite.dart';
+
+part 'decline_household_invite.dart';
+
+part 'cancel_household_invite.dart';
+
 part 'save_contract.dart';
 
 part 'add_daily_task.dart';
@@ -49,6 +55,8 @@ part 'delete_leave_request.dart';
 part 'my_profile.dart';
 
 part 'my_membership.dart';
+
+part 'my_household_invites.dart';
 
 part 'household_members.dart';
 
@@ -374,6 +382,37 @@ part 'admin_households.dart';
   }
   
 
+  enum MembershipStatus {
+    
+      pending,
+    
+      accepted,
+    
+      declined,
+    
+  }
+  
+  String membershipStatusSerializer(EnumValue<MembershipStatus> e) {
+    return e.stringValue;
+  }
+  EnumValue<MembershipStatus> membershipStatusDeserializer(dynamic data) {
+    switch (data) {
+      
+      case 'pending':
+        return const Known(MembershipStatus.pending);
+      
+      case 'accepted':
+        return const Known(MembershipStatus.accepted);
+      
+      case 'declined':
+        return const Known(MembershipStatus.declined);
+      
+      default:
+        return Unknown(data);
+    }
+  }
+  
+
   enum PayType {
     
       monthly,
@@ -643,13 +682,28 @@ class SahakaraConnector {
   }
   
   
-  AddHouseholdMemberVariablesBuilder addHouseholdMember ({required String householdId, required String userId, required MemberRole role, }) {
-    return AddHouseholdMemberVariablesBuilder(dataConnect, householdId: householdId,userId: userId,role: role,);
+  AddHouseholdMemberVariablesBuilder addHouseholdMember ({required String householdId, required String userId, required MemberRole role, required PayType payType, required double rate, }) {
+    return AddHouseholdMemberVariablesBuilder(dataConnect, householdId: householdId,userId: userId,role: role,payType: payType,rate: rate,);
   }
   
   
-  InviteHouseholdMemberVariablesBuilder inviteHouseholdMember ({required String householdId, required String email, required MemberRole role, }) {
-    return InviteHouseholdMemberVariablesBuilder(dataConnect, householdId: householdId,email: email,role: role,);
+  InviteHouseholdMemberVariablesBuilder inviteHouseholdMember ({required String householdId, required String email, required MemberRole role, required PayType payType, required double rate, }) {
+    return InviteHouseholdMemberVariablesBuilder(dataConnect, householdId: householdId,email: email,role: role,payType: payType,rate: rate,);
+  }
+  
+  
+  AcceptHouseholdInviteVariablesBuilder acceptHouseholdInvite ({required String id, }) {
+    return AcceptHouseholdInviteVariablesBuilder(dataConnect, id: id,);
+  }
+  
+  
+  DeclineHouseholdInviteVariablesBuilder declineHouseholdInvite ({required String id, }) {
+    return DeclineHouseholdInviteVariablesBuilder(dataConnect, id: id,);
+  }
+  
+  
+  CancelHouseholdInviteVariablesBuilder cancelHouseholdInvite ({required String id, }) {
+    return CancelHouseholdInviteVariablesBuilder(dataConnect, id: id,);
   }
   
   
@@ -730,6 +784,11 @@ class SahakaraConnector {
   
   MyMembershipVariablesBuilder myMembership () {
     return MyMembershipVariablesBuilder(dataConnect, );
+  }
+  
+  
+  MyHouseholdInvitesVariablesBuilder myHouseholdInvites () {
+    return MyHouseholdInvitesVariablesBuilder(dataConnect, );
   }
   
   

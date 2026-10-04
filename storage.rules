@@ -1,0 +1,16 @@
+rules_version = '2';
+
+// Task photos: households/{householdId}/tasks/{file}, uploaded by the owner
+// when adding a task. Household membership lives in Data Connect, which
+// these rules can't see, so they only require a signed-in user and an image
+// under 5 MB; the random file names keep photos from being guessed.
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /households/{householdId}/tasks/{file} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+  }
+}

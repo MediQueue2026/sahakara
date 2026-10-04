@@ -22,6 +22,7 @@ class CurrentContractContracts {
   final String id;
   final EnumValue<PayType> payType;
   final double rate;
+  final double? allowance;
   final String? offDays;
   final String? workingHours;
   final DateTime startDate;
@@ -30,6 +31,7 @@ class CurrentContractContracts {
   id = nativeFromJson<String>(json['id']),
   payType = payTypeDeserializer(json['payType']),
   rate = nativeFromJson<double>(json['rate']),
+  allowance = json['allowance'] == null ? null : nativeFromJson<double>(json['allowance']),
   offDays = json['offDays'] == null ? null : nativeFromJson<String>(json['offDays']),
   workingHours = json['workingHours'] == null ? null : nativeFromJson<String>(json['workingHours']),
   startDate = nativeFromJson<DateTime>(json['startDate']);
@@ -46,13 +48,14 @@ class CurrentContractContracts {
     return id == otherTyped.id && 
     payType == otherTyped.payType && 
     rate == otherTyped.rate && 
+    allowance == otherTyped.allowance && 
     offDays == otherTyped.offDays && 
     workingHours == otherTyped.workingHours && 
     startDate == otherTyped.startDate;
     
   }
   @override
-  int get hashCode => Object.hashAll([id.hashCode, payType.hashCode, rate.hashCode, offDays.hashCode, workingHours.hashCode, startDate.hashCode]);
+  int get hashCode => Object.hashAll([id.hashCode, payType.hashCode, rate.hashCode, allowance.hashCode, offDays.hashCode, workingHours.hashCode, startDate.hashCode]);
   
 
   Map<String, dynamic> toJson() {
@@ -62,6 +65,9 @@ class CurrentContractContracts {
     payTypeSerializer(payType)
     ;
     json['rate'] = nativeToJson<double>(rate);
+    if (allowance != null) {
+      json['allowance'] = nativeToJson<double?>(allowance);
+    }
     if (offDays != null) {
       json['offDays'] = nativeToJson<String?>(offDays);
     }
@@ -76,6 +82,7 @@ class CurrentContractContracts {
     required this.id,
     required this.payType,
     required this.rate,
+    this.allowance,
     this.offDays,
     this.workingHours,
     required this.startDate,

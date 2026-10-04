@@ -8,6 +8,7 @@ class AddDailyTaskVariablesBuilder {
   Optional<String> _customTitle = Optional.optional(nativeFromJson, nativeToJson);
   Optional<int> _estMinutes = Optional.optional(nativeFromJson, nativeToJson);
   TaskPriority priority;
+  Optional<String> _photoUrl = Optional.optional(nativeFromJson, nativeToJson);
 
   final FirebaseDataConnect _dataConnect;  AddDailyTaskVariablesBuilder assignedToId(String? t) {
    _assignedToId.value = t;
@@ -25,6 +26,10 @@ class AddDailyTaskVariablesBuilder {
    _estMinutes.value = t;
    return this;
   }
+  AddDailyTaskVariablesBuilder photoUrl(String? t) {
+   _photoUrl.value = t;
+   return this;
+  }
 
   AddDailyTaskVariablesBuilder(this._dataConnect, {required  this.householdId,required  this.dueDate,required  this.priority,});
   Deserializer<AddDailyTaskData> dataDeserializer = (dynamic json)  => AddDailyTaskData.fromJson(jsonDecode(json));
@@ -34,7 +39,7 @@ class AddDailyTaskVariablesBuilder {
   }
 
   MutationRef<AddDailyTaskData, AddDailyTaskVariables> ref() {
-    AddDailyTaskVariables vars= AddDailyTaskVariables(householdId: householdId,assignedToId: _assignedToId,dueDate: dueDate,libraryId: _libraryId,customTitle: _customTitle,estMinutes: _estMinutes,priority: priority,);
+    AddDailyTaskVariables vars= AddDailyTaskVariables(householdId: householdId,assignedToId: _assignedToId,dueDate: dueDate,libraryId: _libraryId,customTitle: _customTitle,estMinutes: _estMinutes,priority: priority,photoUrl: _photoUrl,);
     return _dataConnect.mutation("AddDailyTask", dataDeserializer, varsSerializer, vars);
   }
 }
@@ -155,6 +160,7 @@ class AddDailyTaskVariables {
   late final Optional<String>customTitle;
   late final Optional<int>estMinutes;
   final TaskPriority priority;
+  late final Optional<String>photoUrl;
   @Deprecated('fromJson is deprecated for Variable classes as they are no longer required for deserialization.')
   AddDailyTaskVariables.fromJson(Map<String, dynamic> json):
   
@@ -181,6 +187,10 @@ class AddDailyTaskVariables {
     estMinutes.value = json['estMinutes'] == null ? null : nativeFromJson<int>(json['estMinutes']);
   
   
+  
+    photoUrl = Optional.optional(nativeFromJson, nativeToJson);
+    photoUrl.value = json['photoUrl'] == null ? null : nativeFromJson<String>(json['photoUrl']);
+  
   }
   @override
   bool operator ==(Object other) {
@@ -198,11 +208,12 @@ class AddDailyTaskVariables {
     libraryId == otherTyped.libraryId && 
     customTitle == otherTyped.customTitle && 
     estMinutes == otherTyped.estMinutes && 
-    priority == otherTyped.priority;
+    priority == otherTyped.priority && 
+    photoUrl == otherTyped.photoUrl;
     
   }
   @override
-  int get hashCode => Object.hashAll([householdId.hashCode, assignedToId.hashCode, dueDate.hashCode, libraryId.hashCode, customTitle.hashCode, estMinutes.hashCode, priority.hashCode]);
+  int get hashCode => Object.hashAll([householdId.hashCode, assignedToId.hashCode, dueDate.hashCode, libraryId.hashCode, customTitle.hashCode, estMinutes.hashCode, priority.hashCode, photoUrl.hashCode]);
   
 
   Map<String, dynamic> toJson() {
@@ -224,6 +235,9 @@ class AddDailyTaskVariables {
     json['priority'] = 
     priority.name
     ;
+    if(photoUrl.state == OptionalState.set) {
+      json['photoUrl'] = photoUrl.toJson();
+    }
     return json;
   }
 
@@ -235,6 +249,7 @@ class AddDailyTaskVariables {
     required this.customTitle,
     required this.estMinutes,
     required this.priority,
+    required this.photoUrl,
   });
 }
 

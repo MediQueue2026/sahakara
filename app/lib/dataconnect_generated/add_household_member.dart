@@ -4,9 +4,26 @@ class AddHouseholdMemberVariablesBuilder {
   String householdId;
   String userId;
   MemberRole role;
+  PayType payType;
+  double rate;
+  Optional<double> _allowance = Optional.optional(nativeFromJson, nativeToJson);
+  Optional<String> _offDays = Optional.optional(nativeFromJson, nativeToJson);
+  Optional<String> _workingHours = Optional.optional(nativeFromJson, nativeToJson);
 
-  final FirebaseDataConnect _dataConnect;
-  AddHouseholdMemberVariablesBuilder(this._dataConnect, {required  this.householdId,required  this.userId,required  this.role,});
+  final FirebaseDataConnect _dataConnect;  AddHouseholdMemberVariablesBuilder allowance(double? t) {
+   _allowance.value = t;
+   return this;
+  }
+  AddHouseholdMemberVariablesBuilder offDays(String? t) {
+   _offDays.value = t;
+   return this;
+  }
+  AddHouseholdMemberVariablesBuilder workingHours(String? t) {
+   _workingHours.value = t;
+   return this;
+  }
+
+  AddHouseholdMemberVariablesBuilder(this._dataConnect, {required  this.householdId,required  this.userId,required  this.role,required  this.payType,required  this.rate,});
   Deserializer<AddHouseholdMemberData> dataDeserializer = (dynamic json)  => AddHouseholdMemberData.fromJson(jsonDecode(json));
   Serializer<AddHouseholdMemberVariables> varsSerializer = (AddHouseholdMemberVariables vars) => jsonEncode(vars.toJson());
   Future<OperationResult<AddHouseholdMemberData, AddHouseholdMemberVariables>> execute() {
@@ -14,7 +31,7 @@ class AddHouseholdMemberVariablesBuilder {
   }
 
   MutationRef<AddHouseholdMemberData, AddHouseholdMemberVariables> ref() {
-    AddHouseholdMemberVariables vars= AddHouseholdMemberVariables(householdId: householdId,userId: userId,role: role,);
+    AddHouseholdMemberVariables vars= AddHouseholdMemberVariables(householdId: householdId,userId: userId,role: role,payType: payType,rate: rate,allowance: _allowance,offDays: _offDays,workingHours: _workingHours,);
     return _dataConnect.mutation("AddHouseholdMember", dataDeserializer, varsSerializer, vars);
   }
 }
@@ -54,11 +71,47 @@ class AddHouseholdMemberHouseholdMemberInsert {
 }
 
 @immutable
+class AddHouseholdMemberContractInsert {
+  final String id;
+  AddHouseholdMemberContractInsert.fromJson(dynamic json):
+  
+  id = nativeFromJson<String>(json['id']);
+  @override
+  bool operator ==(Object other) {
+    if(identical(this, other)) {
+      return true;
+    }
+    if(other.runtimeType != runtimeType) {
+      return false;
+    }
+
+    final AddHouseholdMemberContractInsert otherTyped = other as AddHouseholdMemberContractInsert;
+    return id == otherTyped.id;
+    
+  }
+  @override
+  int get hashCode => id.hashCode;
+  
+
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> json = {};
+    json['id'] = nativeToJson<String>(id);
+    return json;
+  }
+
+  AddHouseholdMemberContractInsert({
+    required this.id,
+  });
+}
+
+@immutable
 class AddHouseholdMemberData {
   final AddHouseholdMemberHouseholdMemberInsert householdMember_insert;
+  final AddHouseholdMemberContractInsert contract_insert;
   AddHouseholdMemberData.fromJson(dynamic json):
   
-  householdMember_insert = AddHouseholdMemberHouseholdMemberInsert.fromJson(json['householdMember_insert']);
+  householdMember_insert = AddHouseholdMemberHouseholdMemberInsert.fromJson(json['householdMember_insert']),
+  contract_insert = AddHouseholdMemberContractInsert.fromJson(json['contract_insert']);
   @override
   bool operator ==(Object other) {
     if(identical(this, other)) {
@@ -69,21 +122,24 @@ class AddHouseholdMemberData {
     }
 
     final AddHouseholdMemberData otherTyped = other as AddHouseholdMemberData;
-    return householdMember_insert == otherTyped.householdMember_insert;
+    return householdMember_insert == otherTyped.householdMember_insert && 
+    contract_insert == otherTyped.contract_insert;
     
   }
   @override
-  int get hashCode => householdMember_insert.hashCode;
+  int get hashCode => Object.hashAll([householdMember_insert.hashCode, contract_insert.hashCode]);
   
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> json = {};
     json['householdMember_insert'] = householdMember_insert.toJson();
+    json['contract_insert'] = contract_insert.toJson();
     return json;
   }
 
   AddHouseholdMemberData({
     required this.householdMember_insert,
+    required this.contract_insert,
   });
 }
 
@@ -92,12 +148,38 @@ class AddHouseholdMemberVariables {
   final String householdId;
   final String userId;
   final MemberRole role;
+  final PayType payType;
+  final double rate;
+  late final Optional<double>allowance;
+  late final Optional<String>offDays;
+  late final Optional<String>workingHours;
   @Deprecated('fromJson is deprecated for Variable classes as they are no longer required for deserialization.')
   AddHouseholdMemberVariables.fromJson(Map<String, dynamic> json):
   
   householdId = nativeFromJson<String>(json['householdId']),
   userId = nativeFromJson<String>(json['userId']),
-  role = MemberRole.values.byName(json['role']);
+  role = MemberRole.values.byName(json['role']),
+  payType = PayType.values.byName(json['payType']),
+  rate = nativeFromJson<double>(json['rate']) {
+  
+  
+  
+  
+  
+  
+  
+    allowance = Optional.optional(nativeFromJson, nativeToJson);
+    allowance.value = json['allowance'] == null ? null : nativeFromJson<double>(json['allowance']);
+  
+  
+    offDays = Optional.optional(nativeFromJson, nativeToJson);
+    offDays.value = json['offDays'] == null ? null : nativeFromJson<String>(json['offDays']);
+  
+  
+    workingHours = Optional.optional(nativeFromJson, nativeToJson);
+    workingHours.value = json['workingHours'] == null ? null : nativeFromJson<String>(json['workingHours']);
+  
+  }
   @override
   bool operator ==(Object other) {
     if(identical(this, other)) {
@@ -110,11 +192,16 @@ class AddHouseholdMemberVariables {
     final AddHouseholdMemberVariables otherTyped = other as AddHouseholdMemberVariables;
     return householdId == otherTyped.householdId && 
     userId == otherTyped.userId && 
-    role == otherTyped.role;
+    role == otherTyped.role && 
+    payType == otherTyped.payType && 
+    rate == otherTyped.rate && 
+    allowance == otherTyped.allowance && 
+    offDays == otherTyped.offDays && 
+    workingHours == otherTyped.workingHours;
     
   }
   @override
-  int get hashCode => Object.hashAll([householdId.hashCode, userId.hashCode, role.hashCode]);
+  int get hashCode => Object.hashAll([householdId.hashCode, userId.hashCode, role.hashCode, payType.hashCode, rate.hashCode, allowance.hashCode, offDays.hashCode, workingHours.hashCode]);
   
 
   Map<String, dynamic> toJson() {
@@ -124,6 +211,19 @@ class AddHouseholdMemberVariables {
     json['role'] = 
     role.name
     ;
+    json['payType'] = 
+    payType.name
+    ;
+    json['rate'] = nativeToJson<double>(rate);
+    if(allowance.state == OptionalState.set) {
+      json['allowance'] = allowance.toJson();
+    }
+    if(offDays.state == OptionalState.set) {
+      json['offDays'] = offDays.toJson();
+    }
+    if(workingHours.state == OptionalState.set) {
+      json['workingHours'] = workingHours.toJson();
+    }
     return json;
   }
 
@@ -131,6 +231,11 @@ class AddHouseholdMemberVariables {
     required this.householdId,
     required this.userId,
     required this.role,
+    required this.payType,
+    required this.rate,
+    required this.allowance,
+    required this.offDays,
+    required this.workingHours,
   });
 }
 

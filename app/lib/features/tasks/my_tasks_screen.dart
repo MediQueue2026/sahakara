@@ -54,6 +54,7 @@ class _MyTasksScreenState extends State<MyTasksScreen> {
             nameEn: t.template.library?.nameEn,
             nameSi: t.template.library?.nameSi,
             nameTa: t.template.library?.nameTa,
+            photoUrl: t.template.photoUrl,
           ),
         )
         .toList();
@@ -246,6 +247,10 @@ class _MyTasksScreenState extends State<MyTasksScreen> {
                   ],
                 ),
               ),
+              if (t.photoUrl != null) ...[
+                const SizedBox(width: 8),
+                TaskPhotoThumb(url: t.photoUrl!, size: 64),
+              ],
               const Icon(Icons.chevron_right),
             ],
           ),

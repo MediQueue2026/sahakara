@@ -1,11 +1,23 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../core/app_data.dart';
 import '../../core/app_language.dart';
 import '../../core/strings.dart';
 import '../../core/theme.dart';
+import 'task_common.dart';
 
-const _priorities = ['high', 'medium', 'low'];
+/// Each priority with the icon shown on its button.
+const _priorities = {
+  'high': Icons.keyboard_double_arrow_up,
+  'medium': Icons.drag_handle,
+  'low': Icons.keyboard_double_arrow_down,
+};
+
+/// One-tap choices for the estimated time, in minutes.
+const _minutePresets = [15, 30, 45, 60, 90];
 
 /// The order library tasks are grouped in on this screen, with each
 /// category's tab icon.
@@ -26,7 +38,8 @@ const _unassigned = '';
 /// Owner: add a task — tapped from the shared library's default tasks, or a
 /// custom one typed in — for one
 /// day, assigned to a staff member or to nobody yet (assigned later from the
-/// Daily tasks list). Once it's saved, pops the day it was added to.
+/// Daily tasks list), optionally with a photo showing what to do. Once it's
+/// saved, pops the day it was added to.
 class AddDailyTaskScreen extends StatefulWidget {
   final LanguageController lang;
   final String householdId;
@@ -58,6 +71,11 @@ class _AddDailyTaskScreenState extends State<AddDailyTaskScreen> {
   String _search = '';
   final _titleController = TextEditingController();
   final _minutesController = TextEditingController();
+
+  /// The optional photo explaining the task, as JPEG bytes, and its download
+  /// URL once uploaded — kept so a failed save doesn't upload it again.
+  Uint8List? _photo;
+  String? _photoUrl;
 
   @override
   void initState() {
@@ -94,17 +112,52 @@ class _AddDailyTaskScreenState extends State<AddDailyTaskScreen> {
     if (picked != null) setState(() => _day = picked);
   }
 
-  Future<void> _save() async {
+  /// Take or choose a photo for the task, scaled down to keep uploads small.
+  Future<void> _pickPhoto(AppLanguage lang) async {
+    final source = await pickOption(
+      context,
+      title: Strings.of('addPhoto', lang),
+      options: [ImageSource.camera.name, ImageSource.gallery.name],
+      label: (s) => Strings.of(
+        s == ImageSource.camera.name ? 'takePhoto' : 'chooseFromGallery',
+        lang,
+      ),
+      icon: (s) => Icon(
+        s == ImageSource.camera.name
+            ? Icons.photo_camera_outlined
+            : Icons.photo_library_outlined,
+      ),
+    );
+    if (source == null) return;
+    try {
+      final file = await ImagePicker().pickImage(
+        source: ImageSource.values.byName(source),
+        maxWidth: 1600,
+        maxHeight: 1600,
+        imageQuality: 80,
+      );
+      if (file == null) return;
+      final bytes = await file.readAsBytes();
+      setState(() {
+        _photo = bytes;
+        _photoUrl = null;
+      });
+    } catch (e) {
+      setState(() => _error = e.toString());
+    }
+  }
+
+  Future<void> _save(AppLanguage lang) async {
     final custom = _taskChoice == _customTask;
     final title = _titleController.text.trim();
     final minutesText = _minutesController.text.trim();
     final minutes = int.tryParse(minutesText);
     if (_taskChoice == null || (custom && title.isEmpty)) {
-      setState(() => _error = 'Choose a task or type one in');
+      setState(() => _error = Strings.of('chooseTaskError', lang));
       return;
     }
     if (minutesText.isNotEmpty && (minutes == null || minutes <= 0)) {
-      setState(() => _error = 'Enter the minutes as a whole number');
+      setState(() => _error = Strings.of('minutesError', lang));
       return;
     }
     setState(() {
@@ -112,6 +165,12 @@ class _AddDailyTaskScreenState extends State<AddDailyTaskScreen> {
       _error = null;
     });
     try {
+      if (_photo != null) {
+        _photoUrl ??= await AppData.uploadTaskPhoto(
+          householdId: widget.householdId,
+          bytes: _photo!,
+        );
+      }
       await AppData.addDailyTask(
         householdId: widget.householdId,
         assignedToId: _assigneeId == _unassigned ? null : _assigneeId,
@@ -120,6 +179,7 @@ class _AddDailyTaskScreenState extends State<AddDailyTaskScreen> {
         customTitle: custom ? title : null,
         estMinutes: minutes,
         priority: _priority,
+        photoUrl: _photo == null ? null : _photoUrl,
       );
       if (mounted) Navigator.of(context).pop(_day);
     } catch (e) {
@@ -138,12 +198,245 @@ class _AddDailyTaskScreenState extends State<AddDailyTaskScreen> {
           appBar: AppBar(title: Text(Strings.of('addTask', lang))),
           body: _loading
               ? const Center(child: CircularProgressIndicator())
-              : SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: _buildForm(lang),
+              : ListView(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+                  children: [
+                    _Section(
+                      icon: Icons.checklist,
+                      title: Strings.of('whatTask', lang),
+                      child: _taskSection(lang),
+                    ),
+                    const SizedBox(height: 16),
+                    _Section(
+                      icon: Icons.person_outline,
+                      title: Strings.of('whoAndWhen', lang),
+                      child: _whoAndWhenSection(lang),
+                    ),
+                    const SizedBox(height: 16),
+                    _Section(
+                      icon: Icons.tune,
+                      title: Strings.of('detailsOptional', lang),
+                      child: _detailsSection(lang),
+                    ),
+                  ],
                 ),
+          bottomNavigationBar: _loading ? null : _saveBar(lang),
         );
       },
+    );
+  }
+
+  /// The Save button, kept in view at the bottom, with any error above it.
+  Widget _saveBar(AppLanguage lang) {
+    return SafeArea(
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          border: Border(top: BorderSide(color: Colors.black12)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (_error != null)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Text(
+                  _error!,
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                ),
+              ),
+            FilledButton.icon(
+              style: FilledButton.styleFrom(
+                minimumSize: const Size.fromHeight(52),
+                textStyle: Theme.of(context).textTheme.titleMedium,
+              ),
+              onPressed: _busy ? null : () => _save(lang),
+              icon: _busy
+                  ? const SizedBox.square(
+                      dimension: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.check),
+              label: Text(Strings.of('save', lang)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Section 1: the task — picked from the library, or typed in.
+  Widget _taskSection(AppLanguage lang) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (_library.isEmpty) ...[
+          Text(
+            Strings.of('noLibraryTasks', lang),
+            style: const TextStyle(color: mutedText),
+          ),
+          const SizedBox(height: 8),
+          Wrap(children: [_customTaskChip(lang)]),
+        ] else
+          ..._taskPicker(lang),
+        if (_taskChoice == _customTask) ...[
+          const SizedBox(height: 12),
+          TextField(
+            controller: _titleController,
+            autofocus: true,
+            textCapitalization: TextCapitalization.sentences,
+            decoration: InputDecoration(
+              labelText: Strings.of('customTaskTitle', lang),
+              prefixIcon: const Icon(Icons.edit_outlined),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  /// Section 2: who does it, and on which day.
+  Widget _whoAndWhenSection(AppLanguage lang) {
+    final textTheme = Theme.of(context).textTheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(Strings.of('assignTo', lang), style: textTheme.labelLarge),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 4,
+          children: [
+            ChoiceChip(
+              avatar: const Icon(Icons.person_off_outlined, size: 18),
+              label: Text(Strings.of('unassigned', lang)),
+              showCheckmark: false,
+              selected: _assigneeId == _unassigned,
+              onSelected: (_) => setState(() => _assigneeId = _unassigned),
+            ),
+            for (final m in _staff)
+              ChoiceChip(
+                avatar: CircleAvatar(
+                  backgroundColor: brandAmber,
+                  child: Text(
+                    m.user.name.isEmpty ? '?' : m.user.name[0].toUpperCase(),
+                    style: const TextStyle(fontSize: 12, color: Colors.black),
+                  ),
+                ),
+                label: Text(m.user.name),
+                showCheckmark: false,
+                selected: _assigneeId == m.id,
+                onSelected: (_) => setState(() => _assigneeId = m.id),
+              ),
+          ],
+        ),
+        if (_staff.isEmpty) ...[
+          const SizedBox(height: 4),
+          Text(
+            Strings.of('assignLaterHint', lang),
+            style: textTheme.bodySmall?.copyWith(color: mutedText),
+          ),
+        ],
+        const SizedBox(height: 16),
+        Text(Strings.of('date', lang), style: textTheme.labelLarge),
+        const SizedBox(height: 8),
+        _dayChoices(lang),
+      ],
+    );
+  }
+
+  /// Today / Tomorrow, or any other day from the calendar.
+  Widget _dayChoices(AppLanguage lang) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final tomorrow = today.add(const Duration(days: 1));
+    final day = DateTime(_day.year, _day.month, _day.day);
+    final isOther = day != today && day != tomorrow;
+    return Wrap(
+      spacing: 8,
+      runSpacing: 4,
+      children: [
+        ChoiceChip(
+          label: Text(Strings.of('today', lang)),
+          selected: day == today,
+          onSelected: (_) => setState(() => _day = today),
+        ),
+        ChoiceChip(
+          label: Text(Strings.of('tomorrow', lang)),
+          selected: day == tomorrow,
+          onSelected: (_) => setState(() => _day = tomorrow),
+        ),
+        ChoiceChip(
+          avatar: const Icon(Icons.calendar_today_outlined, size: 18),
+          label: Text(
+            isOther
+                ? _day.toIso8601String().substring(0, 10)
+                : Strings.of('pickDate', lang),
+          ),
+          showCheckmark: false,
+          selected: isOther,
+          onSelected: (_) => _pickDay(),
+        ),
+      ],
+    );
+  }
+
+  /// Section 3: time needed, priority and a photo — all optional.
+  Widget _detailsSection(AppLanguage lang) {
+    final textTheme = Theme.of(context).textTheme;
+    final minutes = int.tryParse(_minutesController.text.trim());
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(Strings.of('estMinutes', lang), style: textTheme.labelLarge),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 4,
+          children: [
+            for (final m in _minutePresets)
+              ChoiceChip(
+                label: Text('$m ${Strings.of('minutes', lang)}'),
+                selected: minutes == m,
+                onSelected: (selected) => setState(
+                  () => _minutesController.text = selected ? '$m' : '',
+                ),
+              ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        TextField(
+          controller: _minutesController,
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(
+            isDense: true,
+            prefixIcon: const Icon(Icons.timer_outlined),
+            hintText: Strings.of('otherMinutes', lang),
+            suffixText: Strings.of('minutes', lang),
+          ),
+          onChanged: (_) => setState(() {}),
+        ),
+        const SizedBox(height: 16),
+        Text(Strings.of('priority', lang), style: textTheme.labelLarge),
+        const SizedBox(height: 8),
+        SegmentedButton<String>(
+          segments: [
+            for (final e in _priorities.entries)
+              ButtonSegment(
+                value: e.key,
+                icon: Icon(e.value),
+                label: Text(Strings.of('priority_${e.key}', lang)),
+              ),
+          ],
+          selected: {_priority},
+          showSelectedIcon: false,
+          onSelectionChanged: (s) => setState(() => _priority = s.first),
+        ),
+        const SizedBox(height: 16),
+        _photoField(lang),
+      ],
     );
   }
 
@@ -186,28 +479,25 @@ class _AddDailyTaskScreenState extends State<AddDailyTaskScreen> {
     );
   }
 
-  /// One tab per category that has tasks, scrolling sideways.
+  /// One tab per category that has tasks, wrapping onto more lines so every
+  /// category stays visible without scrolling sideways.
   Widget _categoryTabs(AppLanguage lang) {
     final present = _categories.entries
         .where((e) => _library.any((t) => t.category.stringValue == e.key))
         .toList();
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: [
-          for (final e in present)
-            Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: ChoiceChip(
-                avatar: Icon(e.value, size: 18),
-                label: Text(Strings.of('category_${e.key}', lang)),
-                showCheckmark: false,
-                selected: _search.isEmpty && _category == e.key,
-                onSelected: (_) => setState(() => _category = e.key),
-              ),
-            ),
-        ],
-      ),
+    return Wrap(
+      spacing: 8,
+      runSpacing: 4,
+      children: [
+        for (final e in present)
+          ChoiceChip(
+            avatar: Icon(e.value, size: 18),
+            label: Text(Strings.of('category_${e.key}', lang)),
+            showCheckmark: false,
+            selected: _search.isEmpty && _category == e.key,
+            onSelected: (_) => setState(() => _category = e.key),
+          ),
+      ],
     );
   }
 
@@ -227,140 +517,172 @@ class _AddDailyTaskScreenState extends State<AddDailyTaskScreen> {
         decoration: InputDecoration(
           prefixIcon: const Icon(Icons.search),
           hintText: Strings.of('searchTasks', lang),
-          border: const OutlineInputBorder(),
           isDense: true,
         ),
         onChanged: (v) => setState(() => _search = v),
       ),
-      const SizedBox(height: 8),
+      const SizedBox(height: 12),
       _categoryTabs(lang),
-      const SizedBox(height: 8),
+      const Divider(height: 24),
       if (tasks.isEmpty)
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
+          padding: const EdgeInsets.only(bottom: 8),
           child: Text(
             Strings.of('noTaskMatches', lang),
             style: const TextStyle(color: mutedText),
           ),
-        )
-      else
-        Wrap(
-          spacing: 8,
-          runSpacing: 4,
-          children: [
-            for (final t in tasks)
-              ChoiceChip(
-                label: Text(
-                  pickName(lang, en: t.nameEn, si: t.nameSi, ta: t.nameTa),
-                ),
-                selected: _taskChoice == t.id,
-                onSelected: (_) => setState(() => _taskChoice = t.id),
-              ),
-          ],
         ),
+      Wrap(
+        spacing: 8,
+        runSpacing: 4,
+        children: [
+          for (final t in tasks)
+            ChoiceChip(
+              label: Text(
+                pickName(lang, en: t.nameEn, si: t.nameSi, ta: t.nameTa),
+              ),
+              selected: _taskChoice == t.id,
+              onSelected: (_) => setState(() => _taskChoice = t.id),
+            ),
+          _customTaskChip(lang),
+        ],
+      ),
     ];
   }
 
-  Widget _buildForm(AppLanguage lang) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        DropdownButtonFormField<String>(
-          initialValue: _assigneeId,
-          decoration: InputDecoration(labelText: Strings.of('assignTo', lang)),
-          items: [
-            DropdownMenuItem(
-              value: _unassigned,
-              child: Text(Strings.of('unassigned', lang)),
-            ),
-            ..._staff.map(
-              (m) => DropdownMenuItem(value: m.id, child: Text(m.user.name)),
-            ),
-          ],
-          onChanged: (v) => setState(() => _assigneeId = v!),
+  /// "Other (type it in)": a task that isn't in the library.
+  Widget _customTaskChip(AppLanguage lang) {
+    return ChoiceChip(
+      avatar: const Icon(Icons.add, size: 18),
+      label: Text(Strings.of('customTask', lang)),
+      showCheckmark: false,
+      selected: _taskChoice == _customTask,
+      onSelected: (_) => setState(() => _taskChoice = _customTask),
+    );
+  }
+
+  /// The optional photo: a button to add one, or a preview with buttons to
+  /// replace or remove it.
+  Widget _photoField(AppLanguage lang) {
+    final photo = _photo;
+    if (photo == null) {
+      return Material(
+        color: brandCream.withValues(alpha: 0.4),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: const BorderSide(color: Colors.black12),
         ),
-        if (_staff.isEmpty) ...[
-          const SizedBox(height: 8),
-          Text(
-            Strings.of('assignLaterHint', lang),
-            style: Theme.of(context).textTheme.bodySmall,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: _busy ? null : () => _pickPhoto(lang),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+            child: Column(
+              children: [
+                const Icon(Icons.add_a_photo_outlined, size: 32),
+                const SizedBox(height: 8),
+                Text(
+                  Strings.of('addPhoto', lang),
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+                Text(
+                  Strings.of('addPhotoHint', lang),
+                  style: const TextStyle(color: mutedText),
+                ),
+              ],
+            ),
           ),
-        ],
-        const SizedBox(height: 12),
+        ),
+      );
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Text(
-          Strings.of('task', lang),
+          Strings.of('addPhotoHint', lang),
           style: Theme.of(context).textTheme.titleSmall,
         ),
         const SizedBox(height: 8),
-        if (_library.isEmpty)
-          Text(
-            Strings.of('noLibraryTasks', lang),
-            style: Theme.of(context).textTheme.bodySmall,
-          )
-        else
-          ..._taskPicker(lang),
-        const SizedBox(height: 8),
-        Wrap(
+        Stack(
           children: [
-            ChoiceChip(
-              avatar: const Icon(Icons.edit_outlined, size: 18),
-              label: Text(Strings.of('customTask', lang)),
-              selected: _taskChoice == _customTask,
-              onSelected: (_) => setState(() => _taskChoice = _customTask),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.memory(
+                photo,
+                height: 200,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
+            ),
+            Positioned(
+              top: 4,
+              right: 4,
+              child: Row(
+                children: [
+                  IconButton.filledTonal(
+                    icon: const Icon(Icons.refresh),
+                    onPressed: _busy ? null : () => _pickPhoto(lang),
+                  ),
+                  IconButton.filledTonal(
+                    icon: const Icon(Icons.close),
+                    onPressed: _busy
+                        ? null
+                        : () => setState(() {
+                              _photo = null;
+                              _photoUrl = null;
+                            }),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
-        if (_taskChoice == _customTask) ...[
-          const SizedBox(height: 12),
-          TextField(
-            controller: _titleController,
-            decoration: InputDecoration(
-              labelText: Strings.of('customTaskTitle', lang),
-            ),
-          ),
-        ],
-        const SizedBox(height: 12),
-        TextField(
-          controller: _minutesController,
-          keyboardType: TextInputType.number,
-          decoration: InputDecoration(
-            labelText: Strings.of('estMinutes', lang),
-          ),
-        ),
-        const SizedBox(height: 16),
-        Text(Strings.of('priority', lang)),
-        const SizedBox(height: 8),
-        SegmentedButton<String>(
-          segments: _priorities
-              .map(
-                (p) => ButtonSegment(
-                  value: p,
-                  label: Text(Strings.of('priority_$p', lang)),
-                ),
-              )
-              .toList(),
-          selected: {_priority},
-          onSelectionChanged: (s) => setState(() => _priority = s.first),
-        ),
-        const SizedBox(height: 16),
-        OutlinedButton.icon(
-          onPressed: _pickDay,
-          icon: const Icon(Icons.calendar_today_outlined),
-          label: Text(
-            '${Strings.of('date', lang)}: '
-            '${_day.toIso8601String().substring(0, 10)}',
-          ),
-        ),
-        const SizedBox(height: 20),
-        FilledButton(
-          onPressed: _busy ? null : _save,
-          child: Text(Strings.of('save', lang)),
-        ),
-        if (_error != null) ...[
-          const SizedBox(height: 8),
-          Text(_error!, style: const TextStyle(color: Colors.red)),
-        ],
       ],
+    );
+  }
+}
+
+/// A titled, outlined block of the form.
+class _Section extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final Widget child;
+
+  const _Section({required this.icon, required this.title, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.black12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 16,
+                backgroundColor: brandCream,
+                child: Icon(icon, size: 18, color: Colors.black87),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  title,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          child,
+        ],
+      ),
     );
   }
 }

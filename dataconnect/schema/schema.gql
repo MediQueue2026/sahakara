@@ -22,6 +22,10 @@ enum AppLanguage { si ta en }
 # can't be chosen at sign-up, only set directly in the database.
 enum AccountType { owner maid admin }
 enum MemberRole { owner adult maid driver cook gardener }
+# Where an owner's request for someone to join the household stands. Staff
+# join as `pending` (and inactive) with a proposed contract, and become
+# active members only once they accept it.
+enum MembershipStatus { pending accepted declined }
 enum PayType { monthly daily hourly per_visit }
 enum TaskCategory { kitchen cleaning laundry cooking other }
 enum RecurrenceType { once daily weekly fortnightly monthly quarterly }
@@ -69,7 +73,9 @@ type HouseholdMember @table @unique(fields: ["household", "user"]) {
   household: Household!
   user: User!
   role: MemberRole!
+  # False while a request is pending or declined (see `status`).
   active: Boolean! @default(value: true)
+  status: MembershipStatus! @default(value: accepted)
   joinedOn: Date! @default(expr: "request.time")
 }
 
@@ -77,7 +83,9 @@ type Contract @table {
   id: UUID! @default(expr: "uuidV4()")
   member: HouseholdMember!
   payType: PayType!
-  rate: Float!
+  rate: Float! # for `monthly`, the basic salary — bonuses go in the ledger
+  # A fixed extra paid every month on top of the basic salary, if any.
+  allowance: Float
   offDays: String
   workingHours: String
   scope: String

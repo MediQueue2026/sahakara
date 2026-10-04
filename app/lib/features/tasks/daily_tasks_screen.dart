@@ -57,6 +57,7 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
             nameEn: t.template.library?.nameEn,
             nameSi: t.template.library?.nameSi,
             nameTa: t.template.library?.nameTa,
+            photoUrl: t.template.photoUrl,
             assigneeId: t.assignedTo?.id,
             assigneeName: t.assignedTo?.user.name,
           ),
@@ -237,9 +238,15 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
         ),
       ),
       onTap: () => _assign(t, lang),
-      trailing: IconButton(
-        icon: const Icon(Icons.delete_outline),
-        onPressed: () => _remove(t.id),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (t.photoUrl != null) TaskPhotoThumb(url: t.photoUrl!, size: 40),
+          IconButton(
+            icon: const Icon(Icons.delete_outline),
+            onPressed: () => _remove(t.id),
+          ),
+        ],
       ),
     );
   }
