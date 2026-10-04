@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 
 import '../../core/app_data.dart';
 import '../../core/app_language.dart';
@@ -27,13 +28,53 @@ class DailyTasksScreen extends StatefulWidget {
 class _DailyTasksScreenState extends State<DailyTasksScreen> {
   late DateTime _day;
   late Future<List<TaskRow>> _tasks;
+  late FlutterTts _flutterTts;
 
   @override
   void initState() {
     super.initState();
+    _flutterTts = FlutterTts();
     final now = DateTime.now();
     _day = DateTime(now.year, now.month, now.day);
     _load();
+  }
+
+  Future<void> _speakTask(String text, AppLanguage lang) async {
+    String languageCode = 'en-US';
+    switch (lang) {
+      case AppLanguage.en:
+        languageCode = 'en-US';
+        break;
+      case AppLanguage.si:
+        languageCode = 'si-LK';
+        break;
+      case AppLanguage.ta:
+        languageCode = 'ta-IN';
+        break;
+    }
+    
+    var available = await _flutterTts.isLanguageAvailable(languageCode);
+    if (available == false || available == 0) {
+      final baseCode = languageCode.split('-').first;
+      available = await _flutterTts.isLanguageAvailable(baseCode);
+      if (available == true || available == 1) {
+        languageCode = baseCode;
+      }
+    }
+
+    if (available == true || available == 1) {
+      await _flutterTts.setLanguage(languageCode);
+      await _flutterTts.speak(text);
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Voice not found! Please change your phone's Default TTS Engine to 'Google' in Settings."),
+            duration: Duration(seconds: 4),
+          ),
+        );
+      }
+    }
   }
 
   void _load() {
@@ -241,6 +282,11 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
+          IconButton(
+            icon: const Icon(Icons.volume_up_outlined),
+            onPressed: () => _speakTask(t.title(lang), lang),
+            tooltip: 'Read Aloud',
+          ),
           if (t.photoUrl != null) TaskPhotoThumb(url: t.photoUrl!, size: 40),
           IconButton(
             icon: const Icon(Icons.delete_outline),
