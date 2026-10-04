@@ -1,3 +1,8 @@
+import 'dart:math';
+import 'dart:typed_data';
+
+import 'package:firebase_storage/firebase_storage.dart';
+
 import '../dataconnect_generated/sahakara.dart';
 import 'firebase_client.dart';
 
@@ -6,6 +11,7 @@ typedef Profile = MyProfileUsers;
 typedef Membership = MyMembershipHouseholdMembers;
 typedef Member = HouseholdMembersHouseholdMembers;
 typedef CurrentContract = CurrentContractContracts;
+typedef HouseholdInvite = MyHouseholdInvitesHouseholdMembers;
 typedef LibraryTask = LibraryTasksLibraryTasks;
 typedef HouseholdTask = HouseholdTasksForDayTasks;
 typedef MyTask = MyTasksForDayTasks;
@@ -111,16 +117,24 @@ class AppData {
     return result.data.householdMembers;
   }
 
-  /// Owner adds a maid by email address — links her existing `User` row, or
-  /// pre-creates one (see [ensureUserProfile] for the matching
-  /// claim-on-login side), into the household.
+  /// Owner asks a maid, by email address, to join the household on the
+  /// proposed contract. Links her existing `User` row, or pre-creates one
+  /// (see [ensureUserProfile] for the matching claim-on-login side). She
+  /// joins as a pending member and becomes staff only once she accepts
+  /// (see [fetchMyHouseholdInvites]).
   static Future<void> addMaidByEmail({
     required String householdId,
     required String email,
+    required String payType,
+    required double rate,
+    double? allowance,
+    String? offDays,
+    String? workingHours,
   }) async {
     // Firebase Auth lower-cases emails, so match that when looking up and
     // pre-creating rows.
     email = email.trim().toLowerCase();
+    final pay = PayType.values.byName(payType);
     final existing = await db.userIdByEmail(email: email).execute();
     final userId = existing.data.users.firstOrNull?.id;
     if (userId != null) {
@@ -129,7 +143,12 @@ class AppData {
             householdId: householdId,
             userId: userId,
             role: MemberRole.maid,
+            payType: pay,
+            rate: rate,
           )
+          .allowance(allowance)
+          .offDays(offDays)
+          .workingHours(workingHours)
           .execute();
     } else {
       await db
@@ -137,8 +156,39 @@ class AppData {
             householdId: householdId,
             email: email,
             role: MemberRole.maid,
+            payType: pay,
+            rate: rate,
           )
+          .allowance(allowance)
+          .offDays(offDays)
+          .workingHours(workingHours)
           .execute();
+    }
+  }
+
+  /// Owner withdraws a request that hasn't been accepted, or removes one
+  /// that was declined.
+  static Future<void> cancelHouseholdInvite(String memberId) async {
+    await db.cancelHouseholdInvite(id: memberId).execute();
+  }
+
+  /// Requests for the signed-in user to join a household that are waiting
+  /// for an answer, each with its proposed contract.
+  static Future<List<HouseholdInvite>> fetchMyHouseholdInvites() async {
+    final result = await db.myHouseholdInvites().execute();
+    return result.data.householdMembers;
+  }
+
+  /// Accepting makes the signed-in user an active member of that household
+  /// and starts the proposed contract today.
+  static Future<void> respondToHouseholdInvite({
+    required String memberId,
+    required bool accept,
+  }) async {
+    if (accept) {
+      await db.acceptHouseholdInvite(id: memberId).execute();
+    } else {
+      await db.declineHouseholdInvite(id: memberId).execute();
     }
   }
 
@@ -155,8 +205,9 @@ class AppData {
     required String memberId,
     required String payType,
     required double rate,
-    required String offDays,
-    required String workingHours,
+    double? allowance,
+    String? offDays,
+    String? workingHours,
   }) async {
     await db
         .saveContract(
@@ -164,6 +215,7 @@ class AppData {
           payType: PayType.values.byName(payType),
           rate: rate,
         )
+        .allowance(allowance)
         .offDays(offDays)
         .workingHours(workingHours)
         .execute();
@@ -194,7 +246,8 @@ class AppData {
   /// Owner adds a task for [day], assigned to the staff member
   /// [assignedToId] — or to nobody yet when that's null (see
   /// [assignDailyTask]). Pass either [libraryId] (a task from the shared
-  /// library) or [customTitle].
+  /// library) or [customTitle], and optionally a [photoUrl] explaining the
+  /// task (from [uploadTaskPhoto]).
   static Future<void> addDailyTask({
     required String householdId,
     String? assignedToId,
@@ -203,6 +256,7 @@ class AppData {
     String? customTitle,
     int? estMinutes,
     required String priority,
+    String? photoUrl,
   }) async {
     await db
         .addDailyTask(
@@ -214,7 +268,21 @@ class AppData {
         .libraryId(libraryId)
         .customTitle(customTitle)
         .estMinutes(estMinutes)
+        .photoUrl(photoUrl)
         .execute();
+  }
+
+  /// Uploads a photo explaining a task (JPEG [bytes]) to Cloud Storage and
+  /// returns its download URL, to pass to [addDailyTask] as `photoUrl`.
+  static Future<String> uploadTaskPhoto({
+    required String householdId,
+    required Uint8List bytes,
+  }) async {
+    final name =
+        '${DateTime.now().microsecondsSinceEpoch}_${Random().nextInt(1 << 32)}.jpg';
+    final ref = storage.ref('households/$householdId/tasks/$name');
+    await ref.putData(bytes, SettableMetadata(contentType: 'image/jpeg'));
+    return ref.getDownloadURL();
   }
 
   /// Owner assigns a task to [assignedToId], or moves it to them from

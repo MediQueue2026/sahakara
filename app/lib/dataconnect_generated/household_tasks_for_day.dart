@@ -163,12 +163,14 @@ class HouseholdTasksForDayTasksAssignedToUser {
 @immutable
 class HouseholdTasksForDayTasksTemplate {
   final String? customTitle;
+  final String? photoUrl;
   final int? estMinutes;
   final EnumValue<TaskPriority> priority;
   final HouseholdTasksForDayTasksTemplateLibrary? library;
   HouseholdTasksForDayTasksTemplate.fromJson(dynamic json):
   
   customTitle = json['customTitle'] == null ? null : nativeFromJson<String>(json['customTitle']),
+  photoUrl = json['photoUrl'] == null ? null : nativeFromJson<String>(json['photoUrl']),
   estMinutes = json['estMinutes'] == null ? null : nativeFromJson<int>(json['estMinutes']),
   priority = taskPriorityDeserializer(json['priority']),
   library = json['library'] == null ? null : HouseholdTasksForDayTasksTemplateLibrary.fromJson(json['library']);
@@ -183,19 +185,23 @@ class HouseholdTasksForDayTasksTemplate {
 
     final HouseholdTasksForDayTasksTemplate otherTyped = other as HouseholdTasksForDayTasksTemplate;
     return customTitle == otherTyped.customTitle && 
+    photoUrl == otherTyped.photoUrl && 
     estMinutes == otherTyped.estMinutes && 
     priority == otherTyped.priority && 
     library == otherTyped.library;
     
   }
   @override
-  int get hashCode => Object.hashAll([customTitle.hashCode, estMinutes.hashCode, priority.hashCode, library.hashCode]);
+  int get hashCode => Object.hashAll([customTitle.hashCode, photoUrl.hashCode, estMinutes.hashCode, priority.hashCode, library.hashCode]);
   
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> json = {};
     if (customTitle != null) {
       json['customTitle'] = nativeToJson<String?>(customTitle);
+    }
+    if (photoUrl != null) {
+      json['photoUrl'] = nativeToJson<String?>(photoUrl);
     }
     if (estMinutes != null) {
       json['estMinutes'] = nativeToJson<int?>(estMinutes);
@@ -211,6 +217,7 @@ class HouseholdTasksForDayTasksTemplate {
 
   HouseholdTasksForDayTasksTemplate({
     this.customTitle,
+    this.photoUrl,
     this.estMinutes,
     required this.priority,
     this.library,

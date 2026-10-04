@@ -5,7 +5,7 @@ import '../../core/app_language.dart';
 import '../../core/strings.dart';
 import '../../core/theme.dart';
 
-const _payTypes = ['monthly', 'daily', 'hourly', 'per_visit'];
+const payTypes = ['monthly', 'daily', 'hourly', 'per_visit'];
 
 /// Owner: an editable form that saves a new contract (closing the old one).
 /// Everyone else: a read-only view of the current contract.
@@ -33,8 +33,9 @@ class _ContractDetailScreenState extends State<ContractDetailScreen> {
   bool _busy = false;
   String? _error;
 
-  String _payType = _payTypes.first;
+  String _payType = payTypes.first;
   final _rateController = TextEditingController();
+  final _allowanceController = TextEditingController();
   final _offDaysController = TextEditingController();
   final _hoursController = TextEditingController();
 
@@ -49,6 +50,7 @@ class _ContractDetailScreenState extends State<ContractDetailScreen> {
     if (contract != null) {
       _payType = contract.payType.stringValue;
       _rateController.text = contract.rate.toString();
+      _allowanceController.text = contract.allowance?.toString() ?? '';
       _offDaysController.text = contract.offDays ?? '';
       _hoursController.text = contract.workingHours ?? '';
     }
@@ -58,10 +60,16 @@ class _ContractDetailScreenState extends State<ContractDetailScreen> {
     });
   }
 
-  Future<void> _save() async {
+  Future<void> _save(AppLanguage lang) async {
     final rate = double.tryParse(_rateController.text.trim());
-    if (rate == null) {
-      setState(() => _error = 'Enter a valid rate');
+    if (rate == null || rate <= 0) {
+      setState(() => _error = Strings.of('enterValidAmount', lang));
+      return;
+    }
+    final allowanceText = _allowanceController.text.trim();
+    final allowance = double.tryParse(allowanceText);
+    if (allowanceText.isNotEmpty && (allowance == null || allowance < 0)) {
+      setState(() => _error = Strings.of('enterValidAllowance', lang));
       return;
     }
     setState(() {
@@ -73,14 +81,18 @@ class _ContractDetailScreenState extends State<ContractDetailScreen> {
         memberId: widget.memberId,
         payType: _payType,
         rate: rate,
-        offDays: _offDaysController.text.trim(),
-        workingHours: _hoursController.text.trim(),
+        allowance: allowance,
+        offDays: emptyToNull(_offDaysController.text),
+        workingHours: emptyToNull(_hoursController.text),
       );
       await _load();
+      if (mounted) {
+        await showSuccessDialog(context, Strings.of('contractSaved', lang), lang);
+      }
     } catch (e) {
       setState(() => _error = e.toString());
     } finally {
-      setState(() => _busy = false);
+      if (mounted) setState(() => _busy = false);
     }
   }
 
@@ -111,8 +123,16 @@ class _ContractDetailScreenState extends State<ContractDetailScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _row(Strings.of('payType', lang), _contract!.payType.stringValue),
-        _row(Strings.of('rate', lang), '${_contract!.rate}'),
+        _row(
+          Strings.of('payType', lang),
+          Strings.of('payType_${_contract!.payType.stringValue}', lang),
+        ),
+        _row(
+          Strings.of('rate_${_contract!.payType.stringValue}', lang),
+          '${_contract!.rate}',
+        ),
+        if (_contract!.allowance != null)
+          _row(Strings.of('allowance', lang), '${_contract!.allowance}'),
         _row(Strings.of('offDays', lang), _contract!.offDays ?? '—'),
         _row(Strings.of('workingHours', lang), _contract!.workingHours ?? '—'),
       ],
@@ -134,35 +154,18 @@ class _ContractDetailScreenState extends State<ContractDetailScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        DropdownButtonFormField<String>(
-          initialValue: _payType,
-          decoration: InputDecoration(labelText: Strings.of('payType', lang)),
-          items: _payTypes
-              .map((t) => DropdownMenuItem(value: t, child: Text(t)))
-              .toList(),
-          onChanged: (v) => setState(() => _payType = v!),
-        ),
-        const SizedBox(height: 12),
-        TextField(
-          controller: _rateController,
-          keyboardType: TextInputType.number,
-          decoration: InputDecoration(labelText: Strings.of('rate', lang)),
-        ),
-        const SizedBox(height: 12),
-        TextField(
-          controller: _offDaysController,
-          decoration: InputDecoration(labelText: Strings.of('offDays', lang)),
-        ),
-        const SizedBox(height: 12),
-        TextField(
-          controller: _hoursController,
-          decoration: InputDecoration(
-            labelText: Strings.of('workingHours', lang),
-          ),
+        ContractFields(
+          lang: lang,
+          payType: _payType,
+          onPayTypeChanged: (v) => setState(() => _payType = v),
+          rateController: _rateController,
+          allowanceController: _allowanceController,
+          offDaysController: _offDaysController,
+          hoursController: _hoursController,
         ),
         const SizedBox(height: 20),
         FilledButton(
-          onPressed: _busy ? null : _save,
+          onPressed: _busy ? null : () => _save(lang),
           child: Text(Strings.of('saveContract', lang)),
         ),
         if (_error != null) ...[
@@ -172,4 +175,115 @@ class _ContractDetailScreenState extends State<ContractDetailScreen> {
       ],
     );
   }
+}
+
+/// The contract terms an owner fills in: pay type, rate (required), and
+/// optionally a fixed allowance, off days and working hours. Shared by this screen and adding a maid.
+class ContractFields extends StatelessWidget {
+  final AppLanguage lang;
+  final String payType;
+  final ValueChanged<String> onPayTypeChanged;
+  final TextEditingController rateController;
+  final TextEditingController allowanceController;
+  final TextEditingController offDaysController;
+  final TextEditingController hoursController;
+
+  const ContractFields({
+    super.key,
+    required this.lang,
+    required this.payType,
+    required this.onPayTypeChanged,
+    required this.rateController,
+    required this.allowanceController,
+    required this.offDaysController,
+    required this.hoursController,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        DropdownButtonFormField<String>(
+          initialValue: payType,
+          decoration: InputDecoration(labelText: Strings.of('payType', lang)),
+          items: payTypes
+              .map(
+                (t) => DropdownMenuItem(
+                  value: t,
+                  child: Text(Strings.of('payType_$t', lang)),
+                ),
+              )
+              .toList(),
+          onChanged: (v) => onPayTypeChanged(v!),
+        ),
+        const SizedBox(height: 12),
+        TextField(
+          controller: rateController,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          decoration: InputDecoration(
+            labelText: '${Strings.of('rate_$payType', lang)} *',
+            helperText: Strings.of('required', lang),
+          ),
+        ),
+        const SizedBox(height: 12),
+        TextField(
+          controller: allowanceController,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          decoration: InputDecoration(
+            labelText: Strings.of('allowance', lang),
+            helperText: Strings.of('allowanceHint', lang),
+          ),
+        ),
+        const SizedBox(height: 12),
+        TextField(
+          controller: offDaysController,
+          decoration: InputDecoration(
+            labelText: Strings.of('offDays', lang),
+            helperText: Strings.of('optional', lang),
+          ),
+        ),
+        const SizedBox(height: 12),
+        TextField(
+          controller: hoursController,
+          decoration: InputDecoration(
+            labelText: Strings.of('workingHours', lang),
+            helperText: Strings.of('optional', lang),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// [text] trimmed, or null when it's blank — for optional contract fields.
+String? emptyToNull(String text) {
+  final t = text.trim();
+  return t.isEmpty ? null : t;
+}
+
+/// A pop-up confirming something saved, with [title] and an optional
+/// [message]; completes once it's dismissed.
+Future<void> showSuccessDialog(
+  BuildContext context,
+  String title,
+  AppLanguage lang, {
+  String? message,
+}) {
+  return showDialog<void>(
+    context: context,
+    builder: (context) => AlertDialog(
+      icon: const Icon(Icons.check_circle, color: Colors.green, size: 48),
+      title: Text(title, textAlign: TextAlign.center),
+      content: message == null
+          ? null
+          : Text(message, textAlign: TextAlign.center),
+      actions: [
+        FilledButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(Strings.of('ok', lang)),
+        ),
+      ],
+    ),
+  );
 }

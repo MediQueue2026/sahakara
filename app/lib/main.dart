@@ -28,6 +28,7 @@ Future<void> main() async {
         : 'localhost';
     await auth.useAuthEmulator(host, 9099);
     db.dataConnect.useDataConnectEmulator(host, 9399);
+    await storage.useStorageEmulator(host, 9199);
   }
 
   runApp(const RootApp());

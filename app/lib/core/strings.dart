@@ -145,6 +145,59 @@ class Strings {
       AppLanguage.si: 'ඊමේල් මගින් සහායිකාවක් එක් කරන්න',
       AppLanguage.ta: 'மின்னஞ்சல் மூலம் உதவியாளரைச் சேர்க்கவும்',
     },
+    'enterMaidEmail': {
+      AppLanguage.en: "Enter the maid's email address",
+      AppLanguage.si: 'සහායිකාවගේ ඊමේල් ලිපිනය ඇතුළත් කරන්න',
+      AppLanguage.ta: 'உதவியாளரின் மின்னஞ்சல் முகவரியை உள்ளிடவும்',
+    },
+    'contractSentAsRequest': {
+      AppLanguage.en:
+          'This is sent to her as a request. She joins the household once she accepts it.',
+      AppLanguage.si:
+          'මෙය ඇයට ඉල්ලීමක් ලෙස යවනු ලැබේ. ඇය එය පිළිගත් පසු නිවසට එක් වේ.',
+      AppLanguage.ta:
+          'இது அவருக்குக் கோரிக்கையாக அனுப்பப்படும். அவர் ஏற்றுக்கொண்டதும் வீட்டில் சேர்வார்.',
+    },
+    'sendRequest': {
+      AppLanguage.en: 'Send request',
+      AppLanguage.si: 'ඉල්ලීම යවන්න',
+      AppLanguage.ta: 'கோரிக்கையை அனுப்பவும்',
+    },
+    'invite_pending': {
+      AppLanguage.en: 'Waiting for her to accept',
+      AppLanguage.si: 'ඇය පිළිගන්නා තෙක් රැඳී සිටී',
+      AppLanguage.ta: 'அவர் ஏற்றுக்கொள்ளக் காத்திருக்கிறது',
+    },
+    'invite_declined': {
+      AppLanguage.en: 'Declined the request',
+      AppLanguage.si: 'ඉල්ලීම ප්‍රතික්ෂේප කළා',
+      AppLanguage.ta: 'கோரிக்கையை நிராகரித்தார்',
+    },
+    'cancelRequest': {
+      AppLanguage.en: 'Cancel request',
+      AppLanguage.si: 'ඉල්ලීම අවලංගු කරන්න',
+      AppLanguage.ta: 'கோரிக்கையை ரத்து செய்',
+    },
+    'remove': {
+      AppLanguage.en: 'Remove',
+      AppLanguage.si: 'ඉවත් කරන්න',
+      AppLanguage.ta: 'அகற்று',
+    },
+    'joinRequests': {
+      AppLanguage.en: 'Requests to join a household',
+      AppLanguage.si: 'නිවසකට එක්වීමට ඉල්ලීම්',
+      AppLanguage.ta: 'வீட்டில் சேர்வதற்கான கோரிக்கைகள்',
+    },
+    'accept': {
+      AppLanguage.en: 'Accept',
+      AppLanguage.si: 'පිළිගන්න',
+      AppLanguage.ta: 'ஏற்றுக்கொள்',
+    },
+    'decline': {
+      AppLanguage.en: 'Decline',
+      AppLanguage.si: 'ප්‍රතික්ෂේප කරන්න',
+      AppLanguage.ta: 'நிராகரி',
+    },
     'add': {
       AppLanguage.en: 'Add',
       AppLanguage.si: 'එක් කරන්න',
@@ -174,6 +227,97 @@ class Strings {
       AppLanguage.en: 'Rate (LKR)',
       AppLanguage.si: 'ගාස්තුව (රු)',
       AppLanguage.ta: 'விகிதம் (ரூ)',
+    },
+    'payType_monthly': {
+      AppLanguage.en: 'Monthly basic salary',
+      AppLanguage.si: 'මාසික මූලික වැටුප',
+      AppLanguage.ta: 'மாதாந்திர அடிப்படைச் சம்பளம்',
+    },
+    'payType_daily': {
+      AppLanguage.en: 'Daily wage',
+      AppLanguage.si: 'දෛනික වැටුප',
+      AppLanguage.ta: 'தினசரி கூலி',
+    },
+    'payType_hourly': {
+      AppLanguage.en: 'Hourly rate',
+      AppLanguage.si: 'පැයකට ගාස්තුව',
+      AppLanguage.ta: 'மணிநேர விகிதம்',
+    },
+    'payType_per_visit': {
+      AppLanguage.en: 'Per visit',
+      AppLanguage.si: 'වරකට',
+      AppLanguage.ta: 'ஒரு வருகைக்கு',
+    },
+    'rate_monthly': {
+      AppLanguage.en: 'Monthly basic salary (LKR)',
+      AppLanguage.si: 'මාසික මූලික වැටුප (රු)',
+      AppLanguage.ta: 'மாதாந்திர அடிப்படைச் சம்பளம் (ரூ)',
+    },
+    'rate_daily': {
+      AppLanguage.en: 'Daily wage (LKR)',
+      AppLanguage.si: 'දෛනික වැටුප (රු)',
+      AppLanguage.ta: 'தினசரி கூலி (ரூ)',
+    },
+    'rate_hourly': {
+      AppLanguage.en: 'Hourly rate (LKR)',
+      AppLanguage.si: 'පැයකට ගාස්තුව (රු)',
+      AppLanguage.ta: 'மணிநேர விகிதம் (ரூ)',
+    },
+    'rate_per_visit': {
+      AppLanguage.en: 'Amount per visit (LKR)',
+      AppLanguage.si: 'වරකට මුදල (රු)',
+      AppLanguage.ta: 'ஒரு வருகைக்கான தொகை (ரூ)',
+    },
+    'allowance': {
+      AppLanguage.en: 'Fixed allowance (LKR)',
+      AppLanguage.si: 'ස්ථාවර දීමනාව (රු)',
+      AppLanguage.ta: 'நிலையான கொடுப்பனவு (ரூ)',
+    },
+    'allowanceHint': {
+      AppLanguage.en: 'Optional · paid every month on top of the basic salary',
+      AppLanguage.si: 'අත්‍යවශ්‍ය නොවේ · මූලික වැටුපට අමතරව සෑම මසකම ගෙවේ',
+      AppLanguage.ta:
+          'விருப்பத்தேர்வு · அடிப்படைச் சம்பளத்துடன் ஒவ்வொரு மாதமும் வழங்கப்படும்',
+    },
+    'enterValidAllowance': {
+      AppLanguage.en: 'Enter a valid allowance, or leave it blank',
+      AppLanguage.si: 'වලංගු දීමනාවක් ඇතුළත් කරන්න, නැතහොත් හිස්ව තබන්න',
+      AppLanguage.ta: 'சரியான கொடுப்பனவை உள்ளிடவும், அல்லது காலியாக விடவும்',
+    },
+    'required': {
+      AppLanguage.en: 'Required',
+      AppLanguage.si: 'අනිවාර්යයි',
+      AppLanguage.ta: 'கட்டாயம்',
+    },
+    'optional': {
+      AppLanguage.en: 'Optional',
+      AppLanguage.si: 'අත්‍යවශ්‍ය නොවේ',
+      AppLanguage.ta: 'விருப்பத்தேர்வு',
+    },
+    'enterValidAmount': {
+      AppLanguage.en: 'Enter a valid amount',
+      AppLanguage.si: 'වලංගු මුදලක් ඇතුළත් කරන්න',
+      AppLanguage.ta: 'சரியான தொகையை உள்ளிடவும்',
+    },
+    'contractSaved': {
+      AppLanguage.en: 'Contract saved successfully',
+      AppLanguage.si: 'ගිවිසුම සාර්ථකව සුරකින ලදී',
+      AppLanguage.ta: 'ஒப்பந்தம் வெற்றிகரமாகச் சேமிக்கப்பட்டது',
+    },
+    'requestSent': {
+      AppLanguage.en: 'Request sent successfully',
+      AppLanguage.si: 'ඉල්ලීම සාර්ථකව යවන ලදී',
+      AppLanguage.ta: 'கோரிக்கை வெற்றிகரமாக அனுப்பப்பட்டது',
+    },
+    'requestSentBody': {
+      AppLanguage.en: 'She will join the household once she accepts the contract.',
+      AppLanguage.si: 'ඇය ගිවිසුම පිළිගත් පසු නිවසට එක් වේ.',
+      AppLanguage.ta: 'அவர் ஒப்பந்தத்தை ஏற்றுக்கொண்டதும் வீட்டில் சேர்வார்.',
+    },
+    'ok': {
+      AppLanguage.en: 'OK',
+      AppLanguage.si: 'හරි',
+      AppLanguage.ta: 'சரி',
     },
     'offDays': {
       AppLanguage.en: 'Off days',
@@ -255,6 +399,51 @@ class Strings {
       AppLanguage.si: 'තවම පෙරනිමි කාර්ය නැත. ටයිප් කිරීමට පහත "වෙනත්" ඔබන්න.',
       AppLanguage.ta: 'இன்னும் இயல்புநிலை பணிகள் இல்லை. தட்டச்சு செய்ய கீழே "மற்றவை" அழுத்தவும்.',
     },
+    'whatTask': {
+      AppLanguage.en: 'What needs to be done?',
+      AppLanguage.si: 'කළ යුත්තේ කුමක්ද?',
+      AppLanguage.ta: 'என்ன செய்ய வேண்டும்?',
+    },
+    'whoAndWhen': {
+      AppLanguage.en: 'Who and when',
+      AppLanguage.si: 'කවුද සහ කවදාද',
+      AppLanguage.ta: 'யார், எப்போது',
+    },
+    'detailsOptional': {
+      AppLanguage.en: 'Details (optional)',
+      AppLanguage.si: 'විස්තර (අත්‍යවශ්‍ය නොවේ)',
+      AppLanguage.ta: 'விவரங்கள் (விருப்பத்தேர்வு)',
+    },
+    'today': {
+      AppLanguage.en: 'Today',
+      AppLanguage.si: 'අද',
+      AppLanguage.ta: 'இன்று',
+    },
+    'tomorrow': {
+      AppLanguage.en: 'Tomorrow',
+      AppLanguage.si: 'හෙට',
+      AppLanguage.ta: 'நாளை',
+    },
+    'pickDate': {
+      AppLanguage.en: 'Pick a date',
+      AppLanguage.si: 'දිනයක් තෝරන්න',
+      AppLanguage.ta: 'தேதியைத் தேர்ந்தெடுக்கவும்',
+    },
+    'otherMinutes': {
+      AppLanguage.en: 'Or type the minutes',
+      AppLanguage.si: 'නැතහොත් මිනිත්තු ගණන ටයිප් කරන්න',
+      AppLanguage.ta: 'அல்லது நிமிடங்களைத் தட்டச்சு செய்யவும்',
+    },
+    'chooseTaskError': {
+      AppLanguage.en: 'Choose a task or type one in',
+      AppLanguage.si: 'කාර්යයක් තෝරන්න හෝ ටයිප් කරන්න',
+      AppLanguage.ta: 'ஒரு பணியைத் தேர்ந்தெடுக்கவும் அல்லது தட்டச்சு செய்யவும்',
+    },
+    'minutesError': {
+      AppLanguage.en: 'Enter the minutes as a whole number',
+      AppLanguage.si: 'මිනිත්තු පූර්ණ සංඛ්‍යාවක් ලෙස ඇතුළත් කරන්න',
+      AppLanguage.ta: 'நிமிடங்களை முழு எண்ணாக உள்ளிடவும்',
+    },
     'searchTasks': {
       AppLanguage.en: 'Search tasks',
       AppLanguage.si: 'කාර්ය සොයන්න',
@@ -300,6 +489,26 @@ class Strings {
       AppLanguage.en: 'Estimated minutes',
       AppLanguage.si: 'ඇස්තමේන්තුගත මිනිත්තු',
       AppLanguage.ta: 'மதிப்பிடப்பட்ட நிமிடங்கள்',
+    },
+    'addPhoto': {
+      AppLanguage.en: 'Add a photo (optional)',
+      AppLanguage.si: 'ඡායාරූපයක් එක් කරන්න (අත්‍යවශ්‍ය නොවේ)',
+      AppLanguage.ta: 'புகைப்படம் சேர்க்கவும் (விருப்பத்தேர்வு)',
+    },
+    'addPhotoHint': {
+      AppLanguage.en: 'Show what needs to be done',
+      AppLanguage.si: 'කළ යුතු දේ පෙන්වන්න',
+      AppLanguage.ta: 'என்ன செய்ய வேண்டும் என்பதைக் காட்டுங்கள்',
+    },
+    'takePhoto': {
+      AppLanguage.en: 'Take a photo',
+      AppLanguage.si: 'ඡායාරූපයක් ගන්න',
+      AppLanguage.ta: 'புகைப்படம் எடுக்கவும்',
+    },
+    'chooseFromGallery': {
+      AppLanguage.en: 'Choose from gallery',
+      AppLanguage.si: 'ගැලරියෙන් තෝරන්න',
+      AppLanguage.ta: 'கேலரியிலிருந்து தேர்ந்தெடுக்கவும்',
     },
     'priority': {
       AppLanguage.en: 'Priority',

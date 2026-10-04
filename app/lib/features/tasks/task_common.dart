@@ -44,6 +44,7 @@ class TaskRow {
   final String? nameEn;
   final String? nameSi;
   final String? nameTa;
+  final String? photoUrl;
   final String? assigneeId;
   final String? assigneeName;
 
@@ -57,6 +58,7 @@ class TaskRow {
     this.nameEn,
     this.nameSi,
     this.nameTa,
+    this.photoUrl,
     this.assigneeId,
     this.assigneeName,
   });
@@ -64,6 +66,60 @@ class TaskRow {
   String title(AppLanguage lang) {
     if (nameEn == null) return customTitle ?? '';
     return pickName(lang, en: nameEn!, si: nameSi, ta: nameTa);
+  }
+}
+
+/// A square thumbnail of the photo explaining a task; tapping it opens the
+/// photo full screen.
+class TaskPhotoThumb extends StatelessWidget {
+  final String url;
+  final double size;
+
+  const TaskPhotoThumb({super.key, required this.url, this.size = 56});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => _TaskPhotoView(url: url)),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Image.network(
+          url,
+          width: size,
+          height: size,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stack) => SizedBox(
+            width: size,
+            height: size,
+            child: const Icon(Icons.broken_image_outlined, color: mutedText),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// A task's photo, full screen, pinch to zoom.
+class _TaskPhotoView extends StatelessWidget {
+  final String url;
+
+  const _TaskPhotoView({required this.url});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        foregroundColor: Colors.white,
+      ),
+      body: InteractiveViewer(
+        maxScale: 5,
+        child: Center(child: Image.network(url)),
+      ),
+    );
   }
 }
 
