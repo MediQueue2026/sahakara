@@ -5,6 +5,7 @@ class SubmitLeaveRequestVariablesBuilder {
   DateTime fromDate;
   DateTime toDate;
   LeaveType leaveType;
+  bool isHalfDay;
   Optional<String> _reason = Optional.optional(nativeFromJson, nativeToJson);
 
   final FirebaseDataConnect _dataConnect;  SubmitLeaveRequestVariablesBuilder reason(String? t) {
@@ -12,7 +13,7 @@ class SubmitLeaveRequestVariablesBuilder {
    return this;
   }
 
-  SubmitLeaveRequestVariablesBuilder(this._dataConnect, {required  this.memberId,required  this.fromDate,required  this.toDate,required  this.leaveType,});
+  SubmitLeaveRequestVariablesBuilder(this._dataConnect, {required  this.memberId,required  this.fromDate,required  this.toDate,required  this.leaveType,required  this.isHalfDay,});
   Deserializer<SubmitLeaveRequestData> dataDeserializer = (dynamic json)  => SubmitLeaveRequestData.fromJson(jsonDecode(json));
   Serializer<SubmitLeaveRequestVariables> varsSerializer = (SubmitLeaveRequestVariables vars) => jsonEncode(vars.toJson());
   Future<OperationResult<SubmitLeaveRequestData, SubmitLeaveRequestVariables>> execute() {
@@ -20,7 +21,7 @@ class SubmitLeaveRequestVariablesBuilder {
   }
 
   MutationRef<SubmitLeaveRequestData, SubmitLeaveRequestVariables> ref() {
-    SubmitLeaveRequestVariables vars= SubmitLeaveRequestVariables(memberId: memberId,fromDate: fromDate,toDate: toDate,leaveType: leaveType,reason: _reason,);
+    SubmitLeaveRequestVariables vars= SubmitLeaveRequestVariables(memberId: memberId,fromDate: fromDate,toDate: toDate,leaveType: leaveType,isHalfDay: isHalfDay,reason: _reason,);
     return _dataConnect.mutation("SubmitLeaveRequest", dataDeserializer, varsSerializer, vars);
   }
 }
@@ -99,6 +100,7 @@ class SubmitLeaveRequestVariables {
   final DateTime fromDate;
   final DateTime toDate;
   final LeaveType leaveType;
+  final bool isHalfDay;
   late final Optional<String>reason;
   @Deprecated('fromJson is deprecated for Variable classes as they are no longer required for deserialization.')
   SubmitLeaveRequestVariables.fromJson(Map<String, dynamic> json):
@@ -106,7 +108,9 @@ class SubmitLeaveRequestVariables {
   memberId = nativeFromJson<String>(json['memberId']),
   fromDate = nativeFromJson<DateTime>(json['fromDate']),
   toDate = nativeFromJson<DateTime>(json['toDate']),
-  leaveType = LeaveType.values.byName(json['leaveType']) {
+  leaveType = LeaveType.values.byName(json['leaveType']),
+  isHalfDay = nativeFromJson<bool>(json['isHalfDay']) {
+  
   
   
   
@@ -131,11 +135,12 @@ class SubmitLeaveRequestVariables {
     fromDate == otherTyped.fromDate && 
     toDate == otherTyped.toDate && 
     leaveType == otherTyped.leaveType && 
+    isHalfDay == otherTyped.isHalfDay && 
     reason == otherTyped.reason;
     
   }
   @override
-  int get hashCode => Object.hashAll([memberId.hashCode, fromDate.hashCode, toDate.hashCode, leaveType.hashCode, reason.hashCode]);
+  int get hashCode => Object.hashAll([memberId.hashCode, fromDate.hashCode, toDate.hashCode, leaveType.hashCode, isHalfDay.hashCode, reason.hashCode]);
   
 
   Map<String, dynamic> toJson() {
@@ -146,6 +151,7 @@ class SubmitLeaveRequestVariables {
     json['leaveType'] = 
     leaveType.name
     ;
+    json['isHalfDay'] = nativeToJson<bool>(isHalfDay);
     if(reason.state == OptionalState.set) {
       json['reason'] = reason.toJson();
     }
@@ -157,6 +163,7 @@ class SubmitLeaveRequestVariables {
     required this.fromDate,
     required this.toDate,
     required this.leaveType,
+    required this.isHalfDay,
     required this.reason,
   });
 }

@@ -40,24 +40,47 @@ class _ContractDetailScreenState extends State<ContractDetailScreen> {
   final _hoursController = TextEditingController();
 
   @override
+  void dispose() {
+    _rateController.dispose();
+    _allowanceController.dispose();
+    _offDaysController.dispose();
+    _hoursController.dispose();
+    super.dispose();
+  }
+
+  @override
   void initState() {
     super.initState();
     _load();
   }
 
   Future<void> _load() async {
-    final contract = await AppData.fetchCurrentContract(widget.memberId);
-    if (contract != null) {
-      _payType = contract.payType.stringValue;
-      _rateController.text = contract.rate.toString();
-      _allowanceController.text = contract.allowance?.toString() ?? '';
-      _offDaysController.text = contract.offDays ?? '';
-      _hoursController.text = contract.workingHours ?? '';
-    }
+    if (!mounted) return;
     setState(() {
-      _contract = contract;
-      _loading = false;
+      _loading = true;
+      _error = null;
     });
+    try {
+      final contract = await AppData.fetchCurrentContract(widget.memberId);
+      if (!mounted) return;
+      if (contract != null) {
+        _payType = contract.payType.stringValue;
+        _rateController.text = contract.rate.toString();
+        _allowanceController.text = contract.allowance?.toString() ?? '';
+        _offDaysController.text = contract.offDays ?? '';
+        _hoursController.text = contract.workingHours ?? '';
+      }
+      setState(() {
+        _contract = contract;
+        _loading = false;
+      });
+    } catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _error = error.toString();
+        _loading = false;
+      });
+    }
   }
 
   Future<void> _save(AppLanguage lang) async {
@@ -90,7 +113,7 @@ class _ContractDetailScreenState extends State<ContractDetailScreen> {
         await showSuccessDialog(context, Strings.of('contractSaved', lang), lang);
       }
     } catch (e) {
-      setState(() => _error = e.toString());
+      if (mounted) setState(() => _error = e.toString());
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -102,12 +125,39 @@ class _ContractDetailScreenState extends State<ContractDetailScreen> {
       valueListenable: widget.lang,
       builder: (context, lang, _) {
         return Scaffold(
-          appBar: AppBar(title: Text(widget.memberName)),
+          appBar: AppBar(
+            title: Text(widget.memberName),
+            actions: [
+              IconButton(
+                tooltip: Strings.of('refresh', lang),
+                onPressed: _loading ? null : _load,
+                icon: const Icon(Icons.refresh),
+              ),
+            ],
+          ),
           body: _loading
               ? const Center(child: CircularProgressIndicator())
               : SingleChildScrollView(
                   padding: const EdgeInsets.all(16),
-                  child: widget.editable
+                  child: _error != null
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(
+                              Strings.of('contractLoadFailed', lang),
+                              style: const TextStyle(color: Colors.red),
+                            ),
+                            const SizedBox(height: 8),
+                            SelectableText(_error!),
+                            const SizedBox(height: 16),
+                            OutlinedButton.icon(
+                              onPressed: _load,
+                              icon: const Icon(Icons.refresh),
+                              label: Text(Strings.of('retry', lang)),
+                            ),
+                          ],
+                        )
+                      : widget.editable
                       ? _buildForm(lang)
                       : _buildReadOnly(lang),
                 ),
@@ -118,7 +168,11 @@ class _ContractDetailScreenState extends State<ContractDetailScreen> {
 
   Widget _buildReadOnly(AppLanguage lang) {
     if (_contract == null) {
-      return Text(Strings.of('noContract', lang));
+      return Text(
+        widget.editable
+            ? Strings.of('noContract', lang)
+            : Strings.of('contractMissingAskOwner', lang),
+      );
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

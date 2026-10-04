@@ -4,7 +4,6 @@ import '../../core/app_data.dart';
 import '../../core/app_language.dart';
 import '../../core/strings.dart';
 import 'leave_request_dialog.dart';
-import '../../dataconnect_generated/sahakara.dart' hide AppLanguage;
 
 class AttendanceTab extends StatefulWidget {
   final LanguageController lang;
@@ -31,6 +30,7 @@ class _AttendanceTabState extends State<AttendanceTab> {
   List<dynamic> _leaveRequests = [];
   bool _busy = false;
   bool _loading = true;
+  String _dayType = 'full';
 
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay = DateTime.now();
@@ -58,6 +58,64 @@ class _AttendanceTabState extends State<AttendanceTab> {
     }
   }
 
+  Future<double?> _promptOvertimeHours() async {
+    final controller = TextEditingController(text: '0');
+    try {
+      return await showDialog<double>(
+        context: context,
+        builder: (dialogContext) {
+          String? error;
+          return StatefulBuilder(
+            builder: (context, setDialogState) => AlertDialog(
+              title: Text(Strings.of('overtimeHours', widget.lang.value)),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  TextField(
+                    controller: controller,
+                    autofocus: true,
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    decoration: InputDecoration(
+                      labelText: Strings.of('overtimeHours', widget.lang.value),
+                      errorText: error,
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext),
+                  child: Text(Strings.of('cancel', widget.lang.value)),
+                ),
+                FilledButton(
+                  onPressed: () {
+                    final value = double.tryParse(controller.text.trim());
+                    if (value == null || value < 0 || value > 24) {
+                      setDialogState(
+                        () => error = Strings.of(
+                          'enterValidOvertime',
+                          widget.lang.value,
+                        ),
+                      );
+                      return;
+                    }
+                    Navigator.pop(dialogContext, value);
+                  },
+                  child: Text(Strings.of('save', widget.lang.value)),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    } finally {
+      controller.dispose();
+    }
+  }
+
   Future<void> _checkIn() async {
     setState(() => _busy = true);
     try {
@@ -66,7 +124,7 @@ class _AttendanceTabState extends State<AttendanceTab> {
       await AppData.checkIn(
         memberId: _memberId,
         day: today,
-        dayType: 'full',
+        dayType: _dayType,
       );
       await _refresh();
     } catch (e) {
@@ -77,6 +135,8 @@ class _AttendanceTabState extends State<AttendanceTab> {
   }
 
   Future<void> _checkOut() async {
+    final overtimeHours = await _promptOvertimeHours();
+    if (overtimeHours == null) return;
     setState(() => _busy = true);
     try {
       final now = DateTime.now();
@@ -84,6 +144,7 @@ class _AttendanceTabState extends State<AttendanceTab> {
       await AppData.checkOut(
         memberId: _memberId,
         day: today,
+        overtimeHours: overtimeHours,
       );
       await _refresh();
     } catch (e) {
@@ -142,17 +203,50 @@ class _AttendanceTabState extends State<AttendanceTab> {
   }
 
   Widget _buildMaidActions(AppLanguage l) {
+    final today = DateTime.now();
+    final todayAttendance = _attendance.where((record) {
+      return isSameDay(record.day, today);
+    }).firstOrNull;
+    final canCheckIn =
+        todayAttendance == null || todayAttendance.checkIn == null;
+    final canCheckOut =
+        todayAttendance?.checkIn != null && todayAttendance?.checkOut == null;
+    final selectedDayType =
+        todayAttendance?.dayType.stringValue ?? _dayType;
+
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
+            DropdownButtonFormField<String>(
+              initialValue: selectedDayType,
+              decoration: InputDecoration(
+                labelText: Strings.of('attendanceType', l),
+              ),
+              items: [
+                DropdownMenuItem(
+                  value: 'full',
+                  child: Text(Strings.of('dayType_full', l)),
+                ),
+                DropdownMenuItem(
+                  value: 'half',
+                  child: Text(Strings.of('dayType_half', l)),
+                ),
+              ],
+              onChanged: canCheckIn
+                  ? (value) {
+                      if (value != null) setState(() => _dayType = value);
+                    }
+                  : null,
+            ),
+            const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
                   child: FilledButton.icon(
-                    onPressed: _busy ? null : _checkIn,
+                    onPressed: _busy || !canCheckIn ? null : _checkIn,
                     icon: const Icon(Icons.login),
                     label: Text(Strings.of('checkIn', widget.lang.value)),
                     style: FilledButton.styleFrom(backgroundColor: Colors.green),
@@ -161,7 +255,7 @@ class _AttendanceTabState extends State<AttendanceTab> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: FilledButton.icon(
-                    onPressed: _busy ? null : _checkOut,
+                    onPressed: _busy || !canCheckOut ? null : _checkOut,
                     icon: const Icon(Icons.logout),
                     label: Text(Strings.of('checkOut', widget.lang.value)),
                     style: FilledButton.styleFrom(backgroundColor: Colors.orange),
@@ -212,6 +306,7 @@ class _AttendanceTabState extends State<AttendanceTab> {
           final statusTranslated = Strings.of('leave_status_$statusStr', l);
 
           String title = '$leaveTypeTranslated: ${fromDate.year}-${fromDate.month}-${fromDate.day} to ${toDate.year}-${toDate.month}-${toDate.day}';
+          if (ev.isHalfDay) title += ' (${Strings.of('halfDay', l)})';
           if (_isOwner) {
             title = '${ev.member.user.name} - $title';
           }
@@ -219,7 +314,7 @@ class _AttendanceTabState extends State<AttendanceTab> {
           return Card(
             child: ListTile(
               title: Text(title),
-              subtitle: Text('${Strings.of('status', l) ?? 'Status'}: $statusTranslated\n$reason'),
+              subtitle: Text('${Strings.of('status', l)}: $statusTranslated\n$reason'),
               isThreeLine: true,
               trailing: _isOwner && statusStr == 'pending'
                   ? Row(
@@ -250,7 +345,8 @@ class _AttendanceTabState extends State<AttendanceTab> {
           final checkOut = ev.checkOut;
           final dayType = ev.dayType.stringValue;
 
-          String title = '${day.year}-${day.month}-${day.day} ($dayType)';
+          String title =
+              '${day.year}-${day.month}-${day.day} (${Strings.of('dayType_$dayType', l)})';
           if (_isOwner) {
             title = '${ev.member.user.name} - $title';
           }
@@ -258,6 +354,10 @@ class _AttendanceTabState extends State<AttendanceTab> {
           String subtitle = '${Strings.of('checkIn', l)}: ${checkIn != null ? '${checkIn.toDateTime().toLocal().hour}:${checkIn.toDateTime().toLocal().minute.toString().padLeft(2, '0')}' : '...'}';
           if (checkOut != null) {
             subtitle += '\n${Strings.of('checkOut', l)}: ${checkOut.toDateTime().toLocal().hour}:${checkOut.toDateTime().toLocal().minute.toString().padLeft(2, '0')}';
+          }
+          if (ev.overtimeHours > 0) {
+            subtitle +=
+                '\n${Strings.of('overtimeHours', l)}: ${ev.overtimeHours}';
           }
 
           return Card(

@@ -48,6 +48,16 @@ part 'check_out.dart';
 
 part 'submit_leave_request.dart';
 
+part 'schedule_salary_payment.dart';
+
+part 'mark_salary_payment_paid.dart';
+
+part 'request_advance.dart';
+
+part 'approve_advance_request.dart';
+
+part 'reject_advance_request.dart';
+
 part 'review_leave_request.dart';
 
 part 'delete_leave_request.dart';
@@ -55,6 +65,8 @@ part 'delete_leave_request.dart';
 part 'my_profile.dart';
 
 part 'my_membership.dart';
+
+part 'my_membership_by_id.dart';
 
 part 'my_household_invites.dart';
 
@@ -79,6 +91,14 @@ part 'household_attendance.dart';
 part 'my_leave_requests.dart';
 
 part 'household_leave_requests.dart';
+
+part 'my_salary_payments.dart';
+
+part 'household_salary_payments.dart';
+
+part 'my_advance_requests.dart';
+
+part 'household_advance_requests.dart';
 
 part 'admin_households.dart';
 
@@ -108,6 +128,37 @@ part 'admin_households.dart';
       
       case 'admin':
         return const Known(AccountType.admin);
+      
+      default:
+        return Unknown(data);
+    }
+  }
+  
+
+  enum AdvanceRequestStatus {
+    
+      pending,
+    
+      approved,
+    
+      rejected,
+    
+  }
+  
+  String advanceRequestStatusSerializer(EnumValue<AdvanceRequestStatus> e) {
+    return e.stringValue;
+  }
+  EnumValue<AdvanceRequestStatus> advanceRequestStatusDeserializer(dynamic data) {
+    switch (data) {
+      
+      case 'pending':
+        return const Known(AdvanceRequestStatus.pending);
+      
+      case 'approved':
+        return const Known(AdvanceRequestStatus.approved);
+      
+      case 'rejected':
+        return const Known(AdvanceRequestStatus.rejected);
       
       default:
         return Unknown(data);
@@ -449,6 +500,63 @@ part 'admin_households.dart';
   }
   
 
+  enum PaymentMethod {
+    
+      cash,
+    
+      bank,
+    
+      mobile_wallet,
+    
+  }
+  
+  String paymentMethodSerializer(EnumValue<PaymentMethod> e) {
+    return e.stringValue;
+  }
+  EnumValue<PaymentMethod> paymentMethodDeserializer(dynamic data) {
+    switch (data) {
+      
+      case 'cash':
+        return const Known(PaymentMethod.cash);
+      
+      case 'bank':
+        return const Known(PaymentMethod.bank);
+      
+      case 'mobile_wallet':
+        return const Known(PaymentMethod.mobile_wallet);
+      
+      default:
+        return Unknown(data);
+    }
+  }
+  
+
+  enum SalaryPaymentStatus {
+    
+      scheduled,
+    
+      paid,
+    
+  }
+  
+  String salaryPaymentStatusSerializer(EnumValue<SalaryPaymentStatus> e) {
+    return e.stringValue;
+  }
+  EnumValue<SalaryPaymentStatus> salaryPaymentStatusDeserializer(dynamic data) {
+    switch (data) {
+      
+      case 'scheduled':
+        return const Known(SalaryPaymentStatus.scheduled);
+      
+      case 'paid':
+        return const Known(SalaryPaymentStatus.paid);
+      
+      default:
+        return Unknown(data);
+    }
+  }
+  
+
   enum TaskCategory {
     
       kitchen,
@@ -757,13 +865,38 @@ class SahakaraConnector {
   }
   
   
-  CheckOutVariablesBuilder checkOut ({required String memberId, required DateTime day, }) {
-    return CheckOutVariablesBuilder(dataConnect, memberId: memberId,day: day,);
+  CheckOutVariablesBuilder checkOut ({required String memberId, required DateTime day, required double overtimeHours, }) {
+    return CheckOutVariablesBuilder(dataConnect, memberId: memberId,day: day,overtimeHours: overtimeHours,);
   }
   
   
-  SubmitLeaveRequestVariablesBuilder submitLeaveRequest ({required String memberId, required DateTime fromDate, required DateTime toDate, required LeaveType leaveType, }) {
-    return SubmitLeaveRequestVariablesBuilder(dataConnect, memberId: memberId,fromDate: fromDate,toDate: toDate,leaveType: leaveType,);
+  SubmitLeaveRequestVariablesBuilder submitLeaveRequest ({required String memberId, required DateTime fromDate, required DateTime toDate, required LeaveType leaveType, required bool isHalfDay, }) {
+    return SubmitLeaveRequestVariablesBuilder(dataConnect, memberId: memberId,fromDate: fromDate,toDate: toDate,leaveType: leaveType,isHalfDay: isHalfDay,);
+  }
+  
+  
+  ScheduleSalaryPaymentVariablesBuilder scheduleSalaryPayment ({required String memberId, required double amount, required DateTime paymentDate, }) {
+    return ScheduleSalaryPaymentVariablesBuilder(dataConnect, memberId: memberId,amount: amount,paymentDate: paymentDate,);
+  }
+  
+  
+  MarkSalaryPaymentPaidVariablesBuilder markSalaryPaymentPaid ({required String id, required String month, required PaymentMethod method, }) {
+    return MarkSalaryPaymentPaidVariablesBuilder(dataConnect, id: id,month: month,method: method,);
+  }
+  
+  
+  RequestAdvanceVariablesBuilder requestAdvance ({required String memberId, required double amount, }) {
+    return RequestAdvanceVariablesBuilder(dataConnect, memberId: memberId,amount: amount,);
+  }
+  
+  
+  ApproveAdvanceRequestVariablesBuilder approveAdvanceRequest ({required String id, required String month, }) {
+    return ApproveAdvanceRequestVariablesBuilder(dataConnect, id: id,month: month,);
+  }
+  
+  
+  RejectAdvanceRequestVariablesBuilder rejectAdvanceRequest ({required String id, }) {
+    return RejectAdvanceRequestVariablesBuilder(dataConnect, id: id,);
   }
   
   
@@ -784,6 +917,11 @@ class SahakaraConnector {
   
   MyMembershipVariablesBuilder myMembership () {
     return MyMembershipVariablesBuilder(dataConnect, );
+  }
+  
+  
+  MyMembershipByIdVariablesBuilder myMembershipById ({required String id, }) {
+    return MyMembershipByIdVariablesBuilder(dataConnect, id: id,);
   }
   
   
@@ -844,6 +982,26 @@ class SahakaraConnector {
   
   HouseholdLeaveRequestsVariablesBuilder householdLeaveRequests ({required String householdId, }) {
     return HouseholdLeaveRequestsVariablesBuilder(dataConnect, householdId: householdId,);
+  }
+  
+  
+  MySalaryPaymentsVariablesBuilder mySalaryPayments () {
+    return MySalaryPaymentsVariablesBuilder(dataConnect, );
+  }
+  
+  
+  HouseholdSalaryPaymentsVariablesBuilder householdSalaryPayments ({required String householdId, }) {
+    return HouseholdSalaryPaymentsVariablesBuilder(dataConnect, householdId: householdId,);
+  }
+  
+  
+  MyAdvanceRequestsVariablesBuilder myAdvanceRequests () {
+    return MyAdvanceRequestsVariablesBuilder(dataConnect, );
+  }
+  
+  
+  HouseholdAdvanceRequestsVariablesBuilder householdAdvanceRequests ({required String householdId, }) {
+    return HouseholdAdvanceRequestsVariablesBuilder(dataConnect, householdId: householdId,);
   }
   
   

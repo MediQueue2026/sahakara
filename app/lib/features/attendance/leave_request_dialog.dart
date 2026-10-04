@@ -24,6 +24,13 @@ class _LeaveRequestDialogState extends State<LeaveRequestDialog> {
   LeaveType _leaveType = LeaveType.paid;
   final _reasonController = TextEditingController();
   bool _busy = false;
+  bool _isHalfDay = false;
+
+  @override
+  void dispose() {
+    _reasonController.dispose();
+    super.dispose();
+  }
 
   Future<void> _submit() async {
     if (_fromDate == null || _toDate == null) return;
@@ -34,6 +41,7 @@ class _LeaveRequestDialogState extends State<LeaveRequestDialog> {
         fromDate: _fromDate!,
         toDate: _toDate!,
         leaveType: _leaveType.name,
+        isHalfDay: _isHalfDay,
         reason: _reasonController.text.trim().isEmpty ? null : _reasonController.text.trim(),
       );
       if (mounted) {
@@ -59,7 +67,7 @@ class _LeaveRequestDialogState extends State<LeaveRequestDialog> {
       setState(() {
         if (isFrom) {
           _fromDate = date;
-          if (_toDate == null || _toDate!.isBefore(_fromDate!)) {
+          if (_isHalfDay || _toDate == null || _toDate!.isBefore(_fromDate!)) {
             _toDate = _fromDate;
           }
         } else {
@@ -68,6 +76,7 @@ class _LeaveRequestDialogState extends State<LeaveRequestDialog> {
             _fromDate = _toDate;
           }
         }
+        if (_isHalfDay && _fromDate != null) _toDate = _fromDate;
       });
     }
   }
@@ -93,22 +102,49 @@ class _LeaveRequestDialogState extends State<LeaveRequestDialog> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => _selectDate(true),
-                    child: Text(_fromDate == null ? Strings.of('startDate', l) : '${_fromDate!.year}-${_fromDate!.month}-${_fromDate!.day}'),
-                  ),
+            if (_isHalfDay)
+              OutlinedButton(
+                onPressed: () => _selectDate(true),
+                child: Text(
+                  _fromDate == null
+                      ? Strings.of('startDate', l)
+                      : '${_fromDate!.year}-${_fromDate!.month}-${_fromDate!.day}',
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => _selectDate(false),
-                    child: Text(_toDate == null ? Strings.of('endDate', l) : '${_toDate!.year}-${_toDate!.month}-${_toDate!.day}'),
+              )
+            else
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => _selectDate(true),
+                      child: Text(
+                        _fromDate == null
+                            ? Strings.of('startDate', l)
+                            : '${_fromDate!.year}-${_fromDate!.month}-${_fromDate!.day}',
+                      ),
+                    ),
                   ),
-                ),
-              ],
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => _selectDate(false),
+                      child: Text(
+                        _toDate == null
+                            ? Strings.of('endDate', l)
+                            : '${_toDate!.year}-${_toDate!.month}-${_toDate!.day}',
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: Text(Strings.of('halfDay', l)),
+              value: _isHalfDay,
+              onChanged: (value) => setState(() {
+                _isHalfDay = value;
+                if (value && _fromDate != null) _toDate = _fromDate;
+              }),
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<LeaveType>(

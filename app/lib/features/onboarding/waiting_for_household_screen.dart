@@ -14,13 +14,15 @@ import '../../core/theme.dart';
 class WaitingForHouseholdScreen extends StatefulWidget {
   final LanguageController lang;
   final String email;
-  final VoidCallback onRefresh;
+  final ValueChanged<String> onHouseholdAccepted;
+  final bool inHomeShell;
 
   const WaitingForHouseholdScreen({
     super.key,
     required this.lang,
     required this.email,
-    required this.onRefresh,
+    required this.onHouseholdAccepted,
+    this.inHomeShell = false,
   });
 
   @override
@@ -39,8 +41,8 @@ class _WaitingForHouseholdScreenState extends State<WaitingForHouseholdScreen> {
   }
 
   void _checkAgain() => setState(() {
-    _invites = AppData.fetchMyHouseholdInvites();
-  });
+        _invites = AppData.fetchMyHouseholdInvites();
+      });
 
   Future<void> _respond(HouseholdInvite invite, bool accept) async {
     setState(() => _busy = true);
@@ -50,7 +52,7 @@ class _WaitingForHouseholdScreenState extends State<WaitingForHouseholdScreen> {
         accept: accept,
       );
       if (accept) {
-        widget.onRefresh();
+        widget.onHouseholdAccepted(invite.id);
       } else {
         _checkAgain();
       }
@@ -69,6 +71,9 @@ class _WaitingForHouseholdScreenState extends State<WaitingForHouseholdScreen> {
       valueListenable: widget.lang,
       builder: (context, lang, _) {
         return Scaffold(
+          appBar: widget.inHomeShell
+              ? AppBar(title: Text(Strings.of('joinRequests', lang)))
+              : null,
           body: SafeArea(
             child: Center(
               child: SingleChildScrollView(
@@ -91,8 +96,13 @@ class _WaitingForHouseholdScreenState extends State<WaitingForHouseholdScreen> {
                               '${snapshot.error}',
                               style: const TextStyle(color: Colors.red),
                             ),
-                          if (invites.isEmpty)
+                          if (invites.isEmpty && !widget.inHomeShell)
                             ..._waiting(lang)
+                          else if (invites.isEmpty)
+                            Text(
+                              Strings.of('noJoinRequests', lang),
+                              textAlign: TextAlign.center,
+                            )
                           else ...[
                             Text(
                               Strings.of('joinRequests', lang),
@@ -107,11 +117,13 @@ class _WaitingForHouseholdScreenState extends State<WaitingForHouseholdScreen> {
                             onPressed: _busy ? null : _checkAgain,
                             child: Text(Strings.of('checkAgain', lang)),
                           ),
-                          const SizedBox(height: 8),
-                          TextButton(
-                            onPressed: () => auth.signOut(),
-                            child: Text(Strings.of('signOut', lang)),
-                          ),
+                          if (!widget.inHomeShell) ...[
+                            const SizedBox(height: 8),
+                            TextButton(
+                              onPressed: () => auth.signOut(),
+                              child: Text(Strings.of('signOut', lang)),
+                            ),
+                          ],
                         ],
                       );
                     },
@@ -127,25 +139,25 @@ class _WaitingForHouseholdScreenState extends State<WaitingForHouseholdScreen> {
 
   /// No requests yet: ask the owner to add this email address.
   List<Widget> _waiting(AppLanguage lang) => [
-    const Icon(Icons.hourglass_empty, size: 48),
-    const SizedBox(height: 16),
-    Text(
-      Strings.of('waitingForHousehold', lang),
-      textAlign: TextAlign.center,
-      style: Theme.of(context).textTheme.titleLarge,
-    ),
-    const SizedBox(height: 12),
-    Text(
-      Strings.of('waitingForHouseholdBody', lang),
-      textAlign: TextAlign.center,
-    ),
-    const SizedBox(height: 8),
-    Text(
-      widget.email,
-      textAlign: TextAlign.center,
-      style: const TextStyle(fontWeight: FontWeight.bold),
-    ),
-  ];
+        const Icon(Icons.hourglass_empty, size: 48),
+        const SizedBox(height: 16),
+        Text(
+          Strings.of('waitingForHousehold', lang),
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+        const SizedBox(height: 12),
+        Text(
+          Strings.of('waitingForHouseholdBody', lang),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          widget.email,
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+      ];
 
   /// One request: who it's from, the contract offered, and accept/decline.
   Widget _inviteCard(HouseholdInvite invite, AppLanguage lang) {
@@ -158,7 +170,8 @@ class _WaitingForHouseholdScreenState extends State<WaitingForHouseholdScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(household.name, style: Theme.of(context).textTheme.titleMedium),
+            Text(household.name,
+                style: Theme.of(context).textTheme.titleMedium),
             Text(
               [
                 household.owner.name,
@@ -211,14 +224,14 @@ class _WaitingForHouseholdScreenState extends State<WaitingForHouseholdScreen> {
   }
 
   Widget _row(String label, String value) => Padding(
-    padding: const EdgeInsets.symmetric(vertical: 4),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(label, style: const TextStyle(color: mutedText)),
-        const SizedBox(width: 12),
-        Flexible(child: Text(value, textAlign: TextAlign.end)),
-      ],
-    ),
-  );
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(label, style: const TextStyle(color: mutedText)),
+            const SizedBox(width: 12),
+            Flexible(child: Text(value, textAlign: TextAlign.end)),
+          ],
+        ),
+      );
 }

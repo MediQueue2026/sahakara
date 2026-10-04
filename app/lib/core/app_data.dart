@@ -19,6 +19,10 @@ typedef AttendanceRecord = MyAttendanceAttendances;
 typedef LeaveRequest = MyLeaveRequestsLeaveRequests;
 typedef HouseholdAttendance = HouseholdAttendanceAttendances;
 typedef HouseholdLeaveRequest = HouseholdLeaveRequestsLeaveRequests;
+typedef MySalaryPayment = MySalaryPaymentsSalaryPayments;
+typedef HouseholdSalaryPayment = HouseholdSalaryPaymentsSalaryPayments;
+typedef MyAdvanceRequest = MyAdvanceRequestsAdvanceRequests;
+typedef HouseholdAdvanceRequest = HouseholdAdvanceRequestsAdvanceRequests;
 
 /// The account type and (on sign-up) name picked on the login screen,
 /// handed to [AppData.ensureUserProfile] once Firebase Auth has signed in.
@@ -102,6 +106,21 @@ class AppData {
     return result.data.householdMembers.firstOrNull;
   }
 
+  static Future<Membership?> fetchMyMembershipById(String id) async {
+    final result = await db.myMembershipById(id: id).execute();
+    final member = result.data.householdMembers.firstOrNull;
+    if (member == null) return null;
+    return Membership(
+      id: member.id,
+      role: member.role,
+      household: MyMembershipHouseholdMembersHousehold(
+        id: member.household.id,
+        name: member.household.name,
+        address: member.household.address,
+      ),
+    );
+  }
+
   /// Creates the household with the signed-in user as its owner.
   static Future<void> createHousehold({
     required String name,
@@ -111,9 +130,8 @@ class AppData {
   }
 
   static Future<List<Member>> fetchHouseholdMembers(String householdId) async {
-    final result = await db
-        .householdMembers(householdId: householdId)
-        .execute();
+    final result =
+        await db.householdMembers(householdId: householdId).execute();
     return result.data.householdMembers;
   }
 
@@ -329,18 +347,27 @@ class AppData {
     required DateTime day,
     required String dayType,
   }) async {
-    await db.checkIn(
-      memberId: memberId,
-      day: day,
-      dayType: AttendanceDayType.values.byName(dayType),
-    ).execute();
+    await db
+        .checkIn(
+          memberId: memberId,
+          day: day,
+          dayType: AttendanceDayType.values.byName(dayType),
+        )
+        .execute();
   }
 
   static Future<void> checkOut({
     required String memberId,
     required DateTime day,
+    required double overtimeHours,
   }) async {
-    await db.checkOut(memberId: memberId, day: day).execute();
+    await db
+        .checkOut(
+          memberId: memberId,
+          day: day,
+          overtimeHours: overtimeHours,
+        )
+        .execute();
   }
 
   static Future<void> submitLeaveRequest({
@@ -348,24 +375,31 @@ class AppData {
     required DateTime fromDate,
     required DateTime toDate,
     required String leaveType,
+    required bool isHalfDay,
     String? reason,
   }) async {
-    await db.submitLeaveRequest(
-      memberId: memberId,
-      fromDate: fromDate,
-      toDate: toDate,
-      leaveType: LeaveType.values.byName(leaveType),
-    ).reason(reason).execute();
+    await db
+        .submitLeaveRequest(
+          memberId: memberId,
+          fromDate: fromDate,
+          toDate: toDate,
+          leaveType: LeaveType.values.byName(leaveType),
+          isHalfDay: isHalfDay,
+        )
+        .reason(reason)
+        .execute();
   }
 
   static Future<void> reviewLeaveRequest({
     required String id,
     required String status,
   }) async {
-    await db.reviewLeaveRequest(
-      id: id,
-      status: LeaveStatus.values.byName(status),
-    ).execute();
+    await db
+        .reviewLeaveRequest(
+          id: id,
+          status: LeaveStatus.values.byName(status),
+        )
+        .execute();
   }
 
   static Future<void> deleteLeaveRequest(String id) async {
@@ -377,8 +411,10 @@ class AppData {
     return result.data.attendances;
   }
 
-  static Future<List<HouseholdAttendance>> fetchHouseholdAttendance(String householdId) async {
-    final result = await db.householdAttendance(householdId: householdId).execute();
+  static Future<List<HouseholdAttendance>> fetchHouseholdAttendance(
+      String householdId) async {
+    final result =
+        await db.householdAttendance(householdId: householdId).execute();
     return result.data.attendances;
   }
 
@@ -387,8 +423,96 @@ class AppData {
     return result.data.leaveRequests;
   }
 
-  static Future<List<HouseholdLeaveRequest>> fetchHouseholdLeaveRequests(String householdId) async {
-    final result = await db.householdLeaveRequests(householdId: householdId).execute();
+  static Future<List<HouseholdLeaveRequest>> fetchHouseholdLeaveRequests(
+      String householdId) async {
+    final result =
+        await db.householdLeaveRequests(householdId: householdId).execute();
     return result.data.leaveRequests;
+  }
+
+  static Future<List<MySalaryPayment>> fetchMySalaryPayments() async {
+    final result = await db.mySalaryPayments().execute();
+    return result.data.salaryPayments;
+  }
+
+  static Future<List<HouseholdSalaryPayment>> fetchHouseholdSalaryPayments(
+    String householdId,
+  ) async {
+    final result =
+        await db.householdSalaryPayments(householdId: householdId).execute();
+    return result.data.salaryPayments;
+  }
+
+  static Future<void> scheduleSalaryPayment({
+    required String memberId,
+    required double amount,
+    required DateTime paymentDate,
+    String? note,
+  }) async {
+    await db
+        .scheduleSalaryPayment(
+          memberId: memberId,
+          amount: amount,
+          paymentDate: paymentDate,
+        )
+        .note(note)
+        .execute();
+  }
+
+  static Future<void> markSalaryPaymentPaid({
+    required String id,
+    required DateTime paymentDate,
+    required String method,
+  }) async {
+    final month =
+        '${paymentDate.year}-${paymentDate.month.toString().padLeft(2, '0')}';
+    await db
+        .markSalaryPaymentPaid(
+          id: id,
+          month: month,
+          method: PaymentMethod.values.byName(method),
+        )
+        .execute();
+  }
+
+  static Future<List<MyAdvanceRequest>> fetchMyAdvanceRequests() async {
+    final result = await db.myAdvanceRequests().execute();
+    return result.data.advanceRequests;
+  }
+
+  static Future<List<HouseholdAdvanceRequest>> fetchHouseholdAdvanceRequests(
+    String householdId,
+  ) async {
+    final result =
+        await db.householdAdvanceRequests(householdId: householdId).execute();
+    return result.data.advanceRequests;
+  }
+
+  static Future<void> requestAdvance({
+    required String memberId,
+    required double amount,
+    String? reason,
+  }) async {
+    await db
+        .requestAdvance(memberId: memberId, amount: amount)
+        .reason(reason)
+        .execute();
+  }
+
+  static Future<void> reviewAdvanceRequest({
+    required String id,
+    required String status,
+  }) async {
+    switch (AdvanceRequestStatus.values.byName(status)) {
+      case AdvanceRequestStatus.approved:
+        final now = DateTime.now();
+        final month = '${now.year}-${now.month.toString().padLeft(2, '0')}';
+        await db.approveAdvanceRequest(id: id, month: month).execute();
+      case AdvanceRequestStatus.rejected:
+        await db.rejectAdvanceRequest(id: id).execute();
+      case AdvanceRequestStatus.pending:
+        throw ArgumentError.value(
+            status, 'status', 'Must be approved or rejected');
+    }
   }
 }

@@ -74,6 +74,8 @@ lib/
     onboarding/    First-run household creation
     home/          Bottom-nav shell + household tab
     contract/      View/edit a household member's contract
+    payroll/       Payment dates, advance requests, and payment tracking
+    attendance/    Check-in/out, leave requests, half days and overtime
     tasks/         Daily tasks (owner assigns, staff report status), task library browser
     settings/      Language switch, sign out
     admin/         Web-only staff panel (households, task library, holidays)
@@ -88,6 +90,8 @@ Sprint 2: owners add one-off tasks for a day (from the library or typed in)
 and assign them to staff — straight away, or later, so tasks can be planned
 before any staff are added — who see their own list for the day and mark each
 task started / done / need help / can't do (with a reason) — the owner sees
-the status on their view. Recurring tasks, photo proof, and Sprints 3–5 (attendance, payroll,
-rewards, offline sync, notifications) build on this schema and structure but
-aren't implemented yet.
+the status on their view. Attendance now supports check-in/out, half days,
+leave requests and overtime logging. Payroll supports salary payment dates,
+in-app reminders the day before, and advance requests with owner review.
+Recurring tasks, photo proof, rewards, offline sync, and push notifications
+remain planned.

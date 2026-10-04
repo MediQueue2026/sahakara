@@ -83,21 +83,26 @@ class Strings {
     'registeredAsOwner': {
       AppLanguage.en:
           'This account is registered as a house owner. Sign in here instead.',
-      AppLanguage.si: 'මෙම ගිණුම නිවස් හිමිකරුවෙකු ලෙස ලියාපදිංචි කර ඇත. මෙතැනින් පිවිසෙන්න.',
-      AppLanguage.ta: 'இந்தக் கணக்கு வீட்டு உரிமையாளராகப் பதிவு செய்யப்பட்டுள்ளது. இங்கே உள்நுழையவும்.',
+      AppLanguage.si:
+          'මෙම ගිණුම නිවස් හිමිකරුවෙකු ලෙස ලියාපදිංචි කර ඇත. මෙතැනින් පිවිසෙන්න.',
+      AppLanguage.ta:
+          'இந்தக் கணக்கு வீட்டு உரிமையாளராகப் பதிவு செய்யப்பட்டுள்ளது. இங்கே உள்நுழையவும்.',
     },
     'registeredAsMaid': {
       AppLanguage.en:
           'This account is registered as a maid. Sign in here instead.',
       AppLanguage.si:
           'මෙම ගිණුම සහායිකාවක් ලෙස ලියාපදිංචි කර ඇත. මෙතැනින් පිවිසෙන්න.',
-      AppLanguage.ta: 'இந்தக் கணக்கு வீட்டுப் பணியாளராகப் பதிவு செய்யப்பட்டுள்ளது. இங்கே உள்நுழையவும்.',
+      AppLanguage.ta:
+          'இந்தக் கணக்கு வீட்டுப் பணியாளராகப் பதிவு செய்யப்பட்டுள்ளது. இங்கே உள்நுழையவும்.',
     },
     'adminUseWebPanel': {
       AppLanguage.en:
           'This is an admin account. Please use the Sahakara web admin panel.',
-      AppLanguage.si: 'මෙය පරිපාලක ගිණුමකි. කරුණාකර සහකාර වෙබ් පරිපාලන පුවරුව භාවිතා කරන්න.',
-      AppLanguage.ta: 'இது ஒரு நிர்வாகி கணக்கு. சஹகார இணைய நிர்வாகப் பலகத்தைப் பயன்படுத்தவும்.',
+      AppLanguage.si:
+          'මෙය පරිපාලක ගිණුමකි. කරුණාකර සහකාර වෙබ් පරිපාලන පුවරුව භාවිතා කරන්න.',
+      AppLanguage.ta:
+          'இது ஒரு நிர்வாகி கணக்கு. சஹகார இணைய நிர்வாகப் பலகத்தைப் பயன்படுத்தவும்.',
     },
     'waitingForHousehold': {
       AppLanguage.en: 'Waiting to join a household',
@@ -107,8 +112,10 @@ class Strings {
     'waitingForHouseholdBody': {
       AppLanguage.en:
           'Ask the house owner to add you in Sahakara using this email:',
-      AppLanguage.si: 'මෙම ඊමේල් ලිපිනය භාවිතයෙන් ඔබව සහකාර වෙත එක් කරන ලෙස නිවස් හිමිකරුගෙන් ඉල්ලන්න:',
-      AppLanguage.ta: 'இந்த மின்னஞ்சலைப் பயன்படுத்தி உங்களை சஹகாரவில் சேர்க்க வீட்டு உரிமையாளரிடம் கேளுங்கள்:',
+      AppLanguage.si:
+          'මෙම ඊමේල් ලිපිනය භාවිතයෙන් ඔබව සහකාර වෙත එක් කරන ලෙස නිවස් හිමිකරුගෙන් ඉල්ලන්න:',
+      AppLanguage.ta:
+          'இந்த மின்னஞ்சலைப் பயன்படுத்தி உங்களை சஹகாரவில் சேர்க்க வீட்டு உரிமையாளரிடம் கேளுங்கள்:',
     },
     'checkAgain': {
       AppLanguage.en: 'Check again',
@@ -184,9 +191,14 @@ class Strings {
       AppLanguage.ta: 'அகற்று',
     },
     'joinRequests': {
-      AppLanguage.en: 'Requests to join a household',
-      AppLanguage.si: 'නිවසකට එක්වීමට ඉල්ලීම්',
-      AppLanguage.ta: 'வீட்டில் சேர்வதற்கான கோரிக்கைகள்',
+      AppLanguage.en: 'Requests',
+      AppLanguage.si: 'ඉල්ලීම්',
+      AppLanguage.ta: 'கோரிக்கைகள்',
+    },
+    'noJoinRequests': {
+      AppLanguage.en: 'No pending household requests.',
+      AppLanguage.si: 'පොරොත්තු වන නිවාස ඉල්ලීම් නැත.',
+      AppLanguage.ta: 'நிலுவையில் உள்ள வீட்டு கோரிக்கைகள் இல்லை.',
     },
     'accept': {
       AppLanguage.en: 'Accept',
@@ -310,7 +322,8 @@ class Strings {
       AppLanguage.ta: 'கோரிக்கை வெற்றிகரமாக அனுப்பப்பட்டது',
     },
     'requestSentBody': {
-      AppLanguage.en: 'She will join the household once she accepts the contract.',
+      AppLanguage.en:
+          'She will join the household once she accepts the contract.',
       AppLanguage.si: 'ඇය ගිවිසුම පිළිගත් පසු නිවසට එක් වේ.',
       AppLanguage.ta: 'அவர் ஒப்பந்தத்தை ஏற்றுக்கொண்டதும் வீட்டில் சேர்வார்.',
     },
@@ -338,6 +351,29 @@ class Strings {
       AppLanguage.en: 'No contract set up yet.',
       AppLanguage.si: 'තවම ගිවිසුමක් සකසා නැත.',
       AppLanguage.ta: 'இன்னும் ஒப்பந்தம் அமைக்கப்படவில்லை.',
+    },
+    'contractMissingAskOwner': {
+      AppLanguage.en:
+          'Your contract is not available yet. Ask the household owner to add or update your contract, then refresh this page.',
+      AppLanguage.si:
+          'ඔබගේ ගිවිසුම තවම ලබා ගත නොහැක. ගෘහ හිමිකරුගෙන් ගිවිසුම එක් කිරීමට හෝ යාවත්කාලීන කිරීමට ඉල්ලා මෙම පිටුව නැවත පූරණය කරන්න.',
+      AppLanguage.ta:
+          'உங்கள் ஒப்பந்தம் இன்னும் கிடைக்கவில்லை. வீட்டின் உரிமையாளரிடம் ஒப்பந்தத்தைச் சேர்க்க அல்லது புதுப்பிக்கச் சொல்லி, இந்தப் பக்கத்தைப் புதுப்பிக்கவும்.',
+    },
+    'contractLoadFailed': {
+      AppLanguage.en: 'Could not load the contract.',
+      AppLanguage.si: 'ගිවිසුම පූරණය කළ නොහැකි විය.',
+      AppLanguage.ta: 'ஒப்பந்தத்தை ஏற்ற முடியவில்லை.',
+    },
+    'refresh': {
+      AppLanguage.en: 'Refresh',
+      AppLanguage.si: 'නැවත පූරණය කරන්න',
+      AppLanguage.ta: 'புதுப்பி',
+    },
+    'retry': {
+      AppLanguage.en: 'Try again',
+      AppLanguage.si: 'නැවත උත්සාහ කරන්න',
+      AppLanguage.ta: 'மீண்டும் முயற்சி செய்',
     },
     'signOut': {
       AppLanguage.en: 'Sign out',
@@ -397,7 +433,8 @@ class Strings {
     'noLibraryTasks': {
       AppLanguage.en: 'No default tasks yet. Tap "Other" below to type one in.',
       AppLanguage.si: 'තවම පෙරනිමි කාර්ය නැත. ටයිප් කිරීමට පහත "වෙනත්" ඔබන්න.',
-      AppLanguage.ta: 'இன்னும் இயல்புநிலை பணிகள் இல்லை. தட்டச்சு செய்ய கீழே "மற்றவை" அழுத்தவும்.',
+      AppLanguage.ta:
+          'இன்னும் இயல்புநிலை பணிகள் இல்லை. தட்டச்சு செய்ய கீழே "மற்றவை" அழுத்தவும்.',
     },
     'whatTask': {
       AppLanguage.en: 'What needs to be done?',
@@ -616,9 +653,12 @@ class Strings {
       AppLanguage.ta: 'இன்னும் ஒதுக்கப்படவில்லை',
     },
     'assignLaterHint': {
-      AppLanguage.en: 'No staff yet. Add them from the Household tab, then assign this task from the Daily tasks list.',
-      AppLanguage.si: 'තවම සේවකයින් නැත. නිවස ටැබයෙන් ඔවුන් එක් කර, පසුව දෛනික කාර්ය ලැයිස්තුවෙන් මෙම කාර්යය පවරන්න.',
-      AppLanguage.ta: 'இன்னும் பணியாளர்கள் இல்லை. வீடு தாவலில் அவர்களைச் சேர்த்து, பின்னர் தினசரி பணிகள் பட்டியலில் இந்தப் பணியை ஒதுக்கவும்.',
+      AppLanguage.en:
+          'No staff yet. Add them from the Household tab, then assign this task from the Daily tasks list.',
+      AppLanguage.si:
+          'තවම සේවකයින් නැත. නිවස ටැබයෙන් ඔවුන් එක් කර, පසුව දෛනික කාර්ය ලැයිස්තුවෙන් මෙම කාර්යය පවරන්න.',
+      AppLanguage.ta:
+          'இன்னும் பணியாளர்கள் இல்லை. வீடு தாவலில் அவர்களைச் சேர்த்து, பின்னர் தினசரி பணிகள் பட்டியலில் இந்தப் பணியை ஒதுக்கவும்.',
     },
     'save': {
       AppLanguage.en: 'Save',
@@ -725,10 +765,183 @@ class Strings {
       AppLanguage.si: 'පැමිණීම් වාර්තා නැත.',
       AppLanguage.ta: 'வருகை பதிவுகள் இல்லை.',
     },
+    'status': {
+      AppLanguage.en: 'Status',
+      AppLanguage.si: 'තත්ත්වය',
+      AppLanguage.ta: 'நிலை',
+    },
     'noReasonProvided': {
       AppLanguage.en: 'No reason provided',
       AppLanguage.si: 'හේතුවක් සපයා නැත',
       AppLanguage.ta: 'காரணம் வழங்கப்படவில்லை',
+    },
+    'halfDay': {
+      AppLanguage.en: 'Half day',
+      AppLanguage.si: 'අර්ධ දිනය',
+      AppLanguage.ta: 'அரை நாள்',
+    },
+    'attendanceType': {
+      AppLanguage.en: 'Attendance type',
+      AppLanguage.si: 'පැමිණීමේ වර්ගය',
+      AppLanguage.ta: 'வருகை வகை',
+    },
+    'dayType_full': {
+      AppLanguage.en: 'Full day',
+      AppLanguage.si: 'සම්පූර්ණ දිනය',
+      AppLanguage.ta: 'முழு நாள்',
+    },
+    'dayType_half': {
+      AppLanguage.en: 'Half day',
+      AppLanguage.si: 'අර්ධ දිනය',
+      AppLanguage.ta: 'அரை நாள்',
+    },
+    'overtimeHours': {
+      AppLanguage.en: 'Overtime hours',
+      AppLanguage.si: 'අතිකාල පැය',
+      AppLanguage.ta: 'கூடுதல் நேரம் (மணி)',
+    },
+    'enterValidOvertime': {
+      AppLanguage.en: 'Enter a number from 0 to 24.',
+      AppLanguage.si: '0 සිට 24 දක්වා අගයක් ඇතුළත් කරන්න.',
+      AppLanguage.ta: '0 முதல் 24 வரை உள்ள எண்ணை உள்ளிடவும்.',
+    },
+    'pay': {
+      AppLanguage.en: 'Pay',
+      AppLanguage.si: 'ගෙවීම්',
+      AppLanguage.ta: 'ஊதியம்',
+    },
+    'salaryPayments': {
+      AppLanguage.en: 'Salary payments',
+      AppLanguage.si: 'වැටුප් ගෙවීම්',
+      AppLanguage.ta: 'சம்பளப் பணம்',
+    },
+    'scheduledPayments': {
+      AppLanguage.en: 'Payment schedule',
+      AppLanguage.si: 'ගෙවීම් කාලසටහන',
+      AppLanguage.ta: 'கட்டண அட்டவணை',
+    },
+    'paymentDueTomorrow': {
+      AppLanguage.en: 'Reminder: a staff payment is due tomorrow.',
+      AppLanguage.si: 'මතක් කිරීම: හෙට සේවක වැටුපක් ගෙවිය යුතුයි.',
+      AppLanguage.ta: 'நினைவூட்டல்: நாளை பணியாளர் ஊதியம் வழங்க வேண்டும்.',
+    },
+    'paymentDate': {
+      AppLanguage.en: 'Payment date',
+      AppLanguage.si: 'ගෙවීම් දිනය',
+      AppLanguage.ta: 'கட்டண தேதி',
+    },
+    'amount': {
+      AppLanguage.en: 'Amount (LKR)',
+      AppLanguage.si: 'මුදල (LKR)',
+      AppLanguage.ta: 'தொகை (LKR)',
+    },
+    'noteOptional': {
+      AppLanguage.en: 'Note (optional)',
+      AppLanguage.si: 'සටහන (විකල්ප)',
+      AppLanguage.ta: 'குறிப்பு (விருப்பம்)',
+    },
+    'addPaymentDate': {
+      AppLanguage.en: 'Schedule salary payment',
+      AppLanguage.si: 'වැටුප් ගෙවීම සැලසුම් කරන්න',
+      AppLanguage.ta: 'சம்பளத் தேதியை திட்டமிடு',
+    },
+    'markPaid': {
+      AppLanguage.en: 'Mark as paid',
+      AppLanguage.si: 'ගෙවා ඇති බව සටහන් කරන්න',
+      AppLanguage.ta: 'செலுத்தியதாகக் குறி',
+    },
+    'paymentStatus_scheduled': {
+      AppLanguage.en: 'Scheduled',
+      AppLanguage.si: 'සැලසුම් කර ඇත',
+      AppLanguage.ta: 'திட்டமிடப்பட்டது',
+    },
+    'paymentStatus_paid': {
+      AppLanguage.en: 'Paid',
+      AppLanguage.si: 'ගෙවා ඇත',
+      AppLanguage.ta: 'செலுத்தப்பட்டது',
+    },
+    'paymentMethod': {
+      AppLanguage.en: 'Payment method',
+      AppLanguage.si: 'ගෙවීමේ ක්‍රමය',
+      AppLanguage.ta: 'கட்டண முறை',
+    },
+    'method_cash': {
+      AppLanguage.en: 'Cash',
+      AppLanguage.si: 'මුදල්',
+      AppLanguage.ta: 'பணம்',
+    },
+    'method_bank': {
+      AppLanguage.en: 'Bank transfer',
+      AppLanguage.si: 'බැංකු මාරු කිරීම',
+      AppLanguage.ta: 'வங்கி பரிமாற்றம்',
+    },
+    'method_mobile_wallet': {
+      AppLanguage.en: 'Mobile wallet',
+      AppLanguage.si: 'ජංගම මුදල් පසුම්බිය',
+      AppLanguage.ta: 'மொபைல் பணப்பை',
+    },
+    'advanceRequests': {
+      AppLanguage.en: 'Salary advance requests',
+      AppLanguage.si: 'වැටුප් අත්තිකාරම් ඉල්ලීම්',
+      AppLanguage.ta: 'சம்பள முன்பணக் கோரிக்கைகள்',
+    },
+    'confirmApproveAdvance': {
+      AppLanguage.en:
+          'Approve the advance of {amount}? It will be recorded as issued.',
+      AppLanguage.si:
+          '{amount} අත්තිකාරම අනුමත කරන්නද? එය ලබා දුන් ලෙස සටහන් වේ.',
+      AppLanguage.ta:
+          '{amount} முன்பணத்தை அங்கீகரிக்கவா? வழங்கியதாக பதிவு செய்யப்படும்.',
+    },
+    'confirmRejectAdvance': {
+      AppLanguage.en: 'Reject the advance request for {amount}?',
+      AppLanguage.si: '{amount} අත්තිකාරම් ඉල්ලීම ප්‍රතික්ෂේප කරන්නද?',
+      AppLanguage.ta: '{amount} முன்பணக் கோரிக்கையை நிராகரிக்கவா?',
+    },
+    'requestAdvance': {
+      AppLanguage.en: 'Request an advance',
+      AppLanguage.si: 'අත්තිකාරමක් ඉල්ලන්න',
+      AppLanguage.ta: 'முன்பணம் கோரு',
+    },
+    'advanceStatus_pending': {
+      AppLanguage.en: 'Pending',
+      AppLanguage.si: 'පොරොත්තුවෙන්',
+      AppLanguage.ta: 'நிலுவையில்',
+    },
+    'advanceStatus_approved': {
+      AppLanguage.en: 'Approved',
+      AppLanguage.si: 'අනුමතයි',
+      AppLanguage.ta: 'அங்கீகரிக்கப்பட்டது',
+    },
+    'advanceStatus_rejected': {
+      AppLanguage.en: 'Rejected',
+      AppLanguage.si: 'ප්‍රතික්ෂේපිතයි',
+      AppLanguage.ta: 'நிராகரிக்கப்பட்டது',
+    },
+    'noPayments': {
+      AppLanguage.en: 'No salary payments scheduled yet.',
+      AppLanguage.si: 'තවම වැටුප් ගෙවීම් සැලසුම් කර නැත.',
+      AppLanguage.ta: 'இன்னும் சம்பளப் பணம் திட்டமிடப்படவில்லை.',
+    },
+    'noAdvanceRequests': {
+      AppLanguage.en: 'No advance requests.',
+      AppLanguage.si: 'අත්තිකාරම් ඉල්ලීම් නැත.',
+      AppLanguage.ta: 'முன்பணக் கோரிக்கைகள் இல்லை.',
+    },
+    'selectStaff': {
+      AppLanguage.en: 'Select staff member',
+      AppLanguage.si: 'සේවකයෙකු තෝරන්න',
+      AppLanguage.ta: 'பணியாளரைத் தேர்ந்தெடுக்கவும்',
+    },
+    'approve': {
+      AppLanguage.en: 'Approve',
+      AppLanguage.si: 'අනුමත කරන්න',
+      AppLanguage.ta: 'அங்கீகரி',
+    },
+    'reject': {
+      AppLanguage.en: 'Reject',
+      AppLanguage.si: 'ප්‍රතික්ෂේප කරන්න',
+      AppLanguage.ta: 'நிராகரி',
     },
   };
 
