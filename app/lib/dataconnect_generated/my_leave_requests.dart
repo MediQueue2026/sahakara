@@ -22,6 +22,7 @@ class MyLeaveRequestsLeaveRequests {
   final DateTime fromDate;
   final DateTime toDate;
   final EnumValue<LeaveType> leaveType;
+  final bool isHalfDay;
   final String? reason;
   final EnumValue<LeaveStatus> status;
   final Timestamp createdAt;
@@ -31,6 +32,7 @@ class MyLeaveRequestsLeaveRequests {
   fromDate = nativeFromJson<DateTime>(json['fromDate']),
   toDate = nativeFromJson<DateTime>(json['toDate']),
   leaveType = leaveTypeDeserializer(json['leaveType']),
+  isHalfDay = nativeFromJson<bool>(json['isHalfDay']),
   reason = json['reason'] == null ? null : nativeFromJson<String>(json['reason']),
   status = leaveStatusDeserializer(json['status']),
   createdAt = Timestamp.fromJson(json['createdAt']);
@@ -48,13 +50,14 @@ class MyLeaveRequestsLeaveRequests {
     fromDate == otherTyped.fromDate && 
     toDate == otherTyped.toDate && 
     leaveType == otherTyped.leaveType && 
+    isHalfDay == otherTyped.isHalfDay && 
     reason == otherTyped.reason && 
     status == otherTyped.status && 
     createdAt == otherTyped.createdAt;
     
   }
   @override
-  int get hashCode => Object.hashAll([id.hashCode, fromDate.hashCode, toDate.hashCode, leaveType.hashCode, reason.hashCode, status.hashCode, createdAt.hashCode]);
+  int get hashCode => Object.hashAll([id.hashCode, fromDate.hashCode, toDate.hashCode, leaveType.hashCode, isHalfDay.hashCode, reason.hashCode, status.hashCode, createdAt.hashCode]);
   
 
   Map<String, dynamic> toJson() {
@@ -65,6 +68,7 @@ class MyLeaveRequestsLeaveRequests {
     json['leaveType'] = 
     leaveTypeSerializer(leaveType)
     ;
+    json['isHalfDay'] = nativeToJson<bool>(isHalfDay);
     if (reason != null) {
       json['reason'] = nativeToJson<String?>(reason);
     }
@@ -80,6 +84,7 @@ class MyLeaveRequestsLeaveRequests {
     required this.fromDate,
     required this.toDate,
     required this.leaveType,
+    required this.isHalfDay,
     this.reason,
     required this.status,
     required this.createdAt,

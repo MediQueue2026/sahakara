@@ -200,7 +200,11 @@ mutation AcceptHouseholdInvite($id: UUID!) @auth(level: USER) @transaction {
   }
   householdMember_update(
     id: $id
-    data: { active: true, status: accepted, joinedOn_expr: "request.time" }
+    data: {
+      active: true
+      status: accepted
+      joinedOn_expr: "request.time"
+    }
   )
   contract_updateMany(
     where: { memberId: { eq: $id }, endDate: { isNull: true } }
@@ -589,7 +593,8 @@ mutation CheckIn(
 mutation CheckOut(
   $memberId: UUID!
   $day: Date!
-) @auth(level: USER) @transaction {
+  $overtimeHours: Float!
+) @auth(expr: "auth.uid != '' && vars.overtimeHours >= 0 && vars.overtimeHours <= 24") @transaction {
   query @redact {
     householdMembers(
       where: {
@@ -600,10 +605,29 @@ mutation CheckOut(
     ) @check(expr: "this.size() == 1", message: "Only active members can check out") {
       id
     }
+    attendances(
+      where: {
+        member: { id: { eq: $memberId } }
+        day: { eq: $day }
+        checkIn: { isNull: false }
+        checkOut: { isNull: true }
+      }
+    )
+      @check(
+        expr: "this.size() == 1"
+        message: "Check in before checking out"
+      ) {
+      id
+    }
   }
   attendance_updateMany(
-    where: { memberId: { eq: $memberId }, day: { eq: $day } }
-    data: { checkOut_expr: "request.time" }
+    where: {
+      memberId: { eq: $memberId }
+      day: { eq: $day }
+      checkIn: { isNull: false }
+      checkOut: { isNull: true }
+    }
+    data: { checkOut_expr: "request.time", overtimeHours: $overtimeHours }
   )
 }
 
@@ -612,8 +636,9 @@ mutation SubmitLeaveRequest(
   $fromDate: Date!
   $toDate: Date!
   $leaveType: LeaveType!
+  $isHalfDay: Boolean!
   $reason: String
-) @auth(level: USER) @transaction {
+) @auth(expr: "auth.uid != '' && vars.fromDate <= vars.toDate && (!vars.isHalfDay || vars.fromDate == vars.toDate)") @transaction {
   query @redact {
     householdMembers(
       where: {
@@ -631,19 +656,206 @@ mutation SubmitLeaveRequest(
       fromDate: $fromDate
       toDate: $toDate
       leaveType: $leaveType
+      isHalfDay: $isHalfDay
       reason: $reason
     }
+  )
+}
+
+# ── salary payments and advances ────────────────────────────────────────
+
+mutation ScheduleSalaryPayment(
+  $memberId: UUID!
+  $amount: Float!
+  $paymentDate: Date!
+  $note: String
+) @auth(expr: "auth.uid != '' && vars.amount > 0") @transaction {
+  query @redact {
+    householdMembers(
+      where: {
+        id: { eq: $memberId }
+        active: { eq: true }
+        role: { ne: owner }
+        household: { owner: { authUid: { eq_expr: "auth.uid" } } }
+      }
+    )
+      @check(
+        expr: "this.size() == 1"
+        message: "Only the household owner can schedule a staff payment"
+      ) {
+      id
+    }
+    users(where: { authUid: { eq_expr: "auth.uid" } }) {
+      id
+    }
+  }
+  salaryPayment_insert(
+    data: {
+      memberId: $memberId
+      amount: $amount
+      paymentDate: $paymentDate
+      note: $note
+      createdById_expr: "response.query.users[0].id"
+    }
+  )
+}
+
+mutation MarkSalaryPaymentPaid(
+  $id: UUID!
+  $month: String!
+  $method: PaymentMethod!
+)
+@auth(level: USER) @transaction {
+  query @redact {
+    salaryPayments(
+      where: {
+        id: { eq: $id }
+        status: { eq: scheduled }
+        member: { household: { owner: { authUid: { eq_expr: "auth.uid" } } } }
+      }
+    )
+      @check(
+        expr: "this.size() == 1"
+        message: "Only the owner can mark a scheduled payment as paid"
+      ) {
+      amount
+      note
+      member {
+        id
+      }
+    }
+    users(where: { authUid: { eq_expr: "auth.uid" } }) {
+      id
+    }
+  }
+  salaryPayment_update(
+    id: $id
+    data: { status: paid, paidAt_expr: "request.time" }
+  )
+  ledgerEntry_insert(
+    data: {
+      memberId_expr: "response.query.salaryPayments[0].member.id"
+      entryType: payment
+      amount_expr: "response.query.salaryPayments[0].amount"
+      method: $method
+      note_expr: "response.query.salaryPayments[0].note"
+      month: $month
+      createdById_expr: "response.query.users[0].id"
+    }
+  )
+}
+
+mutation RequestAdvance(
+  $memberId: UUID!
+  $amount: Float!
+  $reason: String
+) @auth(expr: "auth.uid != '' && vars.amount > 0") @transaction {
+  query @redact {
+    householdMembers(
+      where: {
+        id: { eq: $memberId }
+        active: { eq: true }
+        role: { ne: owner }
+        user: { authUid: { eq_expr: "auth.uid" } }
+      }
+    )
+      @check(
+        expr: "this.size() == 1"
+        message: "Only active members can request an advance"
+      ) {
+      id
+    }
+  }
+  advanceRequest_insert(
+    data: { memberId: $memberId, amount: $amount, reason: $reason }
+  )
+}
+
+mutation ApproveAdvanceRequest($id: UUID!, $month: String!)
+@auth(level: USER) @transaction {
+  query @redact {
+    advanceRequests(
+      where: {
+        id: { eq: $id }
+        status: { eq: pending }
+        member: { household: { owner: { authUid: { eq_expr: "auth.uid" } } } }
+      }
+    )
+      @check(
+        expr: "this.size() == 1"
+        message: "Only the owner can review a pending advance request"
+      ) {
+      amount
+      reason
+      member {
+        id
+      }
+    }
+    users(where: { authUid: { eq_expr: "auth.uid" } }) {
+      id
+    }
+  }
+  advance_insert(
+    data: {
+      memberId_expr: "response.query.advanceRequests[0].member.id"
+      amount_expr: "response.query.advanceRequests[0].amount"
+      remaining_expr: "response.query.advanceRequests[0].amount"
+      note_expr: "response.query.advanceRequests[0].reason"
+      createdById_expr: "response.query.users[0].id"
+    }
+  )
+  advanceRequest_update(
+    id: $id
+    data: {
+      status: approved
+      reviewedAt_expr: "request.time"
+      advanceId_expr: "response.advance_insert.id"
+    }
+  )
+  ledgerEntry_insert(
+    data: {
+      memberId_expr: "response.query.advanceRequests[0].member.id"
+      entryType: advance
+      amount_expr: "response.query.advanceRequests[0].amount"
+      method: cash
+      note_expr: "response.query.advanceRequests[0].reason"
+      month: $month
+      createdById_expr: "response.query.users[0].id"
+    }
+  )
+}
+
+mutation RejectAdvanceRequest($id: UUID!) @auth(level: USER) @transaction {
+  query @redact {
+    advanceRequests(
+      where: {
+        id: { eq: $id }
+        status: { eq: pending }
+        member: { household: { owner: { authUid: { eq_expr: "auth.uid" } } } }
+      }
+    )
+      @check(
+        expr: "this.size() == 1"
+        message: "Only the owner can reject a pending advance request"
+      ) {
+      id
+    }
+  }
+  advanceRequest_update(
+    id: $id
+    data: { status: rejected, reviewedAt_expr: "request.time" }
   )
 }
 
 mutation ReviewLeaveRequest(
   $id: UUID!
   $status: LeaveStatus!
-) @auth(level: USER) @transaction {
+) @auth(expr: "auth.uid != '' && (vars.status == 'approved' || vars.status == 'rejected')") @transaction {
   query @redact {
     leaveRequests(
       where: {
         id: { eq: $id }
+        status: { eq: pending }
         member: { household: { owner: { authUid: { eq_expr: "auth.uid" } } } }
       }
     ) @check(expr: "this.size() == 1", message: "Only the owner can review leave requests") {

@@ -53,9 +53,8 @@ class _MobileAppState extends State<MobileApp> {
               _rejectedAs = null;
             },
             // An admin has no mobile form to go back to.
-            initialAccountType: rejectedAs == AccountType.admin
-                ? null
-                : rejectedAs,
+            initialAccountType:
+                rejectedAs == AccountType.admin ? null : rejectedAs,
             initialErrorKey: switch (rejectedAs) {
               AccountType.owner => 'registeredAsOwner',
               AccountType.maid => 'registeredAsMaid',
@@ -96,6 +95,7 @@ class _AuthedRouterState extends State<_AuthedRouter> {
   // it is (e.g. a remembered session), so ask before creating one.
   late Future<(Profile, Membership?)?> _future;
   late AuthIntent? _intent = widget.intent;
+  String? _preferredMembershipId;
 
   @override
   void initState() {
@@ -125,18 +125,26 @@ class _AuthedRouterState extends State<_AuthedRouter> {
       rethrow;
     }
     if (profile == null) return null;
-    final storedLang = AppLanguage.values
-        .asNameMap()[profile.language.stringValue];
+    final storedLang =
+        AppLanguage.values.asNameMap()[profile.language.stringValue];
     if (storedLang != null) {
       widget.lang.value = storedLang;
     }
-    final membership = await AppData.fetchMyMembership();
+    final membershipId = _preferredMembershipId;
+    final membership = membershipId == null
+        ? await AppData.fetchMyMembership()
+        : await AppData.fetchMyMembershipById(membershipId);
     return (profile, membership);
   }
 
   void refresh() => setState(() {
-    _future = _bootstrap();
-  });
+        _future = _bootstrap();
+      });
+
+      void _onHouseholdAccepted(String memberId) {
+        _preferredMembershipId = memberId;
+        refresh();
+      }
 
   void _chooseAccountType(AccountType type) {
     _intent = AuthIntent(accountType: type);
@@ -176,7 +184,7 @@ class _AuthedRouterState extends State<_AuthedRouter> {
             return WaitingForHouseholdScreen(
               lang: widget.lang,
               email: profile.email,
-              onRefresh: refresh,
+              onHouseholdAccepted: _onHouseholdAccepted,
             );
           }
           return HouseholdSetupScreen(lang: widget.lang, onDone: refresh);
@@ -185,6 +193,7 @@ class _AuthedRouterState extends State<_AuthedRouter> {
           lang: widget.lang,
           profile: profile,
           membership: membership,
+          onHouseholdAccepted: _onHouseholdAccepted,
         );
       },
     );

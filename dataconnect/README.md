@@ -10,7 +10,7 @@ The app has no custom server. Firebase is the backend:
 ```
 dataconnect/
   dataconnect.yaml        Service config: region, Cloud SQL instance
-  schema/schema.gql       All 21 tables + enums (becomes the Postgres schema)
+  schema/schema.gql       All 23 tables + enums (becomes the Postgres schema)
   connector/
     connector.yaml        Generates the Dart SDK into app/lib/dataconnect_generated
     queries.gql           Every read the app can do, with its access rule
@@ -34,6 +34,14 @@ queries. Each operation is its own access rule:
   operations first `@check` that the caller's row is an `admin`, so a signed-in
   owner or maid calling one gets "Admins only". `CreateMyProfile` refuses
   `admin`, so nobody can sign themselves up as one.
+
+Attendance supports leave requests (including half days), check-in/check-out,
+and recorded overtime. Payroll supports dated salary-payment schedules,
+marking payments paid, and advance requests with owner approval. Approving an
+advance creates its advance and ledger records in one transaction. The owner
+sees an in-app reminder on the Pay tab when a scheduled payment is due the
+following day; reminders are surfaced while using the app and do not require
+push-notification delivery.
 
 Adding a feature means adding an operation to `connector/` and then
 regenerating the SDK (see below).

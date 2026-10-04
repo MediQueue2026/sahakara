@@ -1,5 +1,5 @@
 # Sahakara (Housemaid Management App) — Firebase Data Connect schema.
-# 21 tables in 6 groups: users & households, tasks, rewards, attendance &
+# 23 tables in 6 groups: users & households, tasks, rewards, attendance &
 # leave, payments, household & admin. Data Connect turns each `@table` type
 # into a PostgreSQL table (Cloud SQL); access rules live on the operations
 # in ../connector/, not here.
@@ -40,6 +40,8 @@ enum LeaveStatus { pending approved rejected }
 enum HolidayType { poya public festival }
 enum LedgerEntryType { salary payment advance advance_repay bonus deduction overtime correction }
 enum PaymentMethod { cash bank mobile_wallet }
+enum SalaryPaymentStatus { scheduled paid }
+enum AdvanceRequestStatus { pending approved rejected }
 enum DisputeStatus { open resolved }
 enum ShoppingStatus { needed bought }
 enum DocumentType { nic agency contract other }
@@ -187,6 +189,7 @@ type LeaveRequest @table {
   fromDate: Date!
   toDate: Date!
   leaveType: LeaveType!
+  isHalfDay: Boolean! @default(value: false)
   reason: String
   voiceNote: String
   status: LeaveStatus! @default(value: pending)
@@ -215,6 +218,29 @@ type Advance @table {
   note: String
   createdBy: User!
   at: Timestamp! @default(expr: "request.time")
+}
+
+type AdvanceRequest @table {
+  id: UUID! @default(expr: "uuidV4()")
+  member: HouseholdMember!
+  amount: Float!
+  reason: String
+  status: AdvanceRequestStatus! @default(value: pending)
+  advance: Advance
+  requestedAt: Timestamp! @default(expr: "request.time")
+  reviewedAt: Timestamp
+}
+
+type SalaryPayment @table {
+  id: UUID! @default(expr: "uuidV4()")
+  member: HouseholdMember!
+  amount: Float!
+  paymentDate: Date!
+  status: SalaryPaymentStatus! @default(value: scheduled)
+  note: String
+  paidAt: Timestamp
+  createdBy: User!
+  createdAt: Timestamp! @default(expr: "request.time")
 }
 
 # Every money movement is one row here. Balance due = sum of rows for a

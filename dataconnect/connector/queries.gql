@@ -26,15 +26,34 @@ query MyProfile @auth(level: USER) {
   }
 }
 
-# The signed-in user's first active household membership. The schema
-# supports several (multi-house, Phase 3) — the basics just use the first.
+# The signed-in user's most recently joined active household.
 query MyMembership @auth(level: USER) {
   householdMembers(
     where: {
       active: { eq: true }
       user: { authUid: { eq_expr: "auth.uid" } }
     }
-    orderBy: [{ joinedOn: ASC }]
+    orderBy: [{ joinedOn: DESC }]
+    limit: 1
+  ) {
+    id
+    role
+    household {
+      id
+      name
+      address
+    }
+  }
+}
+
+# Selects a specific accepted household after the user accepts its invite.
+query MyMembershipById($id: UUID!) @auth(level: USER) {
+  householdMembers(
+    where: {
+      id: { eq: $id }
+      active: { eq: true }
+      user: { authUid: { eq_expr: "auth.uid" } }
+    }
     limit: 1
   ) {
     id
@@ -53,7 +72,12 @@ query MyHouseholdInvites @auth(level: USER) {
   householdMembers(
     where: {
       status: { eq: pending }
-      user: { authUid: { eq_expr: "auth.uid" } }
+      user: {
+        _or: [
+          { authUid: { eq_expr: "auth.uid" } }
+          { email: { eq_expr: "auth.token.email" } }
+        ]
+      }
     }
     orderBy: [{ joinedOn: DESC }]
   ) {
@@ -120,15 +144,22 @@ query CurrentContract($memberId: UUID!) @auth(level: USER) {
     where: {
       endDate: { isNull: true }
       member: {
-        id: { eq: $memberId }
-        household: {
-          householdMembers_on_household: {
-            exist: {
-              active: { eq: true }
-              user: { authUid: { eq_expr: "auth.uid" } }
-            }
+        _and: [
+          { id: { eq: $memberId } }
+          {
+            _or: [
+              {
+                active: { eq: true }
+                user: { authUid: { eq_expr: "auth.uid" } }
+              }
+              {
+                household: {
+                  owner: { authUid: { eq_expr: "auth.uid" } }
+                }
+              }
+            ]
           }
-        }
+        ]
       }
     }
     orderBy: [{ startDate: DESC }]
@@ -306,6 +337,7 @@ query MyLeaveRequests @auth(level: USER) {
     fromDate
     toDate
     leaveType
+    isHalfDay
     reason
     status
     createdAt
@@ -328,9 +360,104 @@ query HouseholdLeaveRequests($householdId: UUID!) @auth(level: USER) {
     fromDate
     toDate
     leaveType
+    isHalfDay
     reason
     status
     createdAt
+    member {
+      id
+      user {
+        name
+      }
+    }
+  }
+}
+
+# ── payments ────────────────────────────────────────────────────────────
+
+query MySalaryPayments @auth(level: USER) {
+  salaryPayments(
+    where: {
+      member: {
+        active: { eq: true }
+        user: { authUid: { eq_expr: "auth.uid" } }
+      }
+    }
+    orderBy: [{ paymentDate: DESC }]
+  ) {
+    id
+    amount
+    paymentDate
+    status
+    note
+    paidAt
+  }
+}
+
+query HouseholdSalaryPayments($householdId: UUID!) @auth(level: USER) {
+  salaryPayments(
+    where: {
+      member: {
+        household: {
+          id: { eq: $householdId }
+          owner: { authUid: { eq_expr: "auth.uid" } }
+        }
+      }
+    }
+    orderBy: [{ paymentDate: ASC }]
+  ) {
+    id
+    amount
+    paymentDate
+    status
+    note
+    paidAt
+    member {
+      id
+      user {
+        name
+      }
+    }
+  }
+}
+
+query MyAdvanceRequests @auth(level: USER) {
+  advanceRequests(
+    where: {
+      member: {
+        active: { eq: true }
+        user: { authUid: { eq_expr: "auth.uid" } }
+      }
+    }
+    orderBy: [{ requestedAt: DESC }]
+  ) {
+    id
+    amount
+    reason
+    status
+    requestedAt
+    reviewedAt
+  }
+}
+
+query HouseholdAdvanceRequests($householdId: UUID!) @auth(level: USER) {
+  advanceRequests(
+    where: {
+      member: {
+        household: {
+          id: { eq: $householdId }
+          owner: { authUid: { eq_expr: "auth.uid" } }
+        }
+      }
+    }
+    orderBy: [{ requestedAt: DESC }]
+  ) {
+    id
+    amount
+    reason
+    status
+    requestedAt
+    reviewedAt
     member {
       id
       user {

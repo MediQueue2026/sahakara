@@ -3,9 +3,10 @@ part of 'sahakara.dart';
 class CheckOutVariablesBuilder {
   String memberId;
   DateTime day;
+  double overtimeHours;
 
   final FirebaseDataConnect _dataConnect;
-  CheckOutVariablesBuilder(this._dataConnect, {required  this.memberId,required  this.day,});
+  CheckOutVariablesBuilder(this._dataConnect, {required  this.memberId,required  this.day,required  this.overtimeHours,});
   Deserializer<CheckOutData> dataDeserializer = (dynamic json)  => CheckOutData.fromJson(jsonDecode(json));
   Serializer<CheckOutVariables> varsSerializer = (CheckOutVariables vars) => jsonEncode(vars.toJson());
   Future<OperationResult<CheckOutData, CheckOutVariables>> execute() {
@@ -13,7 +14,7 @@ class CheckOutVariablesBuilder {
   }
 
   MutationRef<CheckOutData, CheckOutVariables> ref() {
-    CheckOutVariables vars= CheckOutVariables(memberId: memberId,day: day,);
+    CheckOutVariables vars= CheckOutVariables(memberId: memberId,day: day,overtimeHours: overtimeHours,);
     return _dataConnect.mutation("CheckOut", dataDeserializer, varsSerializer, vars);
   }
 }
@@ -56,11 +57,13 @@ class CheckOutData {
 class CheckOutVariables {
   final String memberId;
   final DateTime day;
+  final double overtimeHours;
   @Deprecated('fromJson is deprecated for Variable classes as they are no longer required for deserialization.')
   CheckOutVariables.fromJson(Map<String, dynamic> json):
   
   memberId = nativeFromJson<String>(json['memberId']),
-  day = nativeFromJson<DateTime>(json['day']);
+  day = nativeFromJson<DateTime>(json['day']),
+  overtimeHours = nativeFromJson<double>(json['overtimeHours']);
   @override
   bool operator ==(Object other) {
     if(identical(this, other)) {
@@ -72,23 +75,26 @@ class CheckOutVariables {
 
     final CheckOutVariables otherTyped = other as CheckOutVariables;
     return memberId == otherTyped.memberId && 
-    day == otherTyped.day;
+    day == otherTyped.day && 
+    overtimeHours == otherTyped.overtimeHours;
     
   }
   @override
-  int get hashCode => Object.hashAll([memberId.hashCode, day.hashCode]);
+  int get hashCode => Object.hashAll([memberId.hashCode, day.hashCode, overtimeHours.hashCode]);
   
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> json = {};
     json['memberId'] = nativeToJson<String>(memberId);
     json['day'] = nativeToJson<DateTime>(day);
+    json['overtimeHours'] = nativeToJson<double>(overtimeHours);
     return json;
   }
 
   CheckOutVariables({
     required this.memberId,
     required this.day,
+    required this.overtimeHours,
   });
 }
 
