@@ -42,14 +42,17 @@ class _LeaveRequestDialogState extends State<LeaveRequestDialog> {
         toDate: _toDate!,
         leaveType: _leaveType.name,
         isHalfDay: _isHalfDay,
-        reason: _reasonController.text.trim().isEmpty ? null : _reasonController.text.trim(),
+        reason: _reasonController.text.trim().isEmpty
+            ? null
+            : _reasonController.text.trim(),
       );
       if (mounted) {
         Navigator.of(context).pop(true);
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(e.toString())));
       }
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -149,7 +152,9 @@ class _LeaveRequestDialogState extends State<LeaveRequestDialog> {
             const SizedBox(height: 16),
             DropdownButtonFormField<LeaveType>(
               initialValue: _leaveType,
-              decoration: InputDecoration(labelText: Strings.of('leaveType', l), border: const OutlineInputBorder()),
+              decoration: InputDecoration(
+                  labelText: Strings.of('leaveType', l),
+                  border: const OutlineInputBorder()),
               items: LeaveType.values.map((type) {
                 return DropdownMenuItem(
                   value: type,
@@ -163,7 +168,9 @@ class _LeaveRequestDialogState extends State<LeaveRequestDialog> {
             const SizedBox(height: 16),
             TextField(
               controller: _reasonController,
-              decoration: InputDecoration(labelText: Strings.of('reasonOptional', l), border: const OutlineInputBorder()),
+              decoration: InputDecoration(
+                  labelText: Strings.of('reasonOptional', l),
+                  border: const OutlineInputBorder()),
               maxLines: 3,
             ),
           ],
@@ -175,8 +182,15 @@ class _LeaveRequestDialogState extends State<LeaveRequestDialog> {
           child: Text(Strings.of('cancel', l)),
         ),
         FilledButton(
-          onPressed: _busy || _fromDate == null || _toDate == null ? null : _submit,
-          child: _busy ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)) : Text(Strings.of('submit', l)),
+          onPressed:
+              _busy || _fromDate == null || _toDate == null ? null : _submit,
+          child: _busy
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                      color: Colors.white, strokeWidth: 2))
+              : Text(Strings.of('submit', l)),
         ),
       ],
     );

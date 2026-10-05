@@ -3,11 +3,14 @@ import 'package:flutter/material.dart';
 import '../../core/app_data.dart';
 import '../../core/app_language.dart';
 import '../../core/strings.dart';
+import '../../core/theme.dart';
 import '../contract/contract_detail_screen.dart';
+import '../profile/profile_details.dart';
 
-/// Owner: ask a maid to join the household — her email address and the
-/// contract being offered. She's sent it as a request and only becomes
-/// staff once she accepts. Pops true once the request is sent.
+/// Owner: ask a maid to join the household. First their email address, to
+/// look at their profile; then the contract being offered. It's sent as a
+/// request, and they only become staff once they accept. Pops true once the
+/// request is sent.
 class AddMaidScreen extends StatefulWidget {
   final LanguageController lang;
   final String householdId;
@@ -32,8 +35,58 @@ class _AddMaidScreenState extends State<AddMaidScreen> {
   bool _busy = false;
   String? _error;
 
+  /// The email whose profile is showing; the contract form only appears
+  /// while the email field still matches it.
+  String? _lookedUpEmail;
+  MaidProfile? _maid;
+
+  String get _email => _emailController.text.trim().toLowerCase();
+  bool get _profileShown => _lookedUpEmail != null && _lookedUpEmail == _email;
+
+  @override
+  void initState() {
+    super.initState();
+    // Editing the email hides the profile and contract until it's looked
+    // up again.
+    _emailController.addListener(() => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _rateController.dispose();
+    _allowanceController.dispose();
+    _offDaysController.dispose();
+    _hoursController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _lookUp(AppLanguage lang) async {
+    final email = _email;
+    if (email.isEmpty) {
+      setState(() => _error = Strings.of('enterMaidEmail', lang));
+      return;
+    }
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
+    try {
+      final maid = await AppData.fetchMaidProfileByEmail(email);
+      if (!mounted) return;
+      setState(() {
+        _maid = maid;
+        _lookedUpEmail = email;
+      });
+    } catch (e) {
+      if (mounted) setState(() => _error = e.toString());
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
   Future<void> _send(AppLanguage lang) async {
-    final email = _emailController.text.trim();
+    final email = _email;
     final rate = double.tryParse(_rateController.text.trim());
     if (email.isEmpty) {
       setState(() => _error = Strings.of('enterMaidEmail', lang));
@@ -94,39 +147,27 @@ class _AddMaidScreenState extends State<AddMaidScreen> {
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   autocorrect: false,
+                  textInputAction: TextInputAction.search,
                   decoration: InputDecoration(
                     labelText: Strings.of('email', lang),
                   ),
+                  onSubmitted: _busy ? null : (_) => _lookUp(lang),
                 ),
-                const SizedBox(height: 24),
-                Text(
-                  Strings.of('contract', lang),
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  Strings.of('contractSentAsRequest', lang),
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-                const SizedBox(height: 8),
-                ContractFields(
-                  lang: lang,
-                  payType: _payType,
-                  onPayTypeChanged: (v) => setState(() => _payType = v),
-                  rateController: _rateController,
-                  allowanceController: _allowanceController,
-                  offDaysController: _offDaysController,
-                  hoursController: _hoursController,
-                ),
-                const SizedBox(height: 20),
-                FilledButton.icon(
-                  onPressed: _busy ? null : () => _send(lang),
-                  icon: const Icon(Icons.send_outlined),
-                  label: Text(Strings.of('sendRequest', lang)),
-                ),
-                if (_error != null) ...[
-                  const SizedBox(height: 8),
-                  Text(_error!, style: const TextStyle(color: Colors.red)),
+                const SizedBox(height: 12),
+                if (!_profileShown) ...[
+                  FilledButton.icon(
+                    onPressed: _busy ? null : () => _lookUp(lang),
+                    icon: const Icon(Icons.person_search_outlined),
+                    label: Text(Strings.of('viewProfile', lang)),
+                  ),
+                  if (_error != null) ...[
+                    const SizedBox(height: 8),
+                    Text(_error!, style: const TextStyle(color: Colors.red)),
+                  ],
+                ] else ...[
+                  _maidCard(lang),
+                  const SizedBox(height: 24),
+                  ..._contractStep(lang),
                 ],
               ],
             ),
@@ -135,4 +176,68 @@ class _AddMaidScreenState extends State<AddMaidScreen> {
       },
     );
   }
+
+  Widget _maidCard(AppLanguage lang) {
+    final maid = _maid;
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              Strings.of('maidProfile', lang),
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 8),
+            if (maid == null)
+              Text(
+                Strings.of('maidNotOnSahakara', lang),
+                style: const TextStyle(color: mutedText),
+              )
+            else
+              ProfileDetails(
+                lang: lang,
+                name: maid.name,
+                preferredAreas: maid.preferredAreas,
+                spokenLanguages: maid.spokenLanguages,
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _contractStep(AppLanguage lang) => [
+        Text(
+          Strings.of('contract', lang),
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        const SizedBox(height: 4),
+        Text(
+          Strings.of('contractSentAsRequest', lang),
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+        const SizedBox(height: 8),
+        ContractFields(
+          lang: lang,
+          payType: _payType,
+          onPayTypeChanged: (v) => setState(() => _payType = v),
+          rateController: _rateController,
+          allowanceController: _allowanceController,
+          offDaysController: _offDaysController,
+          hoursController: _hoursController,
+        ),
+        const SizedBox(height: 20),
+        FilledButton.icon(
+          onPressed: _busy ? null : () => _send(lang),
+          icon: const Icon(Icons.send_outlined),
+          label: Text(Strings.of('sendRequest', lang)),
+        ),
+        if (_error != null) ...[
+          const SizedBox(height: 8),
+          Text(_error!, style: const TextStyle(color: Colors.red)),
+        ],
+      ];
 }

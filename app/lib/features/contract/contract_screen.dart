@@ -25,8 +25,8 @@ class ContractScreen extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         }
         final staff = snapshot.data!
-            // A maid who hasn't accepted yet has only the contract she was
-            // offered, which can't be edited until she answers.
+            // A maid who hasn't accepted yet has only the contract they were
+            // offered, which can't be edited until they answer.
             .where(
               (m) =>
                   m.role.stringValue != 'owner' &&

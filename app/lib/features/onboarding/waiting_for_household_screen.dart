@@ -5,11 +5,12 @@ import '../../core/app_language.dart';
 import '../../core/firebase_client.dart';
 import '../../core/strings.dart';
 import '../../core/theme.dart';
+import '../profile/profile_details.dart';
 
 /// Shown to a maid account with no household membership yet. An owner adds
-/// her by the email she signed up with, which sends her a request with the
-/// contract on offer: she accepts it here (and [onRefresh] then takes her
-/// into the household) or declines it. With no requests, there's nothing to
+/// them by the email they signed up with, which sends them a request with
+/// the contract on offer: they accept it here (and [onRefresh] then takes
+/// them into the household) or declines it. With no requests, there's nothing to
 /// do but wait and check again.
 class WaitingForHouseholdScreen extends StatefulWidget {
   final LanguageController lang;
@@ -71,9 +72,6 @@ class _WaitingForHouseholdScreenState extends State<WaitingForHouseholdScreen> {
       valueListenable: widget.lang,
       builder: (context, lang, _) {
         return Scaffold(
-          appBar: widget.inHomeShell
-              ? AppBar(title: Text(Strings.of('joinRequests', lang)))
-              : null,
           body: SafeArea(
             child: Center(
               child: SingleChildScrollView(
@@ -159,7 +157,8 @@ class _WaitingForHouseholdScreenState extends State<WaitingForHouseholdScreen> {
         ),
       ];
 
-  /// One request: who it's from, the contract offered, and accept/decline.
+  /// One request: who it's from and the house's area, the contract
+  /// offered, and accept/decline.
   Widget _inviteCard(HouseholdInvite invite, AppLanguage lang) {
     final household = invite.household;
     final contract = invite.contracts_on_member.firstOrNull;
@@ -172,12 +171,14 @@ class _WaitingForHouseholdScreenState extends State<WaitingForHouseholdScreen> {
           children: [
             Text(household.name,
                 style: Theme.of(context).textTheme.titleMedium),
-            Text(
-              [
-                household.owner.name,
-                if (household.address?.isNotEmpty == true) household.address!,
-              ].join(' · '),
-              style: const TextStyle(color: mutedText),
+            const SizedBox(height: 8),
+            // The owner and the area the house is in, so they know who
+            // they'd work for and roughly where before accepting.
+            ProfileDetails(
+              lang: lang,
+              name: household.owner.name,
+              spokenLanguages: household.owner.spokenLanguages,
+              area: household.area,
             ),
             const Divider(height: 24),
             if (contract == null)

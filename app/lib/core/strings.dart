@@ -30,6 +30,107 @@ class Strings {
       AppLanguage.si: 'මුරපද නොගැලපේ',
       AppLanguage.ta: 'கடவுச்சொற்கள் பொருந்தவில்லை',
     },
+    'changePassword': {
+      AppLanguage.en: 'Change password',
+      AppLanguage.si: 'මුරපදය වෙනස් කරන්න',
+      AppLanguage.ta: 'கடவுச்சொல்லை மாற்று',
+    },
+    'currentPassword': {
+      AppLanguage.en: 'Current password',
+      AppLanguage.si: 'වත්මන් මුරපදය',
+      AppLanguage.ta: 'தற்போதைய கடவுச்சொல்',
+    },
+    'newPassword': {
+      AppLanguage.en: 'New password',
+      AppLanguage.si: 'නව මුරපදය',
+      AppLanguage.ta: 'புதிய கடவுச்சொல்',
+    },
+    'wrongCurrentPassword': {
+      AppLanguage.en: 'Current password is incorrect',
+      AppLanguage.si: 'වත්මන් මුරපදය වැරදියි',
+      AppLanguage.ta: 'தற்போதைய கடவுச்சொல் தவறானது',
+    },
+    'passwordChanged': {
+      AppLanguage.en: 'Password updated',
+      AppLanguage.si: 'මුරපදය යාවත්කාලීන කරන ලදී',
+      AppLanguage.ta: 'கடவுச்சொல் புதுப்பிக்கப்பட்டது',
+    },
+    'myProfile': {
+      AppLanguage.en: 'My profile',
+      AppLanguage.si: 'මගේ පැතිකඩ',
+      AppLanguage.ta: 'என் சுயவிவரம்',
+    },
+    'preferredAreas': {
+      AppLanguage.en: 'Preferred work areas',
+      AppLanguage.si: 'කැමති වැඩ කරන ප්‍රදේශ',
+      AppLanguage.ta: 'விரும்பும் பணிப் பகுதிகள்',
+    },
+    'addArea': {
+      AppLanguage.en: 'Add an area, e.g. Nugegoda',
+      AppLanguage.si: 'ප්‍රදේශයක් එක් කරන්න, උදා. නුගේගොඩ',
+      AppLanguage.ta: 'ஒரு பகுதியைச் சேர்க்கவும், எ.கா. நுகேகொடை',
+    },
+    'languagesISpeak': {
+      AppLanguage.en: 'Languages I speak',
+      AppLanguage.si: 'මා කතා කරන භාෂා',
+      AppLanguage.ta: 'நான் பேசும் மொழிகள்',
+    },
+    'appLanguage': {
+      AppLanguage.en: 'App language',
+      AppLanguage.si: 'යෙදුමේ භාෂාව',
+      AppLanguage.ta: 'செயலி மொழி',
+    },
+    'profileSaved': {
+      AppLanguage.en: 'Profile saved',
+      AppLanguage.si: 'පැතිකඩ සුරකින ලදී',
+      AppLanguage.ta: 'சுயவிவரம் சேமிக்கப்பட்டது',
+    },
+    'houseLocation': {
+      AppLanguage.en: 'House location',
+      AppLanguage.si: 'නිවසේ පිහිටීම',
+      AppLanguage.ta: 'வீட்டின் இருப்பிடம்',
+    },
+    'houseArea': {
+      AppLanguage.en: 'Area',
+      AppLanguage.si: 'ප්‍රදේශය',
+      AppLanguage.ta: 'பகுதி',
+    },
+    'houseAreaHint': {
+      AppLanguage.en: 'e.g. Nugegoda',
+      AppLanguage.si: 'උදා. නුගේගොඩ',
+      AppLanguage.ta: 'எ.கா. நுகேகொடை',
+    },
+    'languagesSpoken': {
+      AppLanguage.en: 'Languages spoken',
+      AppLanguage.si: 'කතා කරන භාෂා',
+      AppLanguage.ta: 'பேசும் மொழிகள்',
+    },
+    'profileEmpty': {
+      AppLanguage.en: 'No profile details added yet.',
+      AppLanguage.si: 'තවම පැතිකඩ විස්තර එක් කර නැත.',
+      AppLanguage.ta: 'சுயவிவர விவரங்கள் இன்னும் சேர்க்கப்படவில்லை.',
+    },
+    'viewProfile': {
+      AppLanguage.en: 'View profile',
+      AppLanguage.si: 'පැතිකඩ බලන්න',
+      AppLanguage.ta: 'சுயவிவரத்தைப் பார்',
+    },
+    'maidProfile': {
+      AppLanguage.en: "Maid's profile",
+      AppLanguage.si: 'සහායකයාගේ පැතිකඩ',
+      AppLanguage.ta: 'பணியாளரின் சுயவிவரம்',
+    },
+    'maidNotOnSahakara': {
+      AppLanguage.en:
+          "This email isn't on Sahakara yet, so there's no profile to show. "
+              'They will see your request when they sign up with it.',
+      AppLanguage.si:
+          'මෙම ඊමේල් ලිපිනය තවම සහකාර හි නැති නිසා පෙන්වීමට පැතිකඩක් නැත. '
+              'ඔවුන් එයින් ලියාපදිංචි වූ විට ඔබගේ ඉල්ලීම දකිනු ඇත.',
+      AppLanguage.ta:
+          'இந்த மின்னஞ்சல் இன்னும் சஹகாரவில் இல்லை, எனவே காட்ட சுயவிவரம் இல்லை. '
+              'அவர் அதைக் கொண்டு பதிவு செய்யும்போது உங்கள் கோரிக்கையைப் பார்ப்பார்.',
+    },
     'signIn': {
       AppLanguage.en: 'Sign in',
       AppLanguage.si: 'පිවිසෙන්න',
@@ -62,7 +163,7 @@ class Strings {
     },
     'imMaid': {
       AppLanguage.en: 'I\'m a maid',
-      AppLanguage.si: 'මම සහායිකාවක්',
+      AppLanguage.si: 'මම සහායකයෙක්',
       AppLanguage.ta: 'நான் வீட்டுப் பணியாளர்',
     },
     'maidBlurb': {
@@ -92,7 +193,7 @@ class Strings {
       AppLanguage.en:
           'This account is registered as a maid. Sign in here instead.',
       AppLanguage.si:
-          'මෙම ගිණුම සහායිකාවක් ලෙස ලියාපදිංචි කර ඇත. මෙතැනින් පිවිසෙන්න.',
+          'මෙම ගිණුම සහායකයෙකු ලෙස ලියාපදිංචි කර ඇත. මෙතැනින් පිවිසෙන්න.',
       AppLanguage.ta:
           'இந்தக் கணக்கு வீட்டுப் பணியாளராகப் பதிவு செய்யப்பட்டுள்ளது. இங்கே உள்நுழையவும்.',
     },
@@ -149,19 +250,19 @@ class Strings {
     },
     'addMaid': {
       AppLanguage.en: 'Add a maid by email',
-      AppLanguage.si: 'ඊමේල් මගින් සහායිකාවක් එක් කරන්න',
+      AppLanguage.si: 'ඊමේල් මගින් සහායකයෙකු එක් කරන්න',
       AppLanguage.ta: 'மின்னஞ்சல் மூலம் உதவியாளரைச் சேர்க்கவும்',
     },
     'enterMaidEmail': {
       AppLanguage.en: "Enter the maid's email address",
-      AppLanguage.si: 'සහායිකාවගේ ඊමේල් ලිපිනය ඇතුළත් කරන්න',
+      AppLanguage.si: 'සහායකයාගේ ඊමේල් ලිපිනය ඇතුළත් කරන්න',
       AppLanguage.ta: 'உதவியாளரின் மின்னஞ்சல் முகவரியை உள்ளிடவும்',
     },
     'contractSentAsRequest': {
       AppLanguage.en:
-          'This is sent to her as a request. She joins the household once she accepts it.',
+          'This is sent to them as a request. They join the household once they accept it.',
       AppLanguage.si:
-          'මෙය ඇයට ඉල්ලීමක් ලෙස යවනු ලැබේ. ඇය එය පිළිගත් පසු නිවසට එක් වේ.',
+          'මෙය ඔවුන්ට ඉල්ලීමක් ලෙස යවනු ලැබේ. ඔවුන් එය පිළිගත් පසු නිවසට එක් වේ.',
       AppLanguage.ta:
           'இது அவருக்குக் கோரிக்கையாக அனுப்பப்படும். அவர் ஏற்றுக்கொண்டதும் வீட்டில் சேர்வார்.',
     },
@@ -171,8 +272,8 @@ class Strings {
       AppLanguage.ta: 'கோரிக்கையை அனுப்பவும்',
     },
     'invite_pending': {
-      AppLanguage.en: 'Waiting for her to accept',
-      AppLanguage.si: 'ඇය පිළිගන්නා තෙක් රැඳී සිටී',
+      AppLanguage.en: 'Waiting for them to accept',
+      AppLanguage.si: 'ඔවුන් පිළිගන්නා තෙක් රැඳී සිටී',
       AppLanguage.ta: 'அவர் ஏற்றுக்கொள்ளக் காத்திருக்கிறது',
     },
     'invite_declined': {
@@ -323,8 +424,8 @@ class Strings {
     },
     'requestSentBody': {
       AppLanguage.en:
-          'She will join the household once she accepts the contract.',
-      AppLanguage.si: 'ඇය ගිවිසුම පිළිගත් පසු නිවසට එක් වේ.',
+          'They will join the household once they accept the contract.',
+      AppLanguage.si: 'ඔවුන් ගිවිසුම පිළිගත් පසු නිවසට එක් වේ.',
       AppLanguage.ta: 'அவர் ஒப்பந்தத்தை ஏற்றுக்கொண்டதும் வீட்டில் சேர்வார்.',
     },
     'ok': {

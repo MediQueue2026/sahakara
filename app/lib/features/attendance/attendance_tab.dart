@@ -46,13 +46,17 @@ class _AttendanceTabState extends State<AttendanceTab> {
     try {
       if (_isOwner) {
         _attendance = await AppData.fetchHouseholdAttendance(_householdId);
-        _leaveRequests = await AppData.fetchHouseholdLeaveRequests(_householdId);
+        _leaveRequests =
+            await AppData.fetchHouseholdLeaveRequests(_householdId);
       } else {
         _attendance = await AppData.fetchMyAttendance();
         _leaveRequests = await AppData.fetchMyLeaveRequests();
       }
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(e.toString())));
+      }
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -128,7 +132,10 @@ class _AttendanceTabState extends State<AttendanceTab> {
       );
       await _refresh();
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(e.toString())));
+      }
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -148,7 +155,10 @@ class _AttendanceTabState extends State<AttendanceTab> {
       );
       await _refresh();
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(e.toString())));
+      }
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -157,7 +167,8 @@ class _AttendanceTabState extends State<AttendanceTab> {
   Future<void> _requestLeave() async {
     final result = await showDialog<bool>(
       context: context,
-      builder: (context) => LeaveRequestDialog(memberId: _memberId, lang: widget.lang),
+      builder: (context) =>
+          LeaveRequestDialog(memberId: _memberId, lang: widget.lang),
     );
     if (result == true) {
       await _refresh();
@@ -170,7 +181,10 @@ class _AttendanceTabState extends State<AttendanceTab> {
       await AppData.reviewLeaveRequest(id: id, status: status);
       await _refresh();
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(e.toString())));
+      }
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -182,14 +196,18 @@ class _AttendanceTabState extends State<AttendanceTab> {
       await AppData.deleteLeaveRequest(id);
       await _refresh();
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(e.toString())));
+      }
     } finally {
       if (mounted) setState(() => _busy = false);
     }
   }
 
   bool _isDayInLeave(DateTime day, dynamic req) {
-    final from = DateTime(req.fromDate.year, req.fromDate.month, req.fromDate.day);
+    final from =
+        DateTime(req.fromDate.year, req.fromDate.month, req.fromDate.day);
     final to = DateTime(req.toDate.year, req.toDate.month, req.toDate.day);
     final d = DateTime(day.year, day.month, day.day);
     return d.compareTo(from) >= 0 && d.compareTo(to) <= 0;
@@ -211,8 +229,7 @@ class _AttendanceTabState extends State<AttendanceTab> {
         todayAttendance == null || todayAttendance.checkIn == null;
     final canCheckOut =
         todayAttendance?.checkIn != null && todayAttendance?.checkOut == null;
-    final selectedDayType =
-        todayAttendance?.dayType.stringValue ?? _dayType;
+    final selectedDayType = todayAttendance?.dayType.stringValue ?? _dayType;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
@@ -249,7 +266,8 @@ class _AttendanceTabState extends State<AttendanceTab> {
                     onPressed: _busy || !canCheckIn ? null : _checkIn,
                     icon: const Icon(Icons.login),
                     label: Text(Strings.of('checkIn', widget.lang.value)),
-                    style: FilledButton.styleFrom(backgroundColor: Colors.green),
+                    style:
+                        FilledButton.styleFrom(backgroundColor: Colors.green),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -258,7 +276,8 @@ class _AttendanceTabState extends State<AttendanceTab> {
                     onPressed: _busy || !canCheckOut ? null : _checkOut,
                     icon: const Icon(Icons.logout),
                     label: Text(Strings.of('checkOut', widget.lang.value)),
-                    style: FilledButton.styleFrom(backgroundColor: Colors.orange),
+                    style:
+                        FilledButton.styleFrom(backgroundColor: Colors.orange),
                   ),
                 ),
               ],
@@ -282,7 +301,8 @@ class _AttendanceTabState extends State<AttendanceTab> {
     if (events.isEmpty) {
       return Padding(
         padding: const EdgeInsets.all(24.0),
-        child: Text(Strings.of('noAttendanceRecords', widget.lang.value), textAlign: TextAlign.center),
+        child: Text(Strings.of('noAttendanceRecords', widget.lang.value),
+            textAlign: TextAlign.center),
       );
     }
 
@@ -301,11 +321,12 @@ class _AttendanceTabState extends State<AttendanceTab> {
           final statusStr = ev.status.stringValue;
           final leaveTypeStr = ev.leaveType.stringValue;
           final reason = ev.reason ?? Strings.of('noReasonProvided', l);
-          
+
           final leaveTypeTranslated = Strings.of('leave_$leaveTypeStr', l);
           final statusTranslated = Strings.of('leave_status_$statusStr', l);
 
-          String title = '$leaveTypeTranslated: ${fromDate.year}-${fromDate.month}-${fromDate.day} to ${toDate.year}-${toDate.month}-${toDate.day}';
+          String title =
+              '$leaveTypeTranslated: ${fromDate.year}-${fromDate.month}-${fromDate.day} to ${toDate.year}-${toDate.month}-${toDate.day}';
           if (ev.isHalfDay) title += ' (${Strings.of('halfDay', l)})';
           if (_isOwner) {
             title = '${ev.member.user.name} - $title';
@@ -314,29 +335,44 @@ class _AttendanceTabState extends State<AttendanceTab> {
           return Card(
             child: ListTile(
               title: Text(title),
-              subtitle: Text('${Strings.of('status', l)}: $statusTranslated\n$reason'),
+              subtitle: Text(
+                  '${Strings.of('status', l)}: $statusTranslated\n$reason'),
               isThreeLine: true,
               trailing: _isOwner && statusStr == 'pending'
                   ? Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         IconButton(
-                          icon: const Icon(Icons.check_circle, color: Colors.green),
-                          onPressed: _busy ? null : () => _reviewLeave(id, 'approved'),
+                          icon: const Icon(Icons.check_circle,
+                              color: Colors.green),
+                          onPressed:
+                              _busy ? null : () => _reviewLeave(id, 'approved'),
                         ),
                         IconButton(
                           icon: const Icon(Icons.cancel, color: Colors.red),
-                          onPressed: _busy ? null : () => _reviewLeave(id, 'rejected'),
+                          onPressed:
+                              _busy ? null : () => _reviewLeave(id, 'rejected'),
                         ),
                       ],
                     )
-                  : (!_isOwner && statusStr == 'pending') ? IconButton(
-                      icon: const Icon(Icons.delete_outline, color: Colors.red),
-                      onPressed: _busy ? null : () => _cancelLeave(id),
-                    ) : Icon(
-                      statusStr == 'approved' ? Icons.check_circle : (statusStr == 'rejected' ? Icons.cancel : Icons.hourglass_empty),
-                      color: statusStr == 'approved' ? Colors.green : (statusStr == 'rejected' ? Colors.red : Colors.grey),
-                    ),
+                  : (!_isOwner && statusStr == 'pending')
+                      ? IconButton(
+                          icon: const Icon(Icons.delete_outline,
+                              color: Colors.red),
+                          onPressed: _busy ? null : () => _cancelLeave(id),
+                        )
+                      : Icon(
+                          statusStr == 'approved'
+                              ? Icons.check_circle
+                              : (statusStr == 'rejected'
+                                  ? Icons.cancel
+                                  : Icons.hourglass_empty),
+                          color: statusStr == 'approved'
+                              ? Colors.green
+                              : (statusStr == 'rejected'
+                                  ? Colors.red
+                                  : Colors.grey),
+                        ),
             ),
           );
         } else {
@@ -351,9 +387,11 @@ class _AttendanceTabState extends State<AttendanceTab> {
             title = '${ev.member.user.name} - $title';
           }
 
-          String subtitle = '${Strings.of('checkIn', l)}: ${checkIn != null ? '${checkIn.toDateTime().toLocal().hour}:${checkIn.toDateTime().toLocal().minute.toString().padLeft(2, '0')}' : '...'}';
+          String subtitle =
+              '${Strings.of('checkIn', l)}: ${checkIn != null ? '${checkIn.toDateTime().toLocal().hour}:${checkIn.toDateTime().toLocal().minute.toString().padLeft(2, '0')}' : '...'}';
           if (checkOut != null) {
-            subtitle += '\n${Strings.of('checkOut', l)}: ${checkOut.toDateTime().toLocal().hour}:${checkOut.toDateTime().toLocal().minute.toString().padLeft(2, '0')}';
+            subtitle +=
+                '\n${Strings.of('checkOut', l)}: ${checkOut.toDateTime().toLocal().hour}:${checkOut.toDateTime().toLocal().minute.toString().padLeft(2, '0')}';
           }
           if (ev.overtimeHours > 0) {
             subtitle +=
@@ -375,7 +413,8 @@ class _AttendanceTabState extends State<AttendanceTab> {
   @override
   Widget build(BuildContext context) {
     final l = widget.lang.value;
-    final selectedEvents = _selectedDay != null ? _getEventsForDay(_selectedDay!) : [];
+    final selectedEvents =
+        _selectedDay != null ? _getEventsForDay(_selectedDay!) : [];
 
     return RefreshIndicator(
       onRefresh: () async => _refresh(),
@@ -383,7 +422,6 @@ class _AttendanceTabState extends State<AttendanceTab> {
         padding: const EdgeInsets.all(16),
         children: [
           if (!_isOwner) _buildMaidActions(l),
-          
           Card(
             clipBehavior: Clip.antiAlias,
             child: TableCalendar(
@@ -408,13 +446,19 @@ class _AttendanceTabState extends State<AttendanceTab> {
                       children: events.take(4).map((e) {
                         Color c = Colors.green;
                         if (e.runtimeType.toString().contains('Leave')) {
-                           final status = (e as dynamic).status.stringValue;
-                           c = status == 'approved' ? Colors.blue : (status == 'rejected' ? Colors.red : Colors.orange);
+                          final status = (e as dynamic).status.stringValue;
+                          c = status == 'approved'
+                              ? Colors.blue
+                              : (status == 'rejected'
+                                  ? Colors.red
+                                  : Colors.orange);
                         }
                         return Container(
                           margin: const EdgeInsets.symmetric(horizontal: 1),
-                          width: 6, height: 6,
-                          decoration: BoxDecoration(shape: BoxShape.circle, color: c),
+                          width: 6,
+                          height: 6,
+                          decoration:
+                              BoxDecoration(shape: BoxShape.circle, color: c),
                         );
                       }).toList(),
                     ),
@@ -423,13 +467,14 @@ class _AttendanceTabState extends State<AttendanceTab> {
               ),
             ),
           ),
-          
           const SizedBox(height: 16),
-          
-          if (_loading) 
-             const Center(child: Padding(padding: EdgeInsets.all(16.0), child: CircularProgressIndicator()))
+          if (_loading)
+            const Center(
+                child: Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: CircularProgressIndicator()))
           else
-             _buildEventList(selectedEvents, l),
+            _buildEventList(selectedEvents, l),
         ],
       ),
     );

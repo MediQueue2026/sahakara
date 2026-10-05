@@ -4,13 +4,13 @@
 SahakaraConnector.instance.ClaimInvitedProfile().execute();
 SahakaraConnector.instance.CreateMyProfile(createMyProfileVariables).execute();
 SahakaraConnector.instance.SetMyName(setMyNameVariables).execute();
+SahakaraConnector.instance.SetMyProfile(setMyProfileVariables).execute();
 SahakaraConnector.instance.SetMyLanguage(setMyLanguageVariables).execute();
+SahakaraConnector.instance.SetHouseholdArea(setHouseholdAreaVariables).execute();
 SahakaraConnector.instance.CreateHousehold(createHouseholdVariables).execute();
 SahakaraConnector.instance.AddHouseholdMember(addHouseholdMemberVariables).execute();
 SahakaraConnector.instance.InviteHouseholdMember(inviteHouseholdMemberVariables).execute();
 SahakaraConnector.instance.AcceptHouseholdInvite(acceptHouseholdInviteVariables).execute();
-SahakaraConnector.instance.DeclineHouseholdInvite(declineHouseholdInviteVariables).execute();
-SahakaraConnector.instance.CancelHouseholdInvite(cancelHouseholdInviteVariables).execute();
 
 ```
 
@@ -23,7 +23,7 @@ Optional fields can be discovered based on classes that have `Optional` object t
 This is an example of a mutation with an optional field:
 
 ```dart
-await SahakaraConnector.instance.SubmitLeaveRequest({ ... })
+await SahakaraConnector.instance.RequestAdvance({ ... })
 .reason(...)
 .execute();
 ```
