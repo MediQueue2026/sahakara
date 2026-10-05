@@ -10,7 +10,7 @@ The app has no custom server. Firebase is the backend:
 ```
 dataconnect/
   dataconnect.yaml        Service config: region, Cloud SQL instance
-  schema/schema.gql       All 23 tables + enums (becomes the Postgres schema)
+  schema/schema.gql       All 24 tables + enums (becomes the Postgres schema)
   connector/
     connector.yaml        Generates the Dart SDK into app/lib/dataconnect_generated
     queries.gql           Every read the app can do, with its access rule

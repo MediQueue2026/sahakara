@@ -1,7 +1,8 @@
 rules_version = '2';
 
 // Task photos: households/{householdId}/tasks/{file}, uploaded by the owner
-// when adding a task. Household membership lives in Data Connect, which
+// when adding a task, or by staff explaining why they need help / can't do
+// one. Household membership lives in Data Connect, which
 // these rules can't see, so they only require a signed-in user and an image
 // under 5 MB; the random file names keep photos from being guessed.
 service firebase.storage {

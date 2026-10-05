@@ -1,5 +1,5 @@
 # Sahakara (Housemaid Management App) — Firebase Data Connect schema.
-# 23 tables in 6 groups: users & households, tasks, rewards, attendance &
+# 24 tables in 6 groups: users & households, tasks, rewards, attendance &
 # leave, payments, household & admin. Data Connect turns each `@table` type
 # into a PostgreSQL table (Cloud SQL); access rules live on the operations
 # in ../connector/, not here.
@@ -45,6 +45,10 @@ enum AdvanceRequestStatus { pending approved rejected }
 enum DisputeStatus { open resolved }
 enum ShoppingStatus { needed bought }
 enum DocumentType { nic agency contract other }
+enum BillingPeriod { monthly yearly }
+# No longer used (plans are now PaymentPlan rows). Kept because the migration
+# that removed HouseholdSubscription.plan tries to drop this type before the
+# column, which fails. Safe to delete once every database has migrated.
 enum SubscriptionPlan { free basic premium }
 
 # ── users & households ──────────────────────────────────────────────────
@@ -82,7 +86,8 @@ type HouseholdMember @table @unique(fields: ["household", "user"]) {
   household: Household!
   user: User!
   role: MemberRole!
-  # False while a request is pending or declined (see `status`).
+  # False while a request is pending or declined (see `status`), and for
+  # staff the owner has removed (`accepted` but no longer active).
   active: Boolean! @default(value: true)
   status: MembershipStatus! @default(value: accepted)
   joinedOn: Date! @default(expr: "request.time")
@@ -145,6 +150,11 @@ type Task @table @index(fields: ["assignedToId", "dueDate"]) {
   sortOrder: Int! @default(value: 0)
   status: TaskStatus! @default(value: pending)
   cantDoReason: CantDoReason
+  # What the staff member optionally wrote / photographed when marking the
+  # task need_help or cant_do, for the owner to see. Cleared on the next
+  # status change.
+  statusNote: String
+  statusPhoto: String
   completedAt: Timestamp
 }
 
@@ -153,6 +163,7 @@ type TaskLog @table {
   task: Task!
   action: TaskLogAction!
   proofPhoto: String
+  note: String
   byUser: User!
   at: Timestamp! @default(expr: "request.time")
 }
@@ -322,10 +333,24 @@ type MemberDocument @table {
   uploadedAt: Timestamp! @default(expr: "request.time")
 }
 
-type HouseholdSubscription @table {
+# A plan on the admin-curated price list, e.g. "Basic — Rs 1,500 a month".
+type PaymentPlan @table {
   id: UUID! @default(expr: "uuidV4()")
+  name: String!
+  price: Float! # in LKR, charged once per billingPeriod
+  billingPeriod: BillingPeriod! @default(value: monthly)
+  description: String
+  createdAt: Timestamp! @default(expr: "request.time")
+}
+
+# The plan an admin has put a household on. Keyed by household, so each
+# household has at most one.
+type HouseholdSubscription @table(key: "household") {
   household: Household!
-  plan: SubscriptionPlan! @default(value: free)
+  plan: PaymentPlan!
+  # What this household actually pays. Starts at the plan's price, but the
+  # admin can set a different one (e.g. a discount).
+  price: Float!
   paidUntil: Date
   paymentRef: String
 }

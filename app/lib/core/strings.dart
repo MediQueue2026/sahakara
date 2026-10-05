@@ -291,6 +291,25 @@ class Strings {
       AppLanguage.si: 'ඉවත් කරන්න',
       AppLanguage.ta: 'அகற்று',
     },
+    'removeFromHousehold': {
+      AppLanguage.en: 'Remove from household',
+      AppLanguage.si: 'නිවසින් ඉවත් කරන්න',
+      AppLanguage.ta: 'வீட்டிலிருந்து நீக்கு',
+    },
+    'confirmRemoveMember': {
+      AppLanguage.en:
+          'Remove {name} from the household? Their contract ends today and '
+          'their upcoming tasks become unassigned. Their attendance and pay '
+          'history is kept.',
+      AppLanguage.si:
+          '{name} නිවසින් ඉවත් කරන්නද? ඔවුන්ගේ ගිවිසුම අදින් අවසන් වන අතර '
+          'ඉදිරි කාර්යයන් කිසිවෙකුට පවරා නොමැති වේ. පැමිණීමේ සහ වැටුප් '
+          'ඉතිහාසය තබා ගැනේ.',
+      AppLanguage.ta:
+          '{name} ஐ வீட்டிலிருந்து நீக்கவா? அவர்களின் ஒப்பந்தம் இன்றுடன் '
+          'முடிவடையும், வரவிருக்கும் பணிகள் யாருக்கும் ஒதுக்கப்படாமல் '
+          'இருக்கும். வருகை மற்றும் சம்பள வரலாறு வைத்திருக்கப்படும்.',
+    },
     'joinRequests': {
       AppLanguage.en: 'Requests',
       AppLanguage.si: 'ඉල්ලීම්',
@@ -712,6 +731,26 @@ class Strings {
       AppLanguage.en: 'Moved to next day',
       AppLanguage.si: 'ඊළඟ දිනට ගෙන ගියා',
       AppLanguage.ta: 'அடுத்த நாளுக்கு மாற்றப்பட்டது',
+    },
+    'tellOwnerMore': {
+      AppLanguage.en: 'Tell the owner more',
+      AppLanguage.si: 'හිමිකරුට තව විස්තර කියන්න',
+      AppLanguage.ta: 'உரிமையாளரிடம் மேலும் சொல்லுங்கள்',
+    },
+    'whatHappened': {
+      AppLanguage.en: 'What happened? (optional)',
+      AppLanguage.si: 'මොකද වුණේ? (අත්‍යවශ්‍ය නොවේ)',
+      AppLanguage.ta: 'என்ன நடந்தது? (விருப்பத்தேர்வு)',
+    },
+    'skip': {
+      AppLanguage.en: 'Skip',
+      AppLanguage.si: 'මඟ හරින්න',
+      AppLanguage.ta: 'தவிர்',
+    },
+    'send': {
+      AppLanguage.en: 'Send',
+      AppLanguage.si: 'යවන්න',
+      AppLanguage.ta: 'அனுப்பு',
     },
     'whyCantDo': {
       AppLanguage.en: "Why can't it be done?",

@@ -22,11 +22,15 @@ part 'add_household_member.dart';
 
 part 'invite_household_member.dart';
 
+part 'reinvite_household_member.dart';
+
 part 'accept_household_invite.dart';
 
 part 'decline_household_invite.dart';
 
 part 'cancel_household_invite.dart';
+
+part 'remove_household_member.dart';
 
 part 'save_contract.dart';
 
@@ -45,6 +49,12 @@ part 'delete_library_task.dart';
 part 'add_holiday.dart';
 
 part 'delete_holiday.dart';
+
+part 'add_payment_plan.dart';
+
+part 'delete_payment_plan.dart';
+
+part 'set_household_plan.dart';
 
 part 'check_in.dart';
 
@@ -107,6 +117,8 @@ part 'my_advance_requests.dart';
 part 'household_advance_requests.dart';
 
 part 'admin_households.dart';
+
+part 'admin_payment_plans.dart';
 
 
 
@@ -247,6 +259,32 @@ part 'admin_households.dart';
       
       case 'holiday':
         return const Known(AttendanceDayType.holiday);
+      
+      default:
+        return Unknown(data);
+    }
+  }
+  
+
+  enum BillingPeriod {
+    
+      monthly,
+    
+      yearly,
+    
+  }
+  
+  String billingPeriodSerializer(EnumValue<BillingPeriod> e) {
+    return e.stringValue;
+  }
+  EnumValue<BillingPeriod> billingPeriodDeserializer(dynamic data) {
+    switch (data) {
+      
+      case 'monthly':
+        return const Known(BillingPeriod.monthly);
+      
+      case 'yearly':
+        return const Known(BillingPeriod.yearly);
       
       default:
         return Unknown(data);
@@ -816,6 +854,11 @@ class SahakaraConnector {
   }
   
   
+  ReinviteHouseholdMemberVariablesBuilder reinviteHouseholdMember ({required String householdId, required String userId, required MemberRole role, required PayType payType, required double rate, }) {
+    return ReinviteHouseholdMemberVariablesBuilder(dataConnect, householdId: householdId,userId: userId,role: role,payType: payType,rate: rate,);
+  }
+  
+  
   AcceptHouseholdInviteVariablesBuilder acceptHouseholdInvite ({required String id, }) {
     return AcceptHouseholdInviteVariablesBuilder(dataConnect, id: id,);
   }
@@ -828,6 +871,11 @@ class SahakaraConnector {
   
   CancelHouseholdInviteVariablesBuilder cancelHouseholdInvite ({required String id, }) {
     return CancelHouseholdInviteVariablesBuilder(dataConnect, id: id,);
+  }
+  
+  
+  RemoveHouseholdMemberVariablesBuilder removeHouseholdMember ({required String id, }) {
+    return RemoveHouseholdMemberVariablesBuilder(dataConnect, id: id,);
   }
   
   
@@ -873,6 +921,21 @@ class SahakaraConnector {
   
   DeleteHolidayVariablesBuilder deleteHoliday ({required String id, }) {
     return DeleteHolidayVariablesBuilder(dataConnect, id: id,);
+  }
+  
+  
+  AddPaymentPlanVariablesBuilder addPaymentPlan ({required String name, required double price, required BillingPeriod billingPeriod, }) {
+    return AddPaymentPlanVariablesBuilder(dataConnect, name: name,price: price,billingPeriod: billingPeriod,);
+  }
+  
+  
+  DeletePaymentPlanVariablesBuilder deletePaymentPlan ({required String id, }) {
+    return DeletePaymentPlanVariablesBuilder(dataConnect, id: id,);
+  }
+  
+  
+  SetHouseholdPlanVariablesBuilder setHouseholdPlan ({required String householdId, required String planId, required double price, }) {
+    return SetHouseholdPlanVariablesBuilder(dataConnect, householdId: householdId,planId: planId,price: price,);
   }
   
   
@@ -1028,6 +1091,11 @@ class SahakaraConnector {
   
   AdminHouseholdsVariablesBuilder adminHouseholds () {
     return AdminHouseholdsVariablesBuilder(dataConnect, );
+  }
+  
+  
+  AdminPaymentPlansVariablesBuilder adminPaymentPlans () {
+    return AdminPaymentPlansVariablesBuilder(dataConnect, );
   }
   
 

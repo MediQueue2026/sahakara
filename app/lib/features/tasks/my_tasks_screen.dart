@@ -1,5 +1,8 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../core/app_data.dart';
 import '../../core/app_language.dart';
@@ -90,6 +93,8 @@ class _MyTasksScreenState extends State<MyTasksScreen> {
             id: t.id,
             status: t.status.stringValue,
             cantDoReason: t.cantDoReason?.stringValue,
+            statusNote: t.statusNote,
+            statusPhoto: t.statusPhoto,
             priority: t.template.priority.stringValue,
             estMinutes: t.template.estMinutes,
             customTitle: t.template.customTitle,
@@ -109,7 +114,8 @@ class _MyTasksScreenState extends State<MyTasksScreen> {
     });
   }
 
-  /// Pick a new status for [t] — and for "can't do", the reason.
+  /// Pick a new status for [t] — for "can't do", the reason — and for "need
+  /// help" / "can't do", an optional note and photo for the owner.
   Future<void> _changeStatus(TaskRow t, AppLanguage lang) async {
     final status = await pickOption(
       context,
@@ -131,15 +137,45 @@ class _MyTasksScreenState extends State<MyTasksScreen> {
       );
       if (reason == null) return;
     }
+    _ProblemDetails? details;
+    if (status == 'need_help' || status == 'cant_do') {
+      if (!mounted) return;
+      details = await showModalBottomSheet<_ProblemDetails>(
+        context: context,
+        isScrollControlled: true,
+        builder: (_) => _ProblemDetailsSheet(
+          lang: lang,
+          initialNote: t.status == status ? t.statusNote : null,
+        ),
+      );
+      if (details == null) return;
+    }
+    if (!mounted) return;
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
     try {
+      final photo = details?.photo;
       await AppData.updateMyTaskStatus(
         taskId: t.id,
         status: status,
         cantDoReason: reason,
+        note: details?.note,
+        photoUrl: photo == null
+            ? null
+            : await AppData.uploadTaskPhoto(
+                householdId: widget.membership.household.id,
+                bytes: photo,
+              ),
       );
+      if (!mounted) return;
+      Navigator.of(context).pop();
       setState(_load);
     } catch (e) {
       if (!mounted) return;
+      Navigator.of(context).pop();
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(e.toString())));
     }
@@ -287,6 +323,7 @@ class _MyTasksScreenState extends State<MyTasksScreen> {
                         color: statusColor(t.status),
                       ),
                     ),
+                    TaskStatusDetails(task: t),
                   ],
                 ),
               ),
@@ -302,6 +339,164 @@ class _MyTasksScreenState extends State<MyTasksScreen> {
               const Icon(Icons.chevron_right),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// What the staff member added in [_ProblemDetailsSheet]; both optional.
+class _ProblemDetails {
+  final String? note;
+  final Uint8List? photo;
+
+  const _ProblemDetails({this.note, this.photo});
+}
+
+/// After marking a task "need help" or "can't do": an optional note and
+/// photo for the owner. Skip sends neither; dismissing cancels the change.
+class _ProblemDetailsSheet extends StatefulWidget {
+  final AppLanguage lang;
+  final String? initialNote;
+
+  const _ProblemDetailsSheet({required this.lang, this.initialNote});
+
+  @override
+  State<_ProblemDetailsSheet> createState() => _ProblemDetailsSheetState();
+}
+
+class _ProblemDetailsSheetState extends State<_ProblemDetailsSheet> {
+  late final _note = TextEditingController(text: widget.initialNote);
+  Uint8List? _photo;
+
+  @override
+  void dispose() {
+    _note.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pickPhoto() async {
+    final lang = widget.lang;
+    final source = await pickOption(
+      context,
+      title: Strings.of('addPhoto', lang),
+      options: [ImageSource.camera.name, ImageSource.gallery.name],
+      label: (s) => Strings.of(
+        s == ImageSource.camera.name ? 'takePhoto' : 'chooseFromGallery',
+        lang,
+      ),
+      icon: (s) => Icon(
+        s == ImageSource.camera.name
+            ? Icons.photo_camera_outlined
+            : Icons.photo_library_outlined,
+      ),
+    );
+    if (source == null) return;
+    try {
+      final file = await ImagePicker().pickImage(
+        source: ImageSource.values.byName(source),
+        maxWidth: 1600,
+        maxHeight: 1600,
+        imageQuality: 80,
+      );
+      if (file == null) return;
+      final bytes = await file.readAsBytes();
+      setState(() => _photo = bytes);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.toString())));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final lang = widget.lang;
+    final photo = _photo;
+    return SafeArea(
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(
+          16,
+          16,
+          16,
+          16 + MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              Strings.of('tellOwnerMore', lang),
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _note,
+              minLines: 2,
+              maxLines: 4,
+              textCapitalization: TextCapitalization.sentences,
+              decoration: InputDecoration(
+                hintText: Strings.of('whatHappened', lang),
+                border: const OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 12),
+            if (photo == null)
+              OutlinedButton.icon(
+                onPressed: _pickPhoto,
+                icon: const Icon(Icons.add_a_photo_outlined),
+                label: Text(Strings.of('addPhoto', lang)),
+              )
+            else
+              Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.memory(
+                      photo,
+                      height: 160,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  Positioned(
+                    top: 4,
+                    right: 4,
+                    child: IconButton.filledTonal(
+                      icon: const Icon(Icons.close),
+                      onPressed: () => setState(() => _photo = null),
+                    ),
+                  ),
+                ],
+              ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: TextButton(
+                    onPressed: () =>
+                        Navigator.of(context).pop(const _ProblemDetails()),
+                    child: Text(Strings.of('skip', lang)),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: FilledButton(
+                    onPressed: () {
+                      final note = _note.text.trim();
+                      Navigator.of(context).pop(
+                        _ProblemDetails(
+                          note: note.isEmpty ? null : note,
+                          photo: _photo,
+                        ),
+                      );
+                    },
+                    child: Text(Strings.of('send', lang)),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

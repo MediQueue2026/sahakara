@@ -38,6 +38,9 @@ class TaskRow {
   final String id;
   final String status;
   final String? cantDoReason;
+  // The staff member's optional explanation for need_help / cant_do.
+  final String? statusNote;
+  final String? statusPhoto;
   final String priority;
   final int? estMinutes;
   final String? customTitle;
@@ -52,6 +55,8 @@ class TaskRow {
     required this.id,
     required this.status,
     this.cantDoReason,
+    this.statusNote,
+    this.statusPhoto,
     required this.priority,
     this.estMinutes,
     this.customTitle,
@@ -66,6 +71,43 @@ class TaskRow {
   String title(AppLanguage lang) {
     if (nameEn == null) return customTitle ?? '';
     return pickName(lang, en: nameEn!, si: nameSi, ta: nameTa);
+  }
+}
+
+/// The staff member's note and photo on a task marked need help / can't do,
+/// or nothing if they didn't add any.
+class TaskStatusDetails extends StatelessWidget {
+  final TaskRow task;
+
+  const TaskStatusDetails({super.key, required this.task});
+
+  @override
+  Widget build(BuildContext context) {
+    final note = task.statusNote;
+    final photo = task.statusPhoto;
+    if (note == null && photo == null) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(top: 6),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (photo != null) ...[
+            TaskPhotoThumb(url: photo, size: 48),
+            const SizedBox(width: 8),
+          ],
+          if (note != null)
+            Expanded(
+              child: Text(
+                '"$note"',
+                style: const TextStyle(
+                  fontStyle: FontStyle.italic,
+                  color: Colors.black87,
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
   }
 }
 

@@ -10,7 +10,7 @@ SahakaraConnector.instance.SetHouseholdArea(setHouseholdAreaVariables).execute()
 SahakaraConnector.instance.CreateHousehold(createHouseholdVariables).execute();
 SahakaraConnector.instance.AddHouseholdMember(addHouseholdMemberVariables).execute();
 SahakaraConnector.instance.InviteHouseholdMember(inviteHouseholdMemberVariables).execute();
-SahakaraConnector.instance.AcceptHouseholdInvite(acceptHouseholdInviteVariables).execute();
+SahakaraConnector.instance.ReinviteHouseholdMember(reinviteHouseholdMemberVariables).execute();
 
 ```
 

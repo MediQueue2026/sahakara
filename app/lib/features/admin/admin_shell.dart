@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/firebase_client.dart';
 import 'holidays_admin_page.dart';
 import 'households_admin_page.dart';
+import 'payment_plans_admin_page.dart';
 import 'task_library_admin_page.dart';
 
 class AdminShell extends StatefulWidget {
@@ -21,6 +22,10 @@ class _AdminShellState extends State<AdminShell> {
       label: Text('Households'),
     ),
     NavigationRailDestination(
+      icon: Icon(Icons.payments_outlined),
+      label: Text('Payment plans'),
+    ),
+    NavigationRailDestination(
       icon: Icon(Icons.checklist_outlined),
       label: Text('Task library'),
     ),
@@ -32,6 +37,7 @@ class _AdminShellState extends State<AdminShell> {
 
   static const _pages = [
     HouseholdsAdminPage(),
+    PaymentPlansAdminPage(),
     TaskLibraryAdminPage(),
     HolidaysAdminPage(),
   ];

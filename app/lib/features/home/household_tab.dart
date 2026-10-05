@@ -54,11 +54,49 @@ class _HouseholdTabState extends State<HouseholdTab> {
     }
   }
 
-  /// A member's card: name and role, and for a request that hasn't been
-  /// accepted, where it stands and a button to cancel or remove it.
+  Future<void> _removeMember(Member m, AppLanguage lang) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(Strings.of('removeFromHousehold', lang)),
+        content: Text(
+          Strings.of('confirmRemoveMember', lang)
+              .replaceFirst('{name}', m.user.name),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(Strings.of('cancel', lang)),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(Strings.of('remove', lang)),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    try {
+      await AppData.removeHouseholdMember(m.id);
+      _reload();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.toString())));
+    }
+  }
+
+  /// Staff the owner removed: they joined once but are no longer active.
+  static bool _isRemoved(Member m) =>
+      m.status.stringValue == 'accepted' && !m.active;
+
+  /// A member's card: name and role, and a button to remove staff; for a
+  /// request that hasn't been accepted, where it stands and a button to
+  /// cancel or remove it.
   Widget _memberCard(Member m, AppLanguage lang) {
     final status = m.status.stringValue;
     final accepted = status == 'accepted';
+    final isOwner = m.role.stringValue == 'owner';
     return Card(
       child: ListTile(
         leading: accepted
@@ -74,7 +112,13 @@ class _HouseholdTabState extends State<HouseholdTab> {
           accepted ? m.role.stringValue : Strings.of('invite_$status', lang),
         ),
         trailing: accepted
-            ? null
+            ? (isOwner
+                ? null
+                : IconButton(
+                    tooltip: Strings.of('removeFromHousehold', lang),
+                    icon: const Icon(Icons.person_remove_outlined),
+                    onPressed: () => _removeMember(m, lang),
+                  ))
             : IconButton(
                 tooltip: Strings.of(
                   status == 'pending' ? 'cancelRequest' : 'remove',
@@ -114,8 +158,10 @@ class _HouseholdTabState extends State<HouseholdTab> {
                 }
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children:
-                      snapshot.data!.map((m) => _memberCard(m, lang)).toList(),
+                  children: snapshot.data!
+                      .where((m) => !_isRemoved(m))
+                      .map((m) => _memberCard(m, lang))
+                      .toList(),
                 );
               },
             ),

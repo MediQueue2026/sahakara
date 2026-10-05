@@ -974,6 +974,47 @@ ref.execute();
 ref.subscribe(...);
 ```
 
+
+### AdminPaymentPlans
+#### Required Arguments
+```dart
+// No required arguments
+SahakaraConnector.instance.adminPaymentPlans().execute();
+```
+
+
+
+#### Return Type
+`execute()` returns a `QueryResult<AdminPaymentPlansData, void>`
+```dart
+/// Result of an Operation Request (query/mutation).
+class OperationResult<Data, Variables> {
+  OperationResult(this.dataConnect, this.data, this.ref);
+  Data data;
+  OperationRef<Data, Variables> ref;
+  FirebaseDataConnect dataConnect;
+}
+
+/// Result of a query request. Created to hold extra variables in the future.
+class QueryResult<Data, Variables> extends OperationResult<Data, Variables> {
+  QueryResult(super.dataConnect, super.data, super.ref);
+}
+
+final result = await SahakaraConnector.instance.adminPaymentPlans();
+AdminPaymentPlansData data = result.data;
+final ref = result.ref;
+```
+
+#### Getting the Ref
+Each builder returns an `execute` function, which is a helper function that creates a `Ref` object, and executes the underlying operation.
+An example of how to use the `Ref` object is shown below:
+```dart
+final ref = SahakaraConnector.instance.adminPaymentPlans().ref();
+ref.execute();
+
+ref.subscribe(...);
+```
+
 ## Mutations
 
 ### ClaimInvitedProfile
@@ -1501,6 +1542,100 @@ ref.execute();
 ```
 
 
+### ReinviteHouseholdMember
+#### Required Arguments
+```dart
+String householdId = ...;
+String userId = ...;
+MemberRole role = ...;
+PayType payType = ...;
+double rate = ...;
+SahakaraConnector.instance.reinviteHouseholdMember(
+  householdId: householdId,
+  userId: userId,
+  role: role,
+  payType: payType,
+  rate: rate,
+).execute();
+```
+
+#### Optional Arguments
+We return a builder for each query. For ReinviteHouseholdMember, we created `ReinviteHouseholdMemberBuilder`. For queries and mutations with optional parameters, we return a builder class.
+The builder pattern allows Data Connect to distinguish between fields that haven't been set and fields that have been set to null. A field can be set by calling its respective setter method like below:
+```dart
+class ReinviteHouseholdMemberVariablesBuilder {
+  ...
+   ReinviteHouseholdMemberVariablesBuilder allowance(double? t) {
+   _allowance.value = t;
+   return this;
+  }
+  ReinviteHouseholdMemberVariablesBuilder offDays(String? t) {
+   _offDays.value = t;
+   return this;
+  }
+  ReinviteHouseholdMemberVariablesBuilder workingHours(String? t) {
+   _workingHours.value = t;
+   return this;
+  }
+
+  ...
+}
+SahakaraConnector.instance.reinviteHouseholdMember(
+  householdId: householdId,
+  userId: userId,
+  role: role,
+  payType: payType,
+  rate: rate,
+)
+.allowance(allowance)
+.offDays(offDays)
+.workingHours(workingHours)
+.execute();
+```
+
+#### Return Type
+`execute()` returns a `OperationResult<ReinviteHouseholdMemberData, ReinviteHouseholdMemberVariables>`
+```dart
+/// Result of an Operation Request (query/mutation).
+class OperationResult<Data, Variables> {
+  OperationResult(this.dataConnect, this.data, this.ref);
+  Data data;
+  OperationRef<Data, Variables> ref;
+  FirebaseDataConnect dataConnect;
+}
+
+final result = await SahakaraConnector.instance.reinviteHouseholdMember(
+  householdId: householdId,
+  userId: userId,
+  role: role,
+  payType: payType,
+  rate: rate,
+);
+ReinviteHouseholdMemberData data = result.data;
+final ref = result.ref;
+```
+
+#### Getting the Ref
+Each builder returns an `execute` function, which is a helper function that creates a `Ref` object, and executes the underlying operation.
+An example of how to use the `Ref` object is shown below:
+```dart
+String householdId = ...;
+String userId = ...;
+MemberRole role = ...;
+PayType payType = ...;
+double rate = ...;
+
+final ref = SahakaraConnector.instance.reinviteHouseholdMember(
+  householdId: householdId,
+  userId: userId,
+  role: role,
+  payType: payType,
+  rate: rate,
+).ref();
+ref.execute();
+```
+
+
 ### AcceptHouseholdInvite
 #### Required Arguments
 ```dart
@@ -1621,6 +1756,48 @@ An example of how to use the `Ref` object is shown below:
 String id = ...;
 
 final ref = SahakaraConnector.instance.cancelHouseholdInvite(
+  id: id,
+).ref();
+ref.execute();
+```
+
+
+### RemoveHouseholdMember
+#### Required Arguments
+```dart
+String id = ...;
+SahakaraConnector.instance.removeHouseholdMember(
+  id: id,
+).execute();
+```
+
+
+
+#### Return Type
+`execute()` returns a `OperationResult<RemoveHouseholdMemberData, RemoveHouseholdMemberVariables>`
+```dart
+/// Result of an Operation Request (query/mutation).
+class OperationResult<Data, Variables> {
+  OperationResult(this.dataConnect, this.data, this.ref);
+  Data data;
+  OperationRef<Data, Variables> ref;
+  FirebaseDataConnect dataConnect;
+}
+
+final result = await SahakaraConnector.instance.removeHouseholdMember(
+  id: id,
+);
+RemoveHouseholdMemberData data = result.data;
+final ref = result.ref;
+```
+
+#### Getting the Ref
+Each builder returns an `execute` function, which is a helper function that creates a `Ref` object, and executes the underlying operation.
+An example of how to use the `Ref` object is shown below:
+```dart
+String id = ...;
+
+final ref = SahakaraConnector.instance.removeHouseholdMember(
   id: id,
 ).ref();
 ref.execute();
@@ -1913,6 +2090,14 @@ class UpdateMyTaskStatusVariablesBuilder {
    _cantDoReason.value = t;
    return this;
   }
+  UpdateMyTaskStatusVariablesBuilder note(String? t) {
+   _note.value = t;
+   return this;
+  }
+  UpdateMyTaskStatusVariablesBuilder photoUrl(String? t) {
+   _photoUrl.value = t;
+   return this;
+  }
 
   ...
 }
@@ -1922,6 +2107,8 @@ SahakaraConnector.instance.updateMyTaskStatus(
   action: action,
 )
 .cantDoReason(cantDoReason)
+.note(note)
+.photoUrl(photoUrl)
 .execute();
 ```
 
@@ -2189,6 +2376,172 @@ String id = ...;
 
 final ref = SahakaraConnector.instance.deleteHoliday(
   id: id,
+).ref();
+ref.execute();
+```
+
+
+### AddPaymentPlan
+#### Required Arguments
+```dart
+String name = ...;
+double price = ...;
+BillingPeriod billingPeriod = ...;
+SahakaraConnector.instance.addPaymentPlan(
+  name: name,
+  price: price,
+  billingPeriod: billingPeriod,
+).execute();
+```
+
+#### Optional Arguments
+We return a builder for each query. For AddPaymentPlan, we created `AddPaymentPlanBuilder`. For queries and mutations with optional parameters, we return a builder class.
+The builder pattern allows Data Connect to distinguish between fields that haven't been set and fields that have been set to null. A field can be set by calling its respective setter method like below:
+```dart
+class AddPaymentPlanVariablesBuilder {
+  ...
+   AddPaymentPlanVariablesBuilder description(String? t) {
+   _description.value = t;
+   return this;
+  }
+
+  ...
+}
+SahakaraConnector.instance.addPaymentPlan(
+  name: name,
+  price: price,
+  billingPeriod: billingPeriod,
+)
+.description(description)
+.execute();
+```
+
+#### Return Type
+`execute()` returns a `OperationResult<AddPaymentPlanData, AddPaymentPlanVariables>`
+```dart
+/// Result of an Operation Request (query/mutation).
+class OperationResult<Data, Variables> {
+  OperationResult(this.dataConnect, this.data, this.ref);
+  Data data;
+  OperationRef<Data, Variables> ref;
+  FirebaseDataConnect dataConnect;
+}
+
+final result = await SahakaraConnector.instance.addPaymentPlan(
+  name: name,
+  price: price,
+  billingPeriod: billingPeriod,
+);
+AddPaymentPlanData data = result.data;
+final ref = result.ref;
+```
+
+#### Getting the Ref
+Each builder returns an `execute` function, which is a helper function that creates a `Ref` object, and executes the underlying operation.
+An example of how to use the `Ref` object is shown below:
+```dart
+String name = ...;
+double price = ...;
+BillingPeriod billingPeriod = ...;
+
+final ref = SahakaraConnector.instance.addPaymentPlan(
+  name: name,
+  price: price,
+  billingPeriod: billingPeriod,
+).ref();
+ref.execute();
+```
+
+
+### DeletePaymentPlan
+#### Required Arguments
+```dart
+String id = ...;
+SahakaraConnector.instance.deletePaymentPlan(
+  id: id,
+).execute();
+```
+
+
+
+#### Return Type
+`execute()` returns a `OperationResult<DeletePaymentPlanData, DeletePaymentPlanVariables>`
+```dart
+/// Result of an Operation Request (query/mutation).
+class OperationResult<Data, Variables> {
+  OperationResult(this.dataConnect, this.data, this.ref);
+  Data data;
+  OperationRef<Data, Variables> ref;
+  FirebaseDataConnect dataConnect;
+}
+
+final result = await SahakaraConnector.instance.deletePaymentPlan(
+  id: id,
+);
+DeletePaymentPlanData data = result.data;
+final ref = result.ref;
+```
+
+#### Getting the Ref
+Each builder returns an `execute` function, which is a helper function that creates a `Ref` object, and executes the underlying operation.
+An example of how to use the `Ref` object is shown below:
+```dart
+String id = ...;
+
+final ref = SahakaraConnector.instance.deletePaymentPlan(
+  id: id,
+).ref();
+ref.execute();
+```
+
+
+### SetHouseholdPlan
+#### Required Arguments
+```dart
+String householdId = ...;
+String planId = ...;
+double price = ...;
+SahakaraConnector.instance.setHouseholdPlan(
+  householdId: householdId,
+  planId: planId,
+  price: price,
+).execute();
+```
+
+
+
+#### Return Type
+`execute()` returns a `OperationResult<SetHouseholdPlanData, SetHouseholdPlanVariables>`
+```dart
+/// Result of an Operation Request (query/mutation).
+class OperationResult<Data, Variables> {
+  OperationResult(this.dataConnect, this.data, this.ref);
+  Data data;
+  OperationRef<Data, Variables> ref;
+  FirebaseDataConnect dataConnect;
+}
+
+final result = await SahakaraConnector.instance.setHouseholdPlan(
+  householdId: householdId,
+  planId: planId,
+  price: price,
+);
+SetHouseholdPlanData data = result.data;
+final ref = result.ref;
+```
+
+#### Getting the Ref
+Each builder returns an `execute` function, which is a helper function that creates a `Ref` object, and executes the underlying operation.
+An example of how to use the `Ref` object is shown below:
+```dart
+String householdId = ...;
+String planId = ...;
+double price = ...;
+
+final ref = SahakaraConnector.instance.setHouseholdPlan(
+  householdId: householdId,
+  planId: planId,
+  price: price,
 ).ref();
 ref.execute();
 ```
