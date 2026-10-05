@@ -162,7 +162,8 @@ class AppData {
   /// proposed contract. Links their existing `User` row, or pre-creates one
   /// (see [ensureUserProfile] for the matching claim-on-login side). They
   /// join as a pending member and become staff only once they accept
-  /// (see [fetchMyHouseholdInvites]).
+  /// (see [fetchMyHouseholdInvites]). Someone the owner removed earlier gets
+  /// their old member row back as a pending request, keeping their history.
   static Future<void> addMaidByEmail({
     required String householdId,
     required String email,
@@ -178,7 +179,27 @@ class AppData {
     final pay = PayType.values.byName(payType);
     final existing = await db.userIdByEmail(email: email).execute();
     final userId = existing.data.users.firstOrNull?.id;
-    if (userId != null) {
+    final wasRemoved = userId != null &&
+        (await fetchHouseholdMembers(householdId)).any(
+          (m) =>
+              m.user.id == userId &&
+              m.status.stringValue == 'accepted' &&
+              !m.active,
+        );
+    if (wasRemoved) {
+      await db
+          .reinviteHouseholdMember(
+            householdId: householdId,
+            userId: userId,
+            role: MemberRole.maid,
+            payType: pay,
+            rate: rate,
+          )
+          .allowance(allowance)
+          .offDays(offDays)
+          .workingHours(workingHours)
+          .execute();
+    } else if (userId != null) {
       await db
           .addHouseholdMember(
             householdId: householdId,
@@ -232,6 +253,13 @@ class AppData {
   /// that was declined.
   static Future<void> cancelHouseholdInvite(String memberId) async {
     await db.cancelHouseholdInvite(id: memberId).execute();
+  }
+
+  /// Owner removes a staff member who had joined: they become inactive (their
+  /// history is kept), their contract ends today and their upcoming tasks
+  /// are unassigned.
+  static Future<void> removeHouseholdMember(String memberId) async {
+    await db.removeHouseholdMember(id: memberId).execute();
   }
 
   /// Requests for the signed-in user to join a household that are waiting
@@ -362,11 +390,15 @@ class AppData {
 
   /// Staff member reports progress on their own task: [status] is one of
   /// 'started', 'done', 'need_help' or 'cant_do', and [cantDoReason] is
-  /// required for 'cant_do' (and only then). Also logged in TaskLog.
+  /// required for 'cant_do' (and only then). [note] and [photoUrl] are an
+  /// optional explanation for 'need_help' / 'cant_do' that the owner sees.
+  /// Also logged in TaskLog.
   static Future<void> updateMyTaskStatus({
     required String taskId,
     required String status,
     String? cantDoReason,
+    String? note,
+    String? photoUrl,
   }) async {
     await db
         .updateMyTaskStatus(
@@ -381,6 +413,8 @@ class AppData {
               ? null
               : CantDoReason.values.byName(cantDoReason),
         )
+        .note(note)
+        .photoUrl(photoUrl)
         .execute();
   }
 

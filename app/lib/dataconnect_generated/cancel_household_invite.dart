@@ -18,47 +18,15 @@ class CancelHouseholdInviteVariablesBuilder {
 }
 
 @immutable
-class CancelHouseholdInviteHouseholdMemberDelete {
-  final String id;
-  CancelHouseholdInviteHouseholdMemberDelete.fromJson(dynamic json):
-  
-  id = nativeFromJson<String>(json['id']);
-  @override
-  bool operator ==(Object other) {
-    if(identical(this, other)) {
-      return true;
-    }
-    if(other.runtimeType != runtimeType) {
-      return false;
-    }
-
-    final CancelHouseholdInviteHouseholdMemberDelete otherTyped = other as CancelHouseholdInviteHouseholdMemberDelete;
-    return id == otherTyped.id;
-    
-  }
-  @override
-  int get hashCode => id.hashCode;
-  
-
-  Map<String, dynamic> toJson() {
-    Map<String, dynamic> json = {};
-    json['id'] = nativeToJson<String>(id);
-    return json;
-  }
-
-  CancelHouseholdInviteHouseholdMemberDelete({
-    required this.id,
-  });
-}
-
-@immutable
 class CancelHouseholdInviteData {
   final int contract_deleteMany;
-  final CancelHouseholdInviteHouseholdMemberDelete? householdMember_delete;
+  final int householdMember_deleteMany;
+  final int householdMember_updateMany;
   CancelHouseholdInviteData.fromJson(dynamic json):
   
   contract_deleteMany = nativeFromJson<int>(json['contract_deleteMany']),
-  householdMember_delete = json['householdMember_delete'] == null ? null : CancelHouseholdInviteHouseholdMemberDelete.fromJson(json['householdMember_delete']);
+  householdMember_deleteMany = nativeFromJson<int>(json['householdMember_deleteMany']),
+  householdMember_updateMany = nativeFromJson<int>(json['householdMember_updateMany']);
   @override
   bool operator ==(Object other) {
     if(identical(this, other)) {
@@ -70,25 +38,26 @@ class CancelHouseholdInviteData {
 
     final CancelHouseholdInviteData otherTyped = other as CancelHouseholdInviteData;
     return contract_deleteMany == otherTyped.contract_deleteMany && 
-    householdMember_delete == otherTyped.householdMember_delete;
+    householdMember_deleteMany == otherTyped.householdMember_deleteMany && 
+    householdMember_updateMany == otherTyped.householdMember_updateMany;
     
   }
   @override
-  int get hashCode => Object.hashAll([contract_deleteMany.hashCode, householdMember_delete.hashCode]);
+  int get hashCode => Object.hashAll([contract_deleteMany.hashCode, householdMember_deleteMany.hashCode, householdMember_updateMany.hashCode]);
   
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> json = {};
     json['contract_deleteMany'] = nativeToJson<int>(contract_deleteMany);
-    if (householdMember_delete != null) {
-      json['householdMember_delete'] = householdMember_delete!.toJson();
-    }
+    json['householdMember_deleteMany'] = nativeToJson<int>(householdMember_deleteMany);
+    json['householdMember_updateMany'] = nativeToJson<int>(householdMember_updateMany);
     return json;
   }
 
   CancelHouseholdInviteData({
     required this.contract_deleteMany,
-    this.householdMember_delete,
+    required this.householdMember_deleteMany,
+    required this.householdMember_updateMany,
   });
 }
 

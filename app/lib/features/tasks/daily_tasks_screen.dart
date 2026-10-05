@@ -93,6 +93,8 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
             id: t.id,
             status: t.status.stringValue,
             cantDoReason: t.cantDoReason?.stringValue,
+            statusNote: t.statusNote,
+            statusPhoto: t.statusPhoto,
             priority: t.template.priority.stringValue,
             estMinutes: t.template.estMinutes,
             customTitle: t.template.customTitle,
@@ -270,16 +272,22 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
         color: statusColor(t.status),
       ),
       title: Text(t.title(lang)),
-      subtitle: Text.rich(
-        TextSpan(
-          children: [
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text.rich(
             TextSpan(
-              text: status,
-              style: TextStyle(color: statusColor(t.status)),
+              children: [
+                TextSpan(
+                  text: status,
+                  style: TextStyle(color: statusColor(t.status)),
+                ),
+                TextSpan(text: ' · ${details.join(' · ')}'),
+              ],
             ),
-            TextSpan(text: ' · ${details.join(' · ')}'),
-          ],
-        ),
+          ),
+          TaskStatusDetails(task: t),
+        ],
       ),
       onTap: () => _assign(t, lang),
       trailing: Row(

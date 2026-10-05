@@ -223,6 +223,8 @@ query HouseholdTasksForDay($householdId: UUID!, $dueDate: Date!)
     id
     status
     cantDoReason
+    statusNote
+    statusPhoto
     completedAt
     assignedTo {
       id
@@ -261,6 +263,8 @@ query MyTasksForDay($dueDate: Date!) @auth(level: USER) {
     id
     status
     cantDoReason
+    statusNote
+    statusPhoto
     completedAt
     template {
       customTitle
@@ -515,6 +519,33 @@ query AdminHouseholds @auth(level: USER) {
     createdAt
     householdMembers_on_household {
       id
+    }
+    householdSubscription_on_household {
+      price
+      paidUntil
+      plan {
+        id
+        name
+        billingPeriod
+      }
+    }
+  }
+}
+
+query AdminPaymentPlans @auth(level: USER) {
+  users(where: { authUid: { eq_expr: "auth.uid" }, accountType: { eq: admin } })
+    @redact
+    @check(expr: "this.size() == 1", message: "Admins only") {
+    id
+  }
+  paymentPlans(orderBy: [{ price: ASC }]) {
+    id
+    name
+    price
+    billingPeriod
+    description
+    householdSubscriptions_on_plan {
+      householdId
     }
   }
 }

@@ -208,6 +208,69 @@ mutation InviteHouseholdMember(
   )
 }
 
+# Owner asks a staff member they removed earlier (RemoveHouseholdMember) to
+# come back. Their old member row — and the history on it — is reused: it
+# goes back to a pending request with a new proposed contract, exactly like
+# a fresh AddHouseholdMember.
+mutation ReinviteHouseholdMember(
+  $householdId: UUID!
+  $userId: UUID!
+  $role: MemberRole!
+  $payType: PayType!
+  $rate: Float!
+  $allowance: Float
+  $offDays: String
+  $workingHours: String
+) @auth(expr: "auth.uid != '' && vars.role != 'owner'") @transaction {
+  query @redact {
+    households(
+      where: {
+        id: { eq: $householdId }
+        owner: { authUid: { eq_expr: "auth.uid" } }
+      }
+    )
+      @check(
+        expr: "this.size() == 1"
+        message: "Only the household owner can add members"
+      ) {
+      id
+    }
+    householdMembers(
+      where: {
+        household: { id: { eq: $householdId } }
+        user: { id: { eq: $userId } }
+        status: { eq: accepted }
+        active: { eq: false }
+      }
+    )
+      @check(
+        expr: "this.size() == 1"
+        message: "This person isn't a former member of the household"
+      ) {
+      id
+    }
+  }
+  householdMember_updateMany(
+    where: {
+      household: { id: { eq: $householdId } }
+      user: { id: { eq: $userId } }
+      status: { eq: accepted }
+      active: { eq: false }
+    }
+    data: { role: $role, status: pending }
+  )
+  contract_insert(
+    data: {
+      memberId_expr: "response.query.householdMembers[0].id"
+      payType: $payType
+      rate: $rate
+      allowance: $allowance
+      offDays: $offDays
+      workingHours: $workingHours
+    }
+  )
+}
+
 # The invited person accepts a pending request: they become an active member
 # of the household, and the proposed contract starts today.
 mutation AcceptHouseholdInvite($id: UUID!) @auth(level: USER) @transaction {
@@ -263,6 +326,9 @@ mutation DeclineHouseholdInvite($id: UUID!) @auth(level: USER) @transaction {
 
 # Owner withdraws a pending request, or clears away a declined one, together
 # with its proposed contract. Accepted members can't be removed this way.
+# For someone who has never joined, the member row goes too. For a former
+# member who was re-invited (they have an ended contract), the row is kept
+# and goes back to removed, so their history stays.
 mutation CancelHouseholdInvite($id: UUID!) @auth(level: USER) @transaction {
   query @redact {
     householdMembers(
@@ -279,8 +345,59 @@ mutation CancelHouseholdInvite($id: UUID!) @auth(level: USER) @transaction {
       id
     }
   }
-  contract_deleteMany(where: { memberId: { eq: $id } })
-  householdMember_delete(id: $id)
+  contract_deleteMany(where: { memberId: { eq: $id }, endDate: { isNull: true } })
+  householdMember_deleteMany(
+    where: {
+      _and: [
+        { id: { eq: $id } }
+        { _not: { contracts_on_member: { exist: { endDate: { isNull: false } } } } }
+      ]
+    }
+  )
+  householdMember_updateMany(
+    where: {
+      id: { eq: $id }
+      contracts_on_member: { exist: { endDate: { isNull: false } } }
+    }
+    data: { status: accepted, active: false }
+  )
+}
+
+# Owner removes a staff member who had joined. The member row is kept
+# (inactive) so their attendance, pay and ledger history stay intact; their
+# contract ends today and their unfinished tasks from today on go back to
+# unassigned. They lose access to the household straight away.
+mutation RemoveHouseholdMember($id: UUID!) @auth(level: USER) @transaction {
+  query @redact {
+    householdMembers(
+      where: {
+        id: { eq: $id }
+        active: { eq: true }
+        status: { eq: accepted }
+        role: { ne: owner }
+        household: { owner: { authUid: { eq_expr: "auth.uid" } } }
+      }
+    )
+      @check(
+        expr: "this.size() == 1"
+        message: "Only the household owner can remove a current staff member"
+      ) {
+      id
+    }
+  }
+  householdMember_update(id: $id, data: { active: false })
+  contract_updateMany(
+    where: { memberId: { eq: $id }, endDate: { isNull: true } }
+    data: { endDate_expr: "request.time" }
+  )
+  task_updateMany(
+    where: {
+      assignedToId: { eq: $id }
+      dueDate: { ge_date: { today: true } }
+      status: { in: [pending, carried_forward] }
+    }
+    data: { assignedToId: null }
+  )
 }
 
 # ── contracts ────────────────────────────────────────────────────────────
@@ -435,6 +552,8 @@ mutation AssignDailyTask($id: UUID!, $assignedToId: UUID!)
       assignedToId: $assignedToId
       status: pending
       cantDoReason: null
+      statusNote: null
+      statusPhoto: null
       completedAt: null
     }
   )
@@ -471,12 +590,16 @@ mutation DeleteDailyTask($id: UUID!) @auth(level: USER) @transaction {
 # change is logged in TaskLog. $action must be the log entry matching
 # $status (need_help is logged as `help`), and a reason is required for
 # cant_do and only for cant_do. completedAt is set when the task becomes
-# done and cleared if it moves back out of done.
+# done and cleared if it moves back out of done. $note and $photoUrl are an
+# optional explanation (sent with need_help / cant_do) shown to the owner;
+# leaving them out clears the previous one.
 mutation UpdateMyTaskStatus(
   $id: UUID!
   $status: TaskStatus!
   $action: TaskLogAction!
   $cantDoReason: CantDoReason
+  $note: String
+  $photoUrl: String
 )
 @auth(
   expr: "auth.uid != '' && ((vars.status == 'started' && vars.action == 'started') || (vars.status == 'done' && vars.action == 'done') || (vars.status == 'need_help' && vars.action == 'help') || (vars.status == 'cant_do' && vars.action == 'cant_do')) && ((vars.status == 'cant_do') == (vars.cantDoReason != null))"
@@ -503,7 +626,15 @@ mutation UpdateMyTaskStatus(
       }
     }
   }
-  task_update(id: $id, data: { status: $status, cantDoReason: $cantDoReason })
+  task_update(
+    id: $id
+    data: {
+      status: $status
+      cantDoReason: $cantDoReason
+      statusNote: $note
+      statusPhoto: $photoUrl
+    }
+  )
   done: task_updateMany(
     where: { id: { eq: $id }, status: { eq: done } }
     data: { completedAt_expr: "request.time" }
@@ -516,6 +647,8 @@ mutation UpdateMyTaskStatus(
     data: {
       taskId: $id
       action: $action
+      note: $note
+      proofPhoto: $photoUrl
       byUserId_expr: "response.query.tasks[0].assignedTo.user.id"
     }
   )
@@ -588,6 +721,66 @@ mutation DeleteHoliday($id: UUID!) @auth(level: USER) @transaction {
     }
   }
   holiday_delete(id: $id)
+}
+
+mutation AddPaymentPlan(
+  $name: String!
+  $price: Float!
+  $billingPeriod: BillingPeriod!
+  $description: String
+) @auth(level: USER) @transaction {
+  query @redact {
+    users(
+      where: { authUid: { eq_expr: "auth.uid" }, accountType: { eq: admin } }
+    ) @check(expr: "this.size() == 1", message: "Admins only") {
+      id
+    }
+  }
+  paymentPlan_insert(
+    data: {
+      name: $name
+      price: $price
+      billingPeriod: $billingPeriod
+      description: $description
+    }
+  )
+}
+
+# Refuses while any household is still on the plan.
+mutation DeletePaymentPlan($id: UUID!) @auth(level: USER) @transaction {
+  query @redact {
+    users(
+      where: { authUid: { eq_expr: "auth.uid" }, accountType: { eq: admin } }
+    ) @check(expr: "this.size() == 1", message: "Admins only") {
+      id
+    }
+    householdSubscriptions(where: { planId: { eq: $id } })
+    @check(
+      expr: "this.size() == 0"
+      message: "Households are still on this plan — move them to another plan first"
+    ) {
+      householdId
+    }
+  }
+  paymentPlan_delete(id: $id)
+}
+
+# Puts a household on a plan at the given price, replacing its current plan.
+mutation SetHouseholdPlan(
+  $householdId: UUID!
+  $planId: UUID!
+  $price: Float!
+) @auth(level: USER) @transaction {
+  query @redact {
+    users(
+      where: { authUid: { eq_expr: "auth.uid" }, accountType: { eq: admin } }
+    ) @check(expr: "this.size() == 1", message: "Admins only") {
+      id
+    }
+  }
+  householdSubscription_upsert(
+    data: { householdId: $householdId, planId: $planId, price: $price }
+  )
 }
 
 # ── attendance & leave ───────────────────────────────────────────────────

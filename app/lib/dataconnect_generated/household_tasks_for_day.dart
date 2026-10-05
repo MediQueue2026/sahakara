@@ -23,6 +23,8 @@ class HouseholdTasksForDayTasks {
   final String id;
   final EnumValue<TaskStatus> status;
   final EnumValue<CantDoReason>? cantDoReason;
+  final String? statusNote;
+  final String? statusPhoto;
   final Timestamp? completedAt;
   final HouseholdTasksForDayTasksAssignedTo? assignedTo;
   final HouseholdTasksForDayTasksTemplate template;
@@ -31,6 +33,8 @@ class HouseholdTasksForDayTasks {
   id = nativeFromJson<String>(json['id']),
   status = taskStatusDeserializer(json['status']),
   cantDoReason = json['cantDoReason'] == null ? null : cantDoReasonDeserializer(json['cantDoReason']),
+  statusNote = json['statusNote'] == null ? null : nativeFromJson<String>(json['statusNote']),
+  statusPhoto = json['statusPhoto'] == null ? null : nativeFromJson<String>(json['statusPhoto']),
   completedAt = json['completedAt'] == null ? null : Timestamp.fromJson(json['completedAt']),
   assignedTo = json['assignedTo'] == null ? null : HouseholdTasksForDayTasksAssignedTo.fromJson(json['assignedTo']),
   template = HouseholdTasksForDayTasksTemplate.fromJson(json['template']);
@@ -47,13 +51,15 @@ class HouseholdTasksForDayTasks {
     return id == otherTyped.id && 
     status == otherTyped.status && 
     cantDoReason == otherTyped.cantDoReason && 
+    statusNote == otherTyped.statusNote && 
+    statusPhoto == otherTyped.statusPhoto && 
     completedAt == otherTyped.completedAt && 
     assignedTo == otherTyped.assignedTo && 
     template == otherTyped.template;
     
   }
   @override
-  int get hashCode => Object.hashAll([id.hashCode, status.hashCode, cantDoReason.hashCode, completedAt.hashCode, assignedTo.hashCode, template.hashCode]);
+  int get hashCode => Object.hashAll([id.hashCode, status.hashCode, cantDoReason.hashCode, statusNote.hashCode, statusPhoto.hashCode, completedAt.hashCode, assignedTo.hashCode, template.hashCode]);
   
 
   Map<String, dynamic> toJson() {
@@ -66,6 +72,12 @@ class HouseholdTasksForDayTasks {
       json['cantDoReason'] = 
     cantDoReasonSerializer(cantDoReason!)
     ;
+    }
+    if (statusNote != null) {
+      json['statusNote'] = nativeToJson<String?>(statusNote);
+    }
+    if (statusPhoto != null) {
+      json['statusPhoto'] = nativeToJson<String?>(statusPhoto);
     }
     if (completedAt != null) {
       json['completedAt'] = completedAt!.toJson();
@@ -81,6 +93,8 @@ class HouseholdTasksForDayTasks {
     required this.id,
     required this.status,
     this.cantDoReason,
+    this.statusNote,
+    this.statusPhoto,
     this.completedAt,
     this.assignedTo,
     required this.template,
