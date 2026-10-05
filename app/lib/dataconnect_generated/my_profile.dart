@@ -24,6 +24,8 @@ class MyProfileUsers {
   final String name;
   final EnumValue<AccountType> accountType;
   final EnumValue<AppLanguage> language;
+  final List<String>? preferredAreas;
+  final List<EnumValue<AppLanguage>>? spokenLanguages;
   MyProfileUsers.fromJson(dynamic json):
   
   id = nativeFromJson<String>(json['id']),
@@ -31,7 +33,13 @@ class MyProfileUsers {
   email = nativeFromJson<String>(json['email']),
   name = nativeFromJson<String>(json['name']),
   accountType = accountTypeDeserializer(json['accountType']),
-  language = appLanguageDeserializer(json['language']);
+  language = appLanguageDeserializer(json['language']),
+  preferredAreas = json['preferredAreas'] == null ? null : (json['preferredAreas'] as List<dynamic>)
+        .map((e) => nativeFromJson<String>(e))
+        .toList(),
+  spokenLanguages = json['spokenLanguages'] == null ? null : (json['spokenLanguages'] as List<dynamic>)
+        .map((e) => appLanguageDeserializer(e))
+        .toList();
   @override
   bool operator ==(Object other) {
     if(identical(this, other)) {
@@ -47,11 +55,13 @@ class MyProfileUsers {
     email == otherTyped.email && 
     name == otherTyped.name && 
     accountType == otherTyped.accountType && 
-    language == otherTyped.language;
+    language == otherTyped.language && 
+    preferredAreas == otherTyped.preferredAreas && 
+    spokenLanguages == otherTyped.spokenLanguages;
     
   }
   @override
-  int get hashCode => Object.hashAll([id.hashCode, authUid.hashCode, email.hashCode, name.hashCode, accountType.hashCode, language.hashCode]);
+  int get hashCode => Object.hashAll([id.hashCode, authUid.hashCode, email.hashCode, name.hashCode, accountType.hashCode, language.hashCode, preferredAreas.hashCode, spokenLanguages.hashCode]);
   
 
   Map<String, dynamic> toJson() {
@@ -68,6 +78,12 @@ class MyProfileUsers {
     json['language'] = 
     appLanguageSerializer(language)
     ;
+    if (preferredAreas != null) {
+      json['preferredAreas'] = preferredAreas?.map((e) => nativeToJson<String>(e)).toList();
+    }
+    if (spokenLanguages != null) {
+      json['spokenLanguages'] = spokenLanguages?.map((e) => appLanguageSerializer(e)).toList();
+    }
     return json;
   }
 
@@ -78,6 +94,8 @@ class MyProfileUsers {
     required this.name,
     required this.accountType,
     required this.language,
+    this.preferredAreas,
+    this.spokenLanguages,
   });
 }
 

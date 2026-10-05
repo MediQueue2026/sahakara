@@ -648,7 +648,8 @@ class _Section extends StatelessWidget {
   final String title;
   final Widget child;
 
-  const _Section({required this.icon, required this.title, required this.child});
+  const _Section(
+      {required this.icon, required this.title, required this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -673,8 +674,8 @@ class _Section extends StatelessWidget {
                 child: Text(
                   title,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+                        fontWeight: FontWeight.w600,
+                      ),
                 ),
               ),
             ],

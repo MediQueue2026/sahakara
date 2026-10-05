@@ -15,12 +15,17 @@ class ContractDetailScreen extends StatefulWidget {
   final String memberName;
   final bool editable;
 
+  /// False when shown as a home tab, under the shell's own top bar. Pull
+  /// down to refresh then stands in for the refresh button.
+  final bool showAppBar;
+
   const ContractDetailScreen({
     super.key,
     required this.lang,
     required this.memberId,
     required this.memberName,
     required this.editable,
+    this.showAppBar = true,
   });
 
   @override
@@ -110,7 +115,8 @@ class _ContractDetailScreenState extends State<ContractDetailScreen> {
       );
       await _load();
       if (mounted) {
-        await showSuccessDialog(context, Strings.of('contractSaved', lang), lang);
+        await showSuccessDialog(
+            context, Strings.of('contractSaved', lang), lang);
       }
     } catch (e) {
       if (mounted) setState(() => _error = e.toString());
@@ -125,41 +131,47 @@ class _ContractDetailScreenState extends State<ContractDetailScreen> {
       valueListenable: widget.lang,
       builder: (context, lang, _) {
         return Scaffold(
-          appBar: AppBar(
-            title: Text(widget.memberName),
-            actions: [
-              IconButton(
-                tooltip: Strings.of('refresh', lang),
-                onPressed: _loading ? null : _load,
-                icon: const Icon(Icons.refresh),
-              ),
-            ],
-          ),
+          appBar: !widget.showAppBar
+              ? null
+              : AppBar(
+                  title: Text(widget.memberName),
+                  actions: [
+                    IconButton(
+                      tooltip: Strings.of('refresh', lang),
+                      onPressed: _loading ? null : _load,
+                      icon: const Icon(Icons.refresh),
+                    ),
+                  ],
+                ),
           body: _loading
               ? const Center(child: CircularProgressIndicator())
-              : SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: _error != null
-                      ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Text(
-                              Strings.of('contractLoadFailed', lang),
-                              style: const TextStyle(color: Colors.red),
-                            ),
-                            const SizedBox(height: 8),
-                            SelectableText(_error!),
-                            const SizedBox(height: 16),
-                            OutlinedButton.icon(
-                              onPressed: _load,
-                              icon: const Icon(Icons.refresh),
-                              label: Text(Strings.of('retry', lang)),
-                            ),
-                          ],
-                        )
-                      : widget.editable
-                      ? _buildForm(lang)
-                      : _buildReadOnly(lang),
+              : RefreshIndicator(
+                  onRefresh: _load,
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.all(16),
+                    child: _error != null
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Text(
+                                Strings.of('contractLoadFailed', lang),
+                                style: const TextStyle(color: Colors.red),
+                              ),
+                              const SizedBox(height: 8),
+                              SelectableText(_error!),
+                              const SizedBox(height: 16),
+                              OutlinedButton.icon(
+                                onPressed: _load,
+                                icon: const Icon(Icons.refresh),
+                                label: Text(Strings.of('retry', lang)),
+                              ),
+                            ],
+                          )
+                        : widget.editable
+                            ? _buildForm(lang)
+                            : _buildReadOnly(lang),
+                  ),
                 ),
         );
       },
@@ -194,15 +206,15 @@ class _ContractDetailScreenState extends State<ContractDetailScreen> {
   }
 
   Widget _row(String label, String value) => Padding(
-    padding: const EdgeInsets.symmetric(vertical: 6),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(label, style: const TextStyle(color: mutedText)),
-        Text(value),
-      ],
-    ),
-  );
+        padding: const EdgeInsets.symmetric(vertical: 6),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(label, style: const TextStyle(color: mutedText)),
+            Text(value),
+          ],
+        ),
+      );
 
   Widget _buildForm(AppLanguage lang) {
     return Column(
@@ -329,9 +341,8 @@ Future<void> showSuccessDialog(
     builder: (context) => AlertDialog(
       icon: const Icon(Icons.check_circle, color: Colors.green, size: 48),
       title: Text(title, textAlign: TextAlign.center),
-      content: message == null
-          ? null
-          : Text(message, textAlign: TextAlign.center),
+      content:
+          message == null ? null : Text(message, textAlign: TextAlign.center),
       actions: [
         FilledButton(
           onPressed: () => Navigator.of(context).pop(),

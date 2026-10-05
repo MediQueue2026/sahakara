@@ -30,8 +30,8 @@ class _HouseholdTabState extends State<HouseholdTab> {
   }
 
   void _reload() => setState(() {
-    _members = AppData.fetchHouseholdMembers(_householdId);
-  });
+        _members = AppData.fetchHouseholdMembers(_householdId);
+      });
 
   Future<void> _addMaid() async {
     final sent = await Navigator.of(context).push<bool>(
@@ -71,9 +71,7 @@ class _HouseholdTabState extends State<HouseholdTab> {
               ),
         title: Text(m.user.name),
         subtitle: Text(
-          accepted
-              ? m.role.stringValue
-              : Strings.of('invite_$status', lang),
+          accepted ? m.role.stringValue : Strings.of('invite_$status', lang),
         ),
         trailing: accepted
             ? null
@@ -116,9 +114,8 @@ class _HouseholdTabState extends State<HouseholdTab> {
                 }
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: snapshot.data!
-                      .map((m) => _memberCard(m, lang))
-                      .toList(),
+                  children:
+                      snapshot.data!.map((m) => _memberCard(m, lang)).toList(),
                 );
               },
             ),

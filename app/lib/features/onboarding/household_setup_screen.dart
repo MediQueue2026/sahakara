@@ -6,8 +6,8 @@ import '../../core/strings.dart';
 
 /// Shown once, right after first login, to whoever has no household
 /// membership yet. Creates the household and makes the current user its
-/// owner — a maid invited by an owner never sees this screen, since her
-/// membership already exists by the time she logs in.
+/// owner — a maid invited by an owner never sees this screen, since their
+/// membership already exists by the time they log in.
 class HouseholdSetupScreen extends StatefulWidget {
   final LanguageController lang;
   final VoidCallback onDone;

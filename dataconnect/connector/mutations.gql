@@ -36,6 +36,22 @@ mutation SetMyName($name: String!) @auth(level: USER) {
   )
 }
 
+# Owners leave preferredAreas empty; it only applies to maids.
+mutation SetMyProfile(
+  $name: String!
+  $preferredAreas: [String!]!
+  $spokenLanguages: [AppLanguage!]!
+) @auth(level: USER) {
+  user_updateMany(
+    where: { authUid: { eq_expr: "auth.uid" } }
+    data: {
+      name: $name
+      preferredAreas: $preferredAreas
+      spokenLanguages: $spokenLanguages
+    }
+  )
+}
+
 mutation SetMyLanguage($language: AppLanguage!) @auth(level: USER) {
   user_updateMany(
     where: { authUid: { eq_expr: "auth.uid" } }
@@ -44,6 +60,18 @@ mutation SetMyLanguage($language: AppLanguage!) @auth(level: USER) {
 }
 
 # ── households & membership ─────────────────────────────────────────────
+
+# Owner sets the area the house is in. Matches nothing for anyone else.
+mutation SetHouseholdArea($householdId: UUID!, $area: String)
+@auth(level: USER) {
+  household_updateMany(
+    where: {
+      id: { eq: $householdId }
+      owner: { authUid: { eq_expr: "auth.uid" } }
+    }
+    data: { area: $area }
+  )
+}
 
 # Creates the household and makes the caller its owner.
 mutation CreateHousehold($name: String!, $address: String)

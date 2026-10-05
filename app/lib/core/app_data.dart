@@ -9,6 +9,8 @@ import 'firebase_client.dart';
 // Shorter names for the generated Data Connect result types the screens use.
 typedef Profile = MyProfileUsers;
 typedef Membership = MyMembershipHouseholdMembers;
+typedef MaidProfile = MaidProfileByEmailUsers;
+typedef Household = MyMembershipHouseholdMembersHousehold;
 typedef Member = HouseholdMembersHouseholdMembers;
 typedef CurrentContract = CurrentContractContracts;
 typedef HouseholdInvite = MyHouseholdInvitesHouseholdMembers;
@@ -55,7 +57,7 @@ class AppData {
   /// there's no row yet and no [signUp] to say which type to save — the
   /// caller then asks the user.
   ///
-  /// An owner can add a maid by email before she has ever logged in
+  /// An owner can add a maid by email before they have ever logged in
   /// (see [addMaidByEmail]), which creates a `User` row with no `authUid`
   /// yet. The first time that email address actually signs in, this claims
   /// that row instead of creating a duplicate one. The same goes for a row
@@ -86,6 +88,10 @@ class AppData {
     return profile!;
   }
 
+  /// The signed-in user's profile as currently saved, e.g. to show edits
+  /// made in Settings.
+  static Future<Profile?> fetchMyProfile() => _myProfile();
+
   static Future<Profile?> _myProfile() async {
     final result = await db.myProfile().execute();
     return result.data.users.firstOrNull;
@@ -95,6 +101,23 @@ class AppData {
   static Future<void> setLanguage(String language) async {
     await db
         .setMyLanguage(language: AppLanguage.values.byName(language))
+        .execute();
+  }
+
+  /// Saves the signed-in user's own profile. [spokenLanguages] are app
+  /// language codes: 'en', 'si' or 'ta'. Owners pass no [preferredAreas].
+  static Future<void> saveProfile({
+    required String name,
+    List<String> preferredAreas = const [],
+    required List<String> spokenLanguages,
+  }) async {
+    await db
+        .setMyProfile(
+          name: name,
+          preferredAreas: preferredAreas,
+          spokenLanguages:
+              spokenLanguages.map(AppLanguage.values.byName).toList(),
+        )
         .execute();
   }
 
@@ -136,9 +159,9 @@ class AppData {
   }
 
   /// Owner asks a maid, by email address, to join the household on the
-  /// proposed contract. Links her existing `User` row, or pre-creates one
-  /// (see [ensureUserProfile] for the matching claim-on-login side). She
-  /// joins as a pending member and becomes staff only once she accepts
+  /// proposed contract. Links their existing `User` row, or pre-creates one
+  /// (see [ensureUserProfile] for the matching claim-on-login side). They
+  /// join as a pending member and become staff only once they accept
   /// (see [fetchMyHouseholdInvites]).
   static Future<void> addMaidByEmail({
     required String householdId,
@@ -182,6 +205,27 @@ class AppData {
           .workingHours(workingHours)
           .execute();
     }
+  }
+
+  /// The maid profile for [email], for an owner to look at before asking
+  /// them to join. Null when that address has no maid account yet.
+  static Future<MaidProfile?> fetchMaidProfileByEmail(String email) async {
+    final result = await db
+        .maidProfileByEmail(email: email.trim().toLowerCase())
+        .execute();
+    return result.data.users.firstOrNull;
+  }
+
+  /// Owner sets the town or neighbourhood the house is in. An empty
+  /// [area] clears it.
+  static Future<void> setHouseholdArea({
+    required String householdId,
+    required String area,
+  }) async {
+    await db
+        .setHouseholdArea(householdId: householdId)
+        .area(area.trim().isEmpty ? null : area.trim())
+        .execute();
   }
 
   /// Owner withdraws a request that hasn't been accepted, or removes one

@@ -23,6 +23,8 @@ query MyProfile @auth(level: USER) {
     name
     accountType
     language
+    preferredAreas
+    spokenLanguages
   }
 }
 
@@ -42,6 +44,7 @@ query MyMembership @auth(level: USER) {
       id
       name
       address
+      area
     }
   }
 }
@@ -62,6 +65,7 @@ query MyMembershipById($id: UUID!) @auth(level: USER) {
       id
       name
       address
+      area
     }
   }
 }
@@ -85,9 +89,10 @@ query MyHouseholdInvites @auth(level: USER) {
     role
     household {
       name
-      address
+      area
       owner {
         name
+        spokenLanguages
       }
     }
     contracts_on_member(where: { endDate: { isNull: true } }, limit: 1) {
@@ -131,9 +136,31 @@ query HouseholdMembers($householdId: UUID!) @auth(level: USER) {
 
 # Used when an owner adds staff by email, to link an existing user rather
 # than create a duplicate. Returns only the id.
-query UserIdByEmail($email: String!) @auth(level: USER) {
+query UserIdByEmail($email: String!)
+@auth(
+  level: USER
+  insecureReason: "An owner looks up staff by email before any household link exists; returns only the row id."
+) {
   users(where: { email: { eq: $email } }, limit: 1) {
     id
+  }
+}
+
+# An owner looks at a maid's profile before asking them to join. Only maid
+# accounts are returned, and only the parts of the profile they keep for
+# owners to see. Empty for an address with no Sahakara account yet.
+query MaidProfileByEmail($email: String!)
+@auth(
+  level: USER
+  insecureReason: "An owner views a maid's profile before inviting them, so no household link exists yet; maid accounts only, and only the profile fields meant for owners."
+) {
+  users(
+    where: { email: { eq: $email }, accountType: { eq: maid } }
+    limit: 1
+  ) {
+    name
+    preferredAreas
+    spokenLanguages
   }
 }
 
@@ -252,7 +279,9 @@ query MyTasksForDay($dueDate: Date!) @auth(level: USER) {
 
 # ── shared, admin-curated lists ──────────────────────────────────────────
 
-query LibraryTasks @auth(level: USER) {
+# The shared task catalogue, the same for every household.
+query LibraryTasks
+@auth(level: USER, insecureReason: "Shared catalogue every signed-in user may read.") {
   libraryTasks(orderBy: [{ category: ASC }, { nameEn: ASC }]) {
     id
     category
@@ -262,7 +291,9 @@ query LibraryTasks @auth(level: USER) {
   }
 }
 
-query Holidays @auth(level: USER) {
+# Public holidays, the same for everyone.
+query Holidays
+@auth(level: USER, insecureReason: "Public holiday list every signed-in user may read.") {
   holidays(orderBy: [{ date: ASC }]) {
     id
     date

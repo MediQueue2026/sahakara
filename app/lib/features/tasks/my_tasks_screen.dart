@@ -52,7 +52,7 @@ class _MyTasksScreenState extends State<MyTasksScreen> {
         languageCode = 'ta-IN';
         break;
     }
-    
+
     var available = await _flutterTts.isLanguageAvailable(languageCode);
     if (available == false || available == 0) {
       final baseCode = languageCode.split('-').first;
@@ -69,7 +69,8 @@ class _MyTasksScreenState extends State<MyTasksScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text("Voice not found! Please change your phone's Default TTS Engine to 'Google' in Settings."),
+            content: Text(
+                "Voice not found! Please change your phone's Default TTS Engine to 'Google' in Settings."),
             duration: Duration(seconds: 4),
           ),
         );
@@ -272,8 +273,9 @@ class _MyTasksScreenState extends State<MyTasksScreen> {
                     Text(
                       t.title(lang),
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        decoration: done ? TextDecoration.lineThrough : null,
-                      ),
+                            decoration:
+                                done ? TextDecoration.lineThrough : null,
+                          ),
                     ),
                     const SizedBox(height: 4),
                     Text(details, style: const TextStyle(color: mutedText)),

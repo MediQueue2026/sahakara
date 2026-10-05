@@ -72,12 +72,12 @@ class MyHouseholdInvitesHouseholdMembers {
 @immutable
 class MyHouseholdInvitesHouseholdMembersHousehold {
   final String name;
-  final String? address;
+  final String? area;
   final MyHouseholdInvitesHouseholdMembersHouseholdOwner owner;
   MyHouseholdInvitesHouseholdMembersHousehold.fromJson(dynamic json):
   
   name = nativeFromJson<String>(json['name']),
-  address = json['address'] == null ? null : nativeFromJson<String>(json['address']),
+  area = json['area'] == null ? null : nativeFromJson<String>(json['area']),
   owner = MyHouseholdInvitesHouseholdMembersHouseholdOwner.fromJson(json['owner']);
   @override
   bool operator ==(Object other) {
@@ -90,19 +90,19 @@ class MyHouseholdInvitesHouseholdMembersHousehold {
 
     final MyHouseholdInvitesHouseholdMembersHousehold otherTyped = other as MyHouseholdInvitesHouseholdMembersHousehold;
     return name == otherTyped.name && 
-    address == otherTyped.address && 
+    area == otherTyped.area && 
     owner == otherTyped.owner;
     
   }
   @override
-  int get hashCode => Object.hashAll([name.hashCode, address.hashCode, owner.hashCode]);
+  int get hashCode => Object.hashAll([name.hashCode, area.hashCode, owner.hashCode]);
   
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> json = {};
     json['name'] = nativeToJson<String>(name);
-    if (address != null) {
-      json['address'] = nativeToJson<String?>(address);
+    if (area != null) {
+      json['area'] = nativeToJson<String?>(area);
     }
     json['owner'] = owner.toJson();
     return json;
@@ -110,7 +110,7 @@ class MyHouseholdInvitesHouseholdMembersHousehold {
 
   MyHouseholdInvitesHouseholdMembersHousehold({
     required this.name,
-    this.address,
+    this.area,
     required this.owner,
   });
 }
@@ -118,9 +118,13 @@ class MyHouseholdInvitesHouseholdMembersHousehold {
 @immutable
 class MyHouseholdInvitesHouseholdMembersHouseholdOwner {
   final String name;
+  final List<EnumValue<AppLanguage>>? spokenLanguages;
   MyHouseholdInvitesHouseholdMembersHouseholdOwner.fromJson(dynamic json):
   
-  name = nativeFromJson<String>(json['name']);
+  name = nativeFromJson<String>(json['name']),
+  spokenLanguages = json['spokenLanguages'] == null ? null : (json['spokenLanguages'] as List<dynamic>)
+        .map((e) => appLanguageDeserializer(e))
+        .toList();
   @override
   bool operator ==(Object other) {
     if(identical(this, other)) {
@@ -131,21 +135,26 @@ class MyHouseholdInvitesHouseholdMembersHouseholdOwner {
     }
 
     final MyHouseholdInvitesHouseholdMembersHouseholdOwner otherTyped = other as MyHouseholdInvitesHouseholdMembersHouseholdOwner;
-    return name == otherTyped.name;
+    return name == otherTyped.name && 
+    spokenLanguages == otherTyped.spokenLanguages;
     
   }
   @override
-  int get hashCode => name.hashCode;
+  int get hashCode => Object.hashAll([name.hashCode, spokenLanguages.hashCode]);
   
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> json = {};
     json['name'] = nativeToJson<String>(name);
+    if (spokenLanguages != null) {
+      json['spokenLanguages'] = spokenLanguages?.map((e) => appLanguageSerializer(e)).toList();
+    }
     return json;
   }
 
   MyHouseholdInvitesHouseholdMembersHouseholdOwner({
     required this.name,
+    this.spokenLanguages,
   });
 }
 

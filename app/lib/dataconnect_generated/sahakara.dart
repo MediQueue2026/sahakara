@@ -10,7 +10,11 @@ part 'create_my_profile.dart';
 
 part 'set_my_name.dart';
 
+part 'set_my_profile.dart';
+
 part 'set_my_language.dart';
+
+part 'set_household_area.dart';
 
 part 'create_household.dart';
 
@@ -73,6 +77,8 @@ part 'my_household_invites.dart';
 part 'household_members.dart';
 
 part 'user_id_by_email.dart';
+
+part 'maid_profile_by_email.dart';
 
 part 'current_contract.dart';
 
@@ -780,8 +786,18 @@ class SahakaraConnector {
   }
   
   
+  SetMyProfileVariablesBuilder setMyProfile ({required String name, required List<String> preferredAreas, required List<AppLanguage> spokenLanguages, }) {
+    return SetMyProfileVariablesBuilder(dataConnect, name: name,preferredAreas: preferredAreas,spokenLanguages: spokenLanguages,);
+  }
+  
+  
   SetMyLanguageVariablesBuilder setMyLanguage ({required AppLanguage language, }) {
     return SetMyLanguageVariablesBuilder(dataConnect, language: language,);
+  }
+  
+  
+  SetHouseholdAreaVariablesBuilder setHouseholdArea ({required String householdId, }) {
+    return SetHouseholdAreaVariablesBuilder(dataConnect, householdId: householdId,);
   }
   
   
@@ -937,6 +953,11 @@ class SahakaraConnector {
   
   UserIdByEmailVariablesBuilder userIdByEmail ({required String email, }) {
     return UserIdByEmailVariablesBuilder(dataConnect, email: email,);
+  }
+  
+  
+  MaidProfileByEmailVariablesBuilder maidProfileByEmail ({required String email, }) {
+    return MaidProfileByEmailVariablesBuilder(dataConnect, email: email,);
   }
   
   

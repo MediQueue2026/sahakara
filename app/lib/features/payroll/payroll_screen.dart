@@ -197,7 +197,6 @@ class _PayrollScreenState extends State<PayrollScreen> {
     return ValueListenableBuilder<AppLanguage>(
       valueListenable: widget.lang,
       builder: (context, language, _) => Scaffold(
-        appBar: AppBar(title: Text(Strings.of('pay', language))),
         body: RefreshIndicator(
           onRefresh: _refresh,
           child: _loading

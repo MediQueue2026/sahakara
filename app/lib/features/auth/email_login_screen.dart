@@ -172,9 +172,9 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
             onPressed: _busy
                 ? null
                 : () => setState(() {
-                    _accountType = null;
-                    _error = null;
-                  }),
+                      _accountType = null;
+                      _error = null;
+                    }),
             icon: const Icon(Icons.arrow_back),
           ),
           Expanded(
@@ -231,9 +231,9 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
         onPressed: _busy
             ? null
             : () => setState(() {
-                _signUp = !_signUp;
-                _error = null;
-              }),
+                  _signUp = !_signUp;
+                  _error = null;
+                }),
         child: Text(Strings.of(_signUp ? 'haveAccount' : 'noAccount', lang)),
       ),
       if (_error != null) ...[

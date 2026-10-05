@@ -52,13 +52,17 @@ enum SubscriptionPlan { free basic premium }
 type User @table {
   id: UUID! @default(expr: "uuidV4()")
   # Firebase Auth uid. Null for a maid an owner invited by email who hasn't
-  # signed up yet — her first login claims the row (ClaimInvitedProfile).
+  # signed up yet — their first login claims the row (ClaimInvitedProfile).
   authUid: String @unique
   email: String! @unique
   name: String!
   accountType: AccountType! @default(value: owner)
   language: AppLanguage! @default(value: en)
   profilePhoto: String
+  # Profile kept up to date in Settings. Areas (maids only) are free text,
+  # e.g. "Nugegoda"; spoken languages are app language codes.
+  preferredAreas: [String!]
+  spokenLanguages: [AppLanguage!]
   createdAt: Timestamp! @default(expr: "request.time")
 }
 
@@ -66,6 +70,9 @@ type Household @table {
   id: UUID! @default(expr: "uuidV4()")
   name: String!
   address: String
+  # Town or neighbourhood, e.g. "Nugegoda", shown to maids alongside their
+  # preferred work areas.
+  area: String
   owner: User!
   createdAt: Timestamp! @default(expr: "request.time")
 }

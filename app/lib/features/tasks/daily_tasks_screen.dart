@@ -52,7 +52,7 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
         languageCode = 'ta-IN';
         break;
     }
-    
+
     var available = await _flutterTts.isLanguageAvailable(languageCode);
     if (available == false || available == 0) {
       final baseCode = languageCode.split('-').first;
@@ -69,7 +69,8 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text("Voice not found! Please change your phone's Default TTS Engine to 'Google' in Settings."),
+            content: Text(
+                "Voice not found! Please change your phone's Default TTS Engine to 'Google' in Settings."),
             duration: Duration(seconds: 4),
           ),
         );
@@ -142,7 +143,9 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
     try {
       final staff = (await AppData.fetchHouseholdMembers(
         widget.membership.household.id,
-      )).where((m) => m.active && m.role.stringValue != 'owner').toList();
+      ))
+          .where((m) => m.active && m.role.stringValue != 'owner')
+          .toList();
       if (staff.isEmpty) {
         _showError(Strings.of('noStaffYet', lang));
         return;

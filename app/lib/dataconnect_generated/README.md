@@ -291,6 +291,55 @@ ref.subscribe(...);
 ```
 
 
+### MaidProfileByEmail
+#### Required Arguments
+```dart
+String email = ...;
+SahakaraConnector.instance.maidProfileByEmail(
+  email: email,
+).execute();
+```
+
+
+
+#### Return Type
+`execute()` returns a `QueryResult<MaidProfileByEmailData, MaidProfileByEmailVariables>`
+```dart
+/// Result of an Operation Request (query/mutation).
+class OperationResult<Data, Variables> {
+  OperationResult(this.dataConnect, this.data, this.ref);
+  Data data;
+  OperationRef<Data, Variables> ref;
+  FirebaseDataConnect dataConnect;
+}
+
+/// Result of a query request. Created to hold extra variables in the future.
+class QueryResult<Data, Variables> extends OperationResult<Data, Variables> {
+  QueryResult(super.dataConnect, super.data, super.ref);
+}
+
+final result = await SahakaraConnector.instance.maidProfileByEmail(
+  email: email,
+);
+MaidProfileByEmailData data = result.data;
+final ref = result.ref;
+```
+
+#### Getting the Ref
+Each builder returns an `execute` function, which is a helper function that creates a `Ref` object, and executes the underlying operation.
+An example of how to use the `Ref` object is shown below:
+```dart
+String email = ...;
+
+final ref = SahakaraConnector.instance.maidProfileByEmail(
+  email: email,
+).ref();
+ref.execute();
+
+ref.subscribe(...);
+```
+
+
 ### CurrentContract
 #### Required Arguments
 ```dart
@@ -1050,6 +1099,58 @@ ref.execute();
 ```
 
 
+### SetMyProfile
+#### Required Arguments
+```dart
+String name = ...;
+String preferredAreas = ...;
+AppLanguage spokenLanguages = ...;
+SahakaraConnector.instance.setMyProfile(
+  name: name,
+  preferredAreas: preferredAreas,
+  spokenLanguages: spokenLanguages,
+).execute();
+```
+
+
+
+#### Return Type
+`execute()` returns a `OperationResult<SetMyProfileData, SetMyProfileVariables>`
+```dart
+/// Result of an Operation Request (query/mutation).
+class OperationResult<Data, Variables> {
+  OperationResult(this.dataConnect, this.data, this.ref);
+  Data data;
+  OperationRef<Data, Variables> ref;
+  FirebaseDataConnect dataConnect;
+}
+
+final result = await SahakaraConnector.instance.setMyProfile(
+  name: name,
+  preferredAreas: preferredAreas,
+  spokenLanguages: spokenLanguages,
+);
+SetMyProfileData data = result.data;
+final ref = result.ref;
+```
+
+#### Getting the Ref
+Each builder returns an `execute` function, which is a helper function that creates a `Ref` object, and executes the underlying operation.
+An example of how to use the `Ref` object is shown below:
+```dart
+String name = ...;
+String preferredAreas = ...;
+AppLanguage spokenLanguages = ...;
+
+final ref = SahakaraConnector.instance.setMyProfile(
+  name: name,
+  preferredAreas: preferredAreas,
+  spokenLanguages: spokenLanguages,
+).ref();
+ref.execute();
+```
+
+
 ### SetMyLanguage
 #### Required Arguments
 ```dart
@@ -1087,6 +1188,66 @@ AppLanguage language = ...;
 
 final ref = SahakaraConnector.instance.setMyLanguage(
   language: language,
+).ref();
+ref.execute();
+```
+
+
+### SetHouseholdArea
+#### Required Arguments
+```dart
+String householdId = ...;
+SahakaraConnector.instance.setHouseholdArea(
+  householdId: householdId,
+).execute();
+```
+
+#### Optional Arguments
+We return a builder for each query. For SetHouseholdArea, we created `SetHouseholdAreaBuilder`. For queries and mutations with optional parameters, we return a builder class.
+The builder pattern allows Data Connect to distinguish between fields that haven't been set and fields that have been set to null. A field can be set by calling its respective setter method like below:
+```dart
+class SetHouseholdAreaVariablesBuilder {
+  ...
+   SetHouseholdAreaVariablesBuilder area(String? t) {
+   _area.value = t;
+   return this;
+  }
+
+  ...
+}
+SahakaraConnector.instance.setHouseholdArea(
+  householdId: householdId,
+)
+.area(area)
+.execute();
+```
+
+#### Return Type
+`execute()` returns a `OperationResult<SetHouseholdAreaData, SetHouseholdAreaVariables>`
+```dart
+/// Result of an Operation Request (query/mutation).
+class OperationResult<Data, Variables> {
+  OperationResult(this.dataConnect, this.data, this.ref);
+  Data data;
+  OperationRef<Data, Variables> ref;
+  FirebaseDataConnect dataConnect;
+}
+
+final result = await SahakaraConnector.instance.setHouseholdArea(
+  householdId: householdId,
+);
+SetHouseholdAreaData data = result.data;
+final ref = result.ref;
+```
+
+#### Getting the Ref
+Each builder returns an `execute` function, which is a helper function that creates a `Ref` object, and executes the underlying operation.
+An example of how to use the `Ref` object is shown below:
+```dart
+String householdId = ...;
+
+final ref = SahakaraConnector.instance.setHouseholdArea(
+  householdId: householdId,
 ).ref();
 ref.execute();
 ```
