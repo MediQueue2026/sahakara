@@ -44,6 +44,8 @@ class TaskRow {
   final String priority;
   final int? estMinutes;
   final String? customTitle;
+  final String? customTitleSi;
+  final String? customTitleTa;
   final String? nameEn;
   final String? nameSi;
   final String? nameTa;
@@ -60,6 +62,8 @@ class TaskRow {
     required this.priority,
     this.estMinutes,
     this.customTitle,
+    this.customTitleSi,
+    this.customTitleTa,
     this.nameEn,
     this.nameSi,
     this.nameTa,
@@ -69,7 +73,11 @@ class TaskRow {
   });
 
   String title(AppLanguage lang) {
-    if (nameEn == null) return customTitle ?? '';
+    if (nameEn == null) {
+      if (lang == AppLanguage.si && customTitleSi != null) return customTitleSi!;
+      if (lang == AppLanguage.ta && customTitleTa != null) return customTitleTa!;
+      return customTitle ?? '';
+    }
     return pickName(lang, en: nameEn!, si: nameSi, ta: nameTa);
   }
 }

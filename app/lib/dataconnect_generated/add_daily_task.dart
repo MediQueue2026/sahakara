@@ -6,6 +6,8 @@ class AddDailyTaskVariablesBuilder {
   DateTime dueDate;
   Optional<String> _libraryId = Optional.optional(nativeFromJson, nativeToJson);
   Optional<String> _customTitle = Optional.optional(nativeFromJson, nativeToJson);
+  Optional<String> _customTitleSi = Optional.optional(nativeFromJson, nativeToJson);
+  Optional<String> _customTitleTa = Optional.optional(nativeFromJson, nativeToJson);
   Optional<int> _estMinutes = Optional.optional(nativeFromJson, nativeToJson);
   TaskPriority priority;
   Optional<String> _photoUrl = Optional.optional(nativeFromJson, nativeToJson);
@@ -20,6 +22,14 @@ class AddDailyTaskVariablesBuilder {
   }
   AddDailyTaskVariablesBuilder customTitle(String? t) {
    _customTitle.value = t;
+   return this;
+  }
+  AddDailyTaskVariablesBuilder customTitleSi(String? t) {
+   _customTitleSi.value = t;
+   return this;
+  }
+  AddDailyTaskVariablesBuilder customTitleTa(String? t) {
+   _customTitleTa.value = t;
    return this;
   }
   AddDailyTaskVariablesBuilder estMinutes(int? t) {
@@ -39,7 +49,7 @@ class AddDailyTaskVariablesBuilder {
   }
 
   MutationRef<AddDailyTaskData, AddDailyTaskVariables> ref() {
-    AddDailyTaskVariables vars= AddDailyTaskVariables(householdId: householdId,assignedToId: _assignedToId,dueDate: dueDate,libraryId: _libraryId,customTitle: _customTitle,estMinutes: _estMinutes,priority: priority,photoUrl: _photoUrl,);
+    AddDailyTaskVariables vars= AddDailyTaskVariables(householdId: householdId,assignedToId: _assignedToId,dueDate: dueDate,libraryId: _libraryId,customTitle: _customTitle,customTitleSi: _customTitleSi,customTitleTa: _customTitleTa,estMinutes: _estMinutes,priority: priority,photoUrl: _photoUrl,);
     return _dataConnect.mutation("AddDailyTask", dataDeserializer, varsSerializer, vars);
   }
 }
@@ -158,6 +168,8 @@ class AddDailyTaskVariables {
   final DateTime dueDate;
   late final Optional<String>libraryId;
   late final Optional<String>customTitle;
+  late final Optional<String>customTitleSi;
+  late final Optional<String>customTitleTa;
   late final Optional<int>estMinutes;
   final TaskPriority priority;
   late final Optional<String>photoUrl;
@@ -181,6 +193,14 @@ class AddDailyTaskVariables {
   
     customTitle = Optional.optional(nativeFromJson, nativeToJson);
     customTitle.value = json['customTitle'] == null ? null : nativeFromJson<String>(json['customTitle']);
+  
+  
+    customTitleSi = Optional.optional(nativeFromJson, nativeToJson);
+    customTitleSi.value = json['customTitleSi'] == null ? null : nativeFromJson<String>(json['customTitleSi']);
+  
+  
+    customTitleTa = Optional.optional(nativeFromJson, nativeToJson);
+    customTitleTa.value = json['customTitleTa'] == null ? null : nativeFromJson<String>(json['customTitleTa']);
   
   
     estMinutes = Optional.optional(nativeFromJson, nativeToJson);
@@ -207,13 +227,15 @@ class AddDailyTaskVariables {
     dueDate == otherTyped.dueDate && 
     libraryId == otherTyped.libraryId && 
     customTitle == otherTyped.customTitle && 
+    customTitleSi == otherTyped.customTitleSi && 
+    customTitleTa == otherTyped.customTitleTa && 
     estMinutes == otherTyped.estMinutes && 
     priority == otherTyped.priority && 
     photoUrl == otherTyped.photoUrl;
     
   }
   @override
-  int get hashCode => Object.hashAll([householdId.hashCode, assignedToId.hashCode, dueDate.hashCode, libraryId.hashCode, customTitle.hashCode, estMinutes.hashCode, priority.hashCode, photoUrl.hashCode]);
+  int get hashCode => Object.hashAll([householdId.hashCode, assignedToId.hashCode, dueDate.hashCode, libraryId.hashCode, customTitle.hashCode, customTitleSi.hashCode, customTitleTa.hashCode, estMinutes.hashCode, priority.hashCode, photoUrl.hashCode]);
   
 
   Map<String, dynamic> toJson() {
@@ -228,6 +250,12 @@ class AddDailyTaskVariables {
     }
     if(customTitle.state == OptionalState.set) {
       json['customTitle'] = customTitle.toJson();
+    }
+    if(customTitleSi.state == OptionalState.set) {
+      json['customTitleSi'] = customTitleSi.toJson();
+    }
+    if(customTitleTa.state == OptionalState.set) {
+      json['customTitleTa'] = customTitleTa.toJson();
     }
     if(estMinutes.state == OptionalState.set) {
       json['estMinutes'] = estMinutes.toJson();
@@ -247,6 +275,8 @@ class AddDailyTaskVariables {
     required this.dueDate,
     required this.libraryId,
     required this.customTitle,
+    required this.customTitleSi,
+    required this.customTitleTa,
     required this.estMinutes,
     required this.priority,
     required this.photoUrl,

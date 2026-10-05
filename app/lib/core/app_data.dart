@@ -344,6 +344,8 @@ class AppData {
     required DateTime day,
     String? libraryId,
     String? customTitle,
+    String? customTitleSi,
+    String? customTitleTa,
     int? estMinutes,
     required String priority,
     String? photoUrl,
@@ -357,6 +359,8 @@ class AppData {
         .assignedToId(assignedToId)
         .libraryId(libraryId)
         .customTitle(customTitle)
+        .customTitleSi(customTitleSi)
+        .customTitleTa(customTitleTa)
         .estMinutes(estMinutes)
         .photoUrl(photoUrl)
         .execute();

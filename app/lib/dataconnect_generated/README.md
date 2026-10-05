@@ -1917,6 +1917,14 @@ class AddDailyTaskVariablesBuilder {
    _customTitle.value = t;
    return this;
   }
+  AddDailyTaskVariablesBuilder customTitleSi(String? t) {
+   _customTitleSi.value = t;
+   return this;
+  }
+  AddDailyTaskVariablesBuilder customTitleTa(String? t) {
+   _customTitleTa.value = t;
+   return this;
+  }
   AddDailyTaskVariablesBuilder estMinutes(int? t) {
    _estMinutes.value = t;
    return this;
@@ -1936,6 +1944,8 @@ SahakaraConnector.instance.addDailyTask(
 .assignedToId(assignedToId)
 .libraryId(libraryId)
 .customTitle(customTitle)
+.customTitleSi(customTitleSi)
+.customTitleTa(customTitleTa)
 .estMinutes(estMinutes)
 .photoUrl(photoUrl)
 .execute();

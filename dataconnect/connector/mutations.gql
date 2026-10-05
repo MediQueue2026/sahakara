@@ -457,6 +457,8 @@ mutation AddDailyTask(
   $dueDate: Date!
   $libraryId: UUID
   $customTitle: String
+  $customTitleSi: String
+  $customTitleTa: String
   $estMinutes: Int
   $priority: TaskPriority!
   $photoUrl: String
@@ -500,6 +502,8 @@ mutation AddDailyTask(
       householdId: $householdId
       libraryId: $libraryId
       customTitle: $customTitle
+      customTitleSi: $customTitleSi
+      customTitleTa: $customTitleTa
       photoUrl: $photoUrl
       estMinutes: $estMinutes
       priority: $priority

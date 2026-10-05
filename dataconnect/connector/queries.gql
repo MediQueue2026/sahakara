@@ -234,6 +234,8 @@ query HouseholdTasksForDay($householdId: UUID!, $dueDate: Date!)
     }
     template {
       customTitle
+      customTitleSi
+      customTitleTa
       photoUrl
       estMinutes
       priority
@@ -268,6 +270,8 @@ query MyTasksForDay($dueDate: Date!) @auth(level: USER) {
     completedAt
     template {
       customTitle
+      customTitleSi
+      customTitleTa
       photoUrl
       estMinutes
       priority

@@ -101,6 +101,8 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
             nameEn: t.template.library?.nameEn,
             nameSi: t.template.library?.nameSi,
             nameTa: t.template.library?.nameTa,
+            customTitleSi: t.template.customTitleSi,
+            customTitleTa: t.template.customTitleTa,
             photoUrl: t.template.photoUrl,
             assigneeId: t.assignedTo?.id,
             assigneeName: t.assignedTo?.user.name,

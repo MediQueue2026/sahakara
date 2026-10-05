@@ -96,6 +96,8 @@ class MyTasksForDayTasks {
 @immutable
 class MyTasksForDayTasksTemplate {
   final String? customTitle;
+  final String? customTitleSi;
+  final String? customTitleTa;
   final String? photoUrl;
   final int? estMinutes;
   final EnumValue<TaskPriority> priority;
@@ -103,6 +105,8 @@ class MyTasksForDayTasksTemplate {
   MyTasksForDayTasksTemplate.fromJson(dynamic json):
   
   customTitle = json['customTitle'] == null ? null : nativeFromJson<String>(json['customTitle']),
+  customTitleSi = json['customTitleSi'] == null ? null : nativeFromJson<String>(json['customTitleSi']),
+  customTitleTa = json['customTitleTa'] == null ? null : nativeFromJson<String>(json['customTitleTa']),
   photoUrl = json['photoUrl'] == null ? null : nativeFromJson<String>(json['photoUrl']),
   estMinutes = json['estMinutes'] == null ? null : nativeFromJson<int>(json['estMinutes']),
   priority = taskPriorityDeserializer(json['priority']),
@@ -118,6 +122,8 @@ class MyTasksForDayTasksTemplate {
 
     final MyTasksForDayTasksTemplate otherTyped = other as MyTasksForDayTasksTemplate;
     return customTitle == otherTyped.customTitle && 
+    customTitleSi == otherTyped.customTitleSi && 
+    customTitleTa == otherTyped.customTitleTa && 
     photoUrl == otherTyped.photoUrl && 
     estMinutes == otherTyped.estMinutes && 
     priority == otherTyped.priority && 
@@ -125,13 +131,19 @@ class MyTasksForDayTasksTemplate {
     
   }
   @override
-  int get hashCode => Object.hashAll([customTitle.hashCode, photoUrl.hashCode, estMinutes.hashCode, priority.hashCode, library.hashCode]);
+  int get hashCode => Object.hashAll([customTitle.hashCode, customTitleSi.hashCode, customTitleTa.hashCode, photoUrl.hashCode, estMinutes.hashCode, priority.hashCode, library.hashCode]);
   
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> json = {};
     if (customTitle != null) {
       json['customTitle'] = nativeToJson<String?>(customTitle);
+    }
+    if (customTitleSi != null) {
+      json['customTitleSi'] = nativeToJson<String?>(customTitleSi);
+    }
+    if (customTitleTa != null) {
+      json['customTitleTa'] = nativeToJson<String?>(customTitleTa);
     }
     if (photoUrl != null) {
       json['photoUrl'] = nativeToJson<String?>(photoUrl);
@@ -150,6 +162,8 @@ class MyTasksForDayTasksTemplate {
 
   MyTasksForDayTasksTemplate({
     this.customTitle,
+    this.customTitleSi,
+    this.customTitleTa,
     this.photoUrl,
     this.estMinutes,
     required this.priority,

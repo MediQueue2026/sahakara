@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:translator/translator.dart';
 
 import '../../core/app_data.dart';
 import '../../core/app_language.dart';
@@ -171,12 +172,29 @@ class _AddDailyTaskScreenState extends State<AddDailyTaskScreen> {
           bytes: _photo!,
         );
       }
+      
+      String? customTitleSi;
+      String? customTitleTa;
+      if (custom && title.isNotEmpty) {
+        final translator = GoogleTranslator();
+        try {
+          final si = await translator.translate(title, from: 'en', to: 'si');
+          customTitleSi = si.text;
+          final ta = await translator.translate(title, from: 'en', to: 'ta');
+          customTitleTa = ta.text;
+        } catch (e) {
+          // Ignore translation errors and fallback to English
+        }
+      }
+
       await AppData.addDailyTask(
         householdId: widget.householdId,
         assignedToId: _assigneeId == _unassigned ? null : _assigneeId,
         day: _day,
         libraryId: custom ? null : _taskChoice,
         customTitle: custom ? title : null,
+        customTitleSi: customTitleSi,
+        customTitleTa: customTitleTa,
         estMinutes: minutes,
         priority: _priority,
         photoUrl: _photo == null ? null : _photoUrl,

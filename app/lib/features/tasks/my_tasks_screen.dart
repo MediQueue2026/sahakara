@@ -101,6 +101,8 @@ class _MyTasksScreenState extends State<MyTasksScreen> {
             nameEn: t.template.library?.nameEn,
             nameSi: t.template.library?.nameSi,
             nameTa: t.template.library?.nameTa,
+            customTitleSi: t.template.customTitleSi,
+            customTitleTa: t.template.customTitleTa,
             photoUrl: t.template.photoUrl,
           ),
         )

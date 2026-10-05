@@ -129,6 +129,8 @@ type TaskTemplate @table {
   household: Household!
   library: LibraryTask
   customTitle: String
+  customTitleSi: String
+  customTitleTa: String
   photoUrl: String
   donePhotoUrl: String
   recurrence: RecurrenceType! @default(value: once)
