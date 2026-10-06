@@ -2104,6 +2104,18 @@ class UpdateMyTaskStatusVariablesBuilder {
    _note.value = t;
    return this;
   }
+  UpdateMyTaskStatusVariablesBuilder noteEn(String? t) {
+   _noteEn.value = t;
+   return this;
+  }
+  UpdateMyTaskStatusVariablesBuilder noteSi(String? t) {
+   _noteSi.value = t;
+   return this;
+  }
+  UpdateMyTaskStatusVariablesBuilder noteTa(String? t) {
+   _noteTa.value = t;
+   return this;
+  }
   UpdateMyTaskStatusVariablesBuilder photoUrl(String? t) {
    _photoUrl.value = t;
    return this;
@@ -2118,6 +2130,9 @@ SahakaraConnector.instance.updateMyTaskStatus(
 )
 .cantDoReason(cantDoReason)
 .note(note)
+.noteEn(noteEn)
+.noteSi(noteSi)
+.noteTa(noteTa)
 .photoUrl(photoUrl)
 .execute();
 ```

@@ -557,6 +557,9 @@ mutation AssignDailyTask($id: UUID!, $assignedToId: UUID!)
       status: pending
       cantDoReason: null
       statusNote: null
+      statusNoteEn: null
+      statusNoteSi: null
+      statusNoteTa: null
       statusPhoto: null
       completedAt: null
     }
@@ -596,13 +599,17 @@ mutation DeleteDailyTask($id: UUID!) @auth(level: USER) @transaction {
 # cant_do and only for cant_do. completedAt is set when the task becomes
 # done and cleared if it moves back out of done. $note and $photoUrl are an
 # optional explanation (sent with need_help / cant_do) shown to the owner;
-# leaving them out clears the previous one.
+# leaving them out clears the previous one. $noteEn / $noteSi / $noteTa are
+# $note translated into each app language.
 mutation UpdateMyTaskStatus(
   $id: UUID!
   $status: TaskStatus!
   $action: TaskLogAction!
   $cantDoReason: CantDoReason
   $note: String
+  $noteEn: String
+  $noteSi: String
+  $noteTa: String
   $photoUrl: String
 )
 @auth(
@@ -636,6 +643,9 @@ mutation UpdateMyTaskStatus(
       status: $status
       cantDoReason: $cantDoReason
       statusNote: $note
+      statusNoteEn: $noteEn
+      statusNoteSi: $noteSi
+      statusNoteTa: $noteTa
       statusPhoto: $photoUrl
     }
   )

@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:translator/translator.dart';
 
 import '../dataconnect_generated/sahakara.dart';
 import 'firebase_client.dart';
@@ -395,8 +396,9 @@ class AppData {
   /// Staff member reports progress on their own task: [status] is one of
   /// 'started', 'done', 'need_help' or 'cant_do', and [cantDoReason] is
   /// required for 'cant_do' (and only then). [note] and [photoUrl] are an
-  /// optional explanation for 'need_help' / 'cant_do' that the owner sees.
-  /// Also logged in TaskLog.
+  /// optional explanation for 'need_help' / 'cant_do' that the owner sees;
+  /// [note] is also translated into each app language so the owner can read
+  /// it in theirs. Also logged in TaskLog.
   static Future<void> updateMyTaskStatus({
     required String taskId,
     required String status,
@@ -404,6 +406,19 @@ class AppData {
     String? note,
     String? photoUrl,
   }) async {
+    String? noteEn;
+    String? noteSi;
+    String? noteTa;
+    if (note != null && note.isNotEmpty) {
+      final translator = GoogleTranslator();
+      try {
+        noteEn = (await translator.translate(note, to: 'en')).text;
+        noteSi = (await translator.translate(note, to: 'si')).text;
+        noteTa = (await translator.translate(note, to: 'ta')).text;
+      } catch (e) {
+        // Ignore translation errors and fall back to the original note
+      }
+    }
     await db
         .updateMyTaskStatus(
           id: taskId,
@@ -418,6 +433,9 @@ class AppData {
               : CantDoReason.values.byName(cantDoReason),
         )
         .note(note)
+        .noteEn(noteEn)
+        .noteSi(noteSi)
+        .noteTa(noteTa)
         .photoUrl(photoUrl)
         .execute();
   }
