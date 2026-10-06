@@ -224,6 +224,9 @@ query HouseholdTasksForDay($householdId: UUID!, $dueDate: Date!)
     status
     cantDoReason
     statusNote
+    statusNoteEn
+    statusNoteSi
+    statusNoteTa
     statusPhoto
     completedAt
     assignedTo {
@@ -266,6 +269,9 @@ query MyTasksForDay($dueDate: Date!) @auth(level: USER) {
     status
     cantDoReason
     statusNote
+    statusNoteEn
+    statusNoteSi
+    statusNoteTa
     statusPhoto
     completedAt
     template {

@@ -23,6 +23,9 @@ class MyTasksForDayTasks {
   final EnumValue<TaskStatus> status;
   final EnumValue<CantDoReason>? cantDoReason;
   final String? statusNote;
+  final String? statusNoteEn;
+  final String? statusNoteSi;
+  final String? statusNoteTa;
   final String? statusPhoto;
   final Timestamp? completedAt;
   final MyTasksForDayTasksTemplate template;
@@ -32,6 +35,9 @@ class MyTasksForDayTasks {
   status = taskStatusDeserializer(json['status']),
   cantDoReason = json['cantDoReason'] == null ? null : cantDoReasonDeserializer(json['cantDoReason']),
   statusNote = json['statusNote'] == null ? null : nativeFromJson<String>(json['statusNote']),
+  statusNoteEn = json['statusNoteEn'] == null ? null : nativeFromJson<String>(json['statusNoteEn']),
+  statusNoteSi = json['statusNoteSi'] == null ? null : nativeFromJson<String>(json['statusNoteSi']),
+  statusNoteTa = json['statusNoteTa'] == null ? null : nativeFromJson<String>(json['statusNoteTa']),
   statusPhoto = json['statusPhoto'] == null ? null : nativeFromJson<String>(json['statusPhoto']),
   completedAt = json['completedAt'] == null ? null : Timestamp.fromJson(json['completedAt']),
   template = MyTasksForDayTasksTemplate.fromJson(json['template']);
@@ -49,13 +55,16 @@ class MyTasksForDayTasks {
     status == otherTyped.status && 
     cantDoReason == otherTyped.cantDoReason && 
     statusNote == otherTyped.statusNote && 
+    statusNoteEn == otherTyped.statusNoteEn && 
+    statusNoteSi == otherTyped.statusNoteSi && 
+    statusNoteTa == otherTyped.statusNoteTa && 
     statusPhoto == otherTyped.statusPhoto && 
     completedAt == otherTyped.completedAt && 
     template == otherTyped.template;
     
   }
   @override
-  int get hashCode => Object.hashAll([id.hashCode, status.hashCode, cantDoReason.hashCode, statusNote.hashCode, statusPhoto.hashCode, completedAt.hashCode, template.hashCode]);
+  int get hashCode => Object.hashAll([id.hashCode, status.hashCode, cantDoReason.hashCode, statusNote.hashCode, statusNoteEn.hashCode, statusNoteSi.hashCode, statusNoteTa.hashCode, statusPhoto.hashCode, completedAt.hashCode, template.hashCode]);
   
 
   Map<String, dynamic> toJson() {
@@ -72,6 +81,15 @@ class MyTasksForDayTasks {
     if (statusNote != null) {
       json['statusNote'] = nativeToJson<String?>(statusNote);
     }
+    if (statusNoteEn != null) {
+      json['statusNoteEn'] = nativeToJson<String?>(statusNoteEn);
+    }
+    if (statusNoteSi != null) {
+      json['statusNoteSi'] = nativeToJson<String?>(statusNoteSi);
+    }
+    if (statusNoteTa != null) {
+      json['statusNoteTa'] = nativeToJson<String?>(statusNoteTa);
+    }
     if (statusPhoto != null) {
       json['statusPhoto'] = nativeToJson<String?>(statusPhoto);
     }
@@ -87,6 +105,9 @@ class MyTasksForDayTasks {
     required this.status,
     this.cantDoReason,
     this.statusNote,
+    this.statusNoteEn,
+    this.statusNoteSi,
+    this.statusNoteTa,
     this.statusPhoto,
     this.completedAt,
     required this.template,

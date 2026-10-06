@@ -6,6 +6,9 @@ class UpdateMyTaskStatusVariablesBuilder {
   TaskLogAction action;
   Optional<CantDoReason> _cantDoReason = Optional.optional((data) => CantDoReason.values.byName(data), enumSerializer);
   Optional<String> _note = Optional.optional(nativeFromJson, nativeToJson);
+  Optional<String> _noteEn = Optional.optional(nativeFromJson, nativeToJson);
+  Optional<String> _noteSi = Optional.optional(nativeFromJson, nativeToJson);
+  Optional<String> _noteTa = Optional.optional(nativeFromJson, nativeToJson);
   Optional<String> _photoUrl = Optional.optional(nativeFromJson, nativeToJson);
 
   final FirebaseDataConnect _dataConnect;  UpdateMyTaskStatusVariablesBuilder cantDoReason(CantDoReason? t) {
@@ -14,6 +17,18 @@ class UpdateMyTaskStatusVariablesBuilder {
   }
   UpdateMyTaskStatusVariablesBuilder note(String? t) {
    _note.value = t;
+   return this;
+  }
+  UpdateMyTaskStatusVariablesBuilder noteEn(String? t) {
+   _noteEn.value = t;
+   return this;
+  }
+  UpdateMyTaskStatusVariablesBuilder noteSi(String? t) {
+   _noteSi.value = t;
+   return this;
+  }
+  UpdateMyTaskStatusVariablesBuilder noteTa(String? t) {
+   _noteTa.value = t;
    return this;
   }
   UpdateMyTaskStatusVariablesBuilder photoUrl(String? t) {
@@ -29,7 +44,7 @@ class UpdateMyTaskStatusVariablesBuilder {
   }
 
   MutationRef<UpdateMyTaskStatusData, UpdateMyTaskStatusVariables> ref() {
-    UpdateMyTaskStatusVariables vars= UpdateMyTaskStatusVariables(id: id,status: status,action: action,cantDoReason: _cantDoReason,note: _note,photoUrl: _photoUrl,);
+    UpdateMyTaskStatusVariables vars= UpdateMyTaskStatusVariables(id: id,status: status,action: action,cantDoReason: _cantDoReason,note: _note,noteEn: _noteEn,noteSi: _noteSi,noteTa: _noteTa,photoUrl: _photoUrl,);
     return _dataConnect.mutation("UpdateMyTaskStatus", dataDeserializer, varsSerializer, vars);
   }
 }
@@ -160,6 +175,9 @@ class UpdateMyTaskStatusVariables {
   final TaskLogAction action;
   late final Optional<CantDoReason>cantDoReason;
   late final Optional<String>note;
+  late final Optional<String>noteEn;
+  late final Optional<String>noteSi;
+  late final Optional<String>noteTa;
   late final Optional<String>photoUrl;
   @Deprecated('fromJson is deprecated for Variable classes as they are no longer required for deserialization.')
   UpdateMyTaskStatusVariables.fromJson(Map<String, dynamic> json):
@@ -178,6 +196,18 @@ class UpdateMyTaskStatusVariables {
   
     note = Optional.optional(nativeFromJson, nativeToJson);
     note.value = json['note'] == null ? null : nativeFromJson<String>(json['note']);
+  
+  
+    noteEn = Optional.optional(nativeFromJson, nativeToJson);
+    noteEn.value = json['noteEn'] == null ? null : nativeFromJson<String>(json['noteEn']);
+  
+  
+    noteSi = Optional.optional(nativeFromJson, nativeToJson);
+    noteSi.value = json['noteSi'] == null ? null : nativeFromJson<String>(json['noteSi']);
+  
+  
+    noteTa = Optional.optional(nativeFromJson, nativeToJson);
+    noteTa.value = json['noteTa'] == null ? null : nativeFromJson<String>(json['noteTa']);
   
   
     photoUrl = Optional.optional(nativeFromJson, nativeToJson);
@@ -199,11 +229,14 @@ class UpdateMyTaskStatusVariables {
     action == otherTyped.action && 
     cantDoReason == otherTyped.cantDoReason && 
     note == otherTyped.note && 
+    noteEn == otherTyped.noteEn && 
+    noteSi == otherTyped.noteSi && 
+    noteTa == otherTyped.noteTa && 
     photoUrl == otherTyped.photoUrl;
     
   }
   @override
-  int get hashCode => Object.hashAll([id.hashCode, status.hashCode, action.hashCode, cantDoReason.hashCode, note.hashCode, photoUrl.hashCode]);
+  int get hashCode => Object.hashAll([id.hashCode, status.hashCode, action.hashCode, cantDoReason.hashCode, note.hashCode, noteEn.hashCode, noteSi.hashCode, noteTa.hashCode, photoUrl.hashCode]);
   
 
   Map<String, dynamic> toJson() {
@@ -221,6 +254,15 @@ class UpdateMyTaskStatusVariables {
     if(note.state == OptionalState.set) {
       json['note'] = note.toJson();
     }
+    if(noteEn.state == OptionalState.set) {
+      json['noteEn'] = noteEn.toJson();
+    }
+    if(noteSi.state == OptionalState.set) {
+      json['noteSi'] = noteSi.toJson();
+    }
+    if(noteTa.state == OptionalState.set) {
+      json['noteTa'] = noteTa.toJson();
+    }
     if(photoUrl.state == OptionalState.set) {
       json['photoUrl'] = photoUrl.toJson();
     }
@@ -233,6 +275,9 @@ class UpdateMyTaskStatusVariables {
     required this.action,
     required this.cantDoReason,
     required this.note,
+    required this.noteEn,
+    required this.noteSi,
+    required this.noteTa,
     required this.photoUrl,
   });
 }

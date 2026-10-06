@@ -40,6 +40,9 @@ class TaskRow {
   final String? cantDoReason;
   // The staff member's optional explanation for need_help / cant_do.
   final String? statusNote;
+  final String? statusNoteEn;
+  final String? statusNoteSi;
+  final String? statusNoteTa;
   final String? statusPhoto;
   final String priority;
   final int? estMinutes;
@@ -58,6 +61,9 @@ class TaskRow {
     required this.status,
     this.cantDoReason,
     this.statusNote,
+    this.statusNoteEn,
+    this.statusNoteSi,
+    this.statusNoteTa,
     this.statusPhoto,
     required this.priority,
     this.estMinutes,
@@ -74,11 +80,23 @@ class TaskRow {
 
   String title(AppLanguage lang) {
     if (nameEn == null) {
-      if (lang == AppLanguage.si && customTitleSi != null) return customTitleSi!;
-      if (lang == AppLanguage.ta && customTitleTa != null) return customTitleTa!;
+      if (lang == AppLanguage.si && customTitleSi != null)
+        return customTitleSi!;
+      if (lang == AppLanguage.ta && customTitleTa != null)
+        return customTitleTa!;
       return customTitle ?? '';
     }
     return pickName(lang, en: nameEn!, si: nameSi, ta: nameTa);
+  }
+
+  /// [statusNote] in [lang], or as written if it has no translation.
+  String? note(AppLanguage lang) {
+    final translated = switch (lang) {
+      AppLanguage.en => statusNoteEn,
+      AppLanguage.si => statusNoteSi,
+      AppLanguage.ta => statusNoteTa,
+    };
+    return translated ?? statusNote;
   }
 }
 
@@ -86,12 +104,13 @@ class TaskRow {
 /// or nothing if they didn't add any.
 class TaskStatusDetails extends StatelessWidget {
   final TaskRow task;
+  final AppLanguage lang;
 
-  const TaskStatusDetails({super.key, required this.task});
+  const TaskStatusDetails({super.key, required this.task, required this.lang});
 
   @override
   Widget build(BuildContext context) {
-    final note = task.statusNote;
+    final note = task.note(lang);
     final photo = task.statusPhoto;
     if (note == null && photo == null) return const SizedBox.shrink();
     return Padding(

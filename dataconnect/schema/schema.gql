@@ -154,8 +154,12 @@ type Task @table @index(fields: ["assignedToId", "dueDate"]) {
   cantDoReason: CantDoReason
   # What the staff member optionally wrote / photographed when marking the
   # task need_help or cant_do, for the owner to see. Cleared on the next
-  # status change.
+  # status change. The note is also stored translated into each app
+  # language so the owner can read it in theirs.
   statusNote: String
+  statusNoteEn: String
+  statusNoteSi: String
+  statusNoteTa: String
   statusPhoto: String
   completedAt: Timestamp
 }
