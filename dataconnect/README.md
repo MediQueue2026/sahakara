@@ -30,6 +30,11 @@ queries. Each operation is its own access rule:
 - Owner-only writes (`SaveContract`, `AddHouseholdMember`, …) are
   `@transaction`s. Their first step is a `@check` that the caller owns the
   household, so the write never happens if the check fails.
+- `AvailableMaids` lists registered maid profiles only when they have no
+  contract or pending contract offer (`endDate` is null) in any household.
+  It returns the same limited profile details as the email lookup and never
+  returns email addresses. Adding a listed maid and accepting an invite both
+  recheck that no other current contract or offer exists.
 - Every `User` row has an `accountType`: `owner`, `maid` or `admin`. Admin
   operations first `@check` that the caller's row is an `admin`, so a signed-in
   owner or maid calling one gets "Admins only". `CreateMyProfile` refuses
@@ -124,6 +129,8 @@ be chosen when signing up in the app, only set in the database.
 - **Contracts don't get edited for a raise.** `SaveContract` sets `endDate`
   on the old contract and inserts a new one, so past months still calculate
   at the old rate.
+- **Contract duration is stored in months.** A null `durationMonths` means
+  ongoing; fixed terms begin when the member accepts an invite.
 - **Everything hangs off `HouseholdMember`, not `User`,** for tasks,
   attendance and pay. That's what lets one maid work across several
   households (Phase 3).

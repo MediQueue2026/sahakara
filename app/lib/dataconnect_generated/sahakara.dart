@@ -90,6 +90,8 @@ part 'user_id_by_email.dart';
 
 part 'maid_profile_by_email.dart';
 
+part 'available_maids.dart';
+
 part 'current_contract.dart';
 
 part 'household_tasks_for_day.dart';
@@ -1021,6 +1023,11 @@ class SahakaraConnector {
   
   MaidProfileByEmailVariablesBuilder maidProfileByEmail ({required String email, }) {
     return MaidProfileByEmailVariablesBuilder(dataConnect, email: email,);
+  }
+  
+  
+  AvailableMaidsVariablesBuilder availableMaids () {
+    return AvailableMaidsVariablesBuilder(dataConnect, );
   }
   
   

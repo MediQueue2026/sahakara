@@ -11,6 +11,7 @@ import 'firebase_client.dart';
 typedef Profile = MyProfileUsers;
 typedef Membership = MyMembershipHouseholdMembers;
 typedef MaidProfile = MaidProfileByEmailUsers;
+typedef AvailableMaid = AvailableMaidsUsers;
 typedef Household = MyMembershipHouseholdMembersHousehold;
 typedef Member = HouseholdMembersHouseholdMembers;
 typedef CurrentContract = CurrentContractContracts;
@@ -171,6 +172,7 @@ class AppData {
     required String payType,
     required double rate,
     double? allowance,
+    int? durationMonths,
     String? offDays,
     String? workingHours,
   }) async {
@@ -180,13 +182,53 @@ class AppData {
     final pay = PayType.values.byName(payType);
     final existing = await db.userIdByEmail(email: email).execute();
     final userId = existing.data.users.firstOrNull?.id;
-    final wasRemoved = userId != null &&
-        (await fetchHouseholdMembers(householdId)).any(
-          (m) =>
-              m.user.id == userId &&
-              m.status.stringValue == 'accepted' &&
-              !m.active,
-        );
+    if (userId == null) {
+      await db
+          .inviteHouseholdMember(
+            householdId: householdId,
+            email: email,
+            role: MemberRole.maid,
+            payType: pay,
+            rate: rate,
+          )
+          .allowance(allowance)
+          .durationMonths(durationMonths)
+          .offDays(offDays)
+          .workingHours(workingHours)
+          .execute();
+      return;
+    }
+    await addMaidByUserId(
+      householdId: householdId,
+      userId: userId,
+      payType: payType,
+      rate: rate,
+      allowance: allowance,
+      durationMonths: durationMonths,
+      offDays: offDays,
+      workingHours: workingHours,
+    );
+  }
+
+  /// Owner asks a registered maid selected from the available-maid list to
+  /// join. Availability is checked again by the Data Connect mutation.
+  static Future<void> addMaidByUserId({
+    required String householdId,
+    required String userId,
+    required String payType,
+    required double rate,
+    double? allowance,
+    int? durationMonths,
+    String? offDays,
+    String? workingHours,
+  }) async {
+    final pay = PayType.values.byName(payType);
+    final wasRemoved = (await fetchHouseholdMembers(householdId)).any(
+      (m) =>
+          m.user.id == userId &&
+          m.status.stringValue == 'accepted' &&
+          !m.active,
+    );
     if (wasRemoved) {
       await db
           .reinviteHouseholdMember(
@@ -197,10 +239,11 @@ class AppData {
             rate: rate,
           )
           .allowance(allowance)
+          .durationMonths(durationMonths)
           .offDays(offDays)
           .workingHours(workingHours)
           .execute();
-    } else if (userId != null) {
+    } else {
       await db
           .addHouseholdMember(
             householdId: householdId,
@@ -210,23 +253,18 @@ class AppData {
             rate: rate,
           )
           .allowance(allowance)
-          .offDays(offDays)
-          .workingHours(workingHours)
-          .execute();
-    } else {
-      await db
-          .inviteHouseholdMember(
-            householdId: householdId,
-            email: email,
-            role: MemberRole.maid,
-            payType: pay,
-            rate: rate,
-          )
-          .allowance(allowance)
+          .durationMonths(durationMonths)
           .offDays(offDays)
           .workingHours(workingHours)
           .execute();
     }
+  }
+
+  /// Registered maid accounts with no current contract or contract offer in
+  /// any household. Contact details are intentionally not part of the result.
+  static Future<List<AvailableMaid>> fetchAvailableMaids() async {
+    final result = await db.availableMaids().execute();
+    return result.data.users;
   }
 
   /// The maid profile for [email], for an owner to look at before asking
@@ -297,6 +335,7 @@ class AppData {
     required String payType,
     required double rate,
     double? allowance,
+    int? durationMonths,
     String? offDays,
     String? workingHours,
   }) async {
@@ -307,6 +346,7 @@ class AppData {
           rate: rate,
         )
         .allowance(allowance)
+        .durationMonths(durationMonths)
         .offDays(offDays)
         .workingHours(workingHours)
         .execute();

@@ -340,6 +340,47 @@ ref.subscribe(...);
 ```
 
 
+### AvailableMaids
+#### Required Arguments
+```dart
+// No required arguments
+SahakaraConnector.instance.availableMaids().execute();
+```
+
+
+
+#### Return Type
+`execute()` returns a `QueryResult<AvailableMaidsData, void>`
+```dart
+/// Result of an Operation Request (query/mutation).
+class OperationResult<Data, Variables> {
+  OperationResult(this.dataConnect, this.data, this.ref);
+  Data data;
+  OperationRef<Data, Variables> ref;
+  FirebaseDataConnect dataConnect;
+}
+
+/// Result of a query request. Created to hold extra variables in the future.
+class QueryResult<Data, Variables> extends OperationResult<Data, Variables> {
+  QueryResult(super.dataConnect, super.data, super.ref);
+}
+
+final result = await SahakaraConnector.instance.availableMaids();
+AvailableMaidsData data = result.data;
+final ref = result.ref;
+```
+
+#### Getting the Ref
+Each builder returns an `execute` function, which is a helper function that creates a `Ref` object, and executes the underlying operation.
+An example of how to use the `Ref` object is shown below:
+```dart
+final ref = SahakaraConnector.instance.availableMaids().ref();
+ref.execute();
+
+ref.subscribe(...);
+```
+
+
 ### CurrentContract
 #### Required Arguments
 ```dart
@@ -1381,6 +1422,10 @@ class AddHouseholdMemberVariablesBuilder {
    _allowance.value = t;
    return this;
   }
+  AddHouseholdMemberVariablesBuilder durationMonths(int? t) {
+   _durationMonths.value = t;
+   return this;
+  }
   AddHouseholdMemberVariablesBuilder offDays(String? t) {
    _offDays.value = t;
    return this;
@@ -1400,6 +1445,7 @@ SahakaraConnector.instance.addHouseholdMember(
   rate: rate,
 )
 .allowance(allowance)
+.durationMonths(durationMonths)
 .offDays(offDays)
 .workingHours(workingHours)
 .execute();
@@ -1475,6 +1521,10 @@ class InviteHouseholdMemberVariablesBuilder {
    _allowance.value = t;
    return this;
   }
+  InviteHouseholdMemberVariablesBuilder durationMonths(int? t) {
+   _durationMonths.value = t;
+   return this;
+  }
   InviteHouseholdMemberVariablesBuilder offDays(String? t) {
    _offDays.value = t;
    return this;
@@ -1494,6 +1544,7 @@ SahakaraConnector.instance.inviteHouseholdMember(
   rate: rate,
 )
 .allowance(allowance)
+.durationMonths(durationMonths)
 .offDays(offDays)
 .workingHours(workingHours)
 .execute();
@@ -1569,6 +1620,10 @@ class ReinviteHouseholdMemberVariablesBuilder {
    _allowance.value = t;
    return this;
   }
+  ReinviteHouseholdMemberVariablesBuilder durationMonths(int? t) {
+   _durationMonths.value = t;
+   return this;
+  }
   ReinviteHouseholdMemberVariablesBuilder offDays(String? t) {
    _offDays.value = t;
    return this;
@@ -1588,6 +1643,7 @@ SahakaraConnector.instance.reinviteHouseholdMember(
   rate: rate,
 )
 .allowance(allowance)
+.durationMonths(durationMonths)
 .offDays(offDays)
 .workingHours(workingHours)
 .execute();
@@ -1827,6 +1883,10 @@ class SaveContractVariablesBuilder {
    _allowance.value = t;
    return this;
   }
+  SaveContractVariablesBuilder durationMonths(int? t) {
+   _durationMonths.value = t;
+   return this;
+  }
   SaveContractVariablesBuilder offDays(String? t) {
    _offDays.value = t;
    return this;
@@ -1844,6 +1904,7 @@ SahakaraConnector.instance.saveContract(
   rate: rate,
 )
 .allowance(allowance)
+.durationMonths(durationMonths)
 .offDays(offDays)
 .workingHours(workingHours)
 .execute();

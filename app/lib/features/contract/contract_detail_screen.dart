@@ -39,8 +39,12 @@ class _ContractDetailScreenState extends State<ContractDetailScreen> {
   String? _error;
 
   String _payType = payTypes.first;
+  int? _durationMonths;
+  bool _customDuration = false;
+  bool _durationInYears = false;
   final _rateController = TextEditingController();
   final _allowanceController = TextEditingController();
+  final _customDurationController = TextEditingController();
   final _offDaysController = TextEditingController();
   final _hoursController = TextEditingController();
 
@@ -48,6 +52,7 @@ class _ContractDetailScreenState extends State<ContractDetailScreen> {
   void dispose() {
     _rateController.dispose();
     _allowanceController.dispose();
+    _customDurationController.dispose();
     _offDaysController.dispose();
     _hoursController.dispose();
     super.dispose();
@@ -70,6 +75,14 @@ class _ContractDetailScreenState extends State<ContractDetailScreen> {
       if (!mounted) return;
       if (contract != null) {
         _payType = contract.payType.stringValue;
+        _durationMonths = contract.durationMonths;
+        _customDuration = contract.durationMonths != null;
+        if (_customDuration) {
+          final months = contract.durationMonths!;
+          _durationInYears = months % 12 == 0;
+          _customDurationController.text =
+              _durationInYears ? '${months ~/ 12}' : '$months';
+        }
         _rateController.text = contract.rate.toString();
         _allowanceController.text = contract.allowance?.toString() ?? '';
         _offDaysController.text = contract.offDays ?? '';
@@ -100,6 +113,8 @@ class _ContractDetailScreenState extends State<ContractDetailScreen> {
       setState(() => _error = Strings.of('enterValidAllowance', lang));
       return;
     }
+    final durationMonths = _durationForSave(lang);
+    if (_customDuration && durationMonths == null) return;
     setState(() {
       _busy = true;
       _error = null;
@@ -110,6 +125,7 @@ class _ContractDetailScreenState extends State<ContractDetailScreen> {
         payType: _payType,
         rate: rate,
         allowance: allowance,
+        durationMonths: durationMonths,
         offDays: emptyToNull(_offDaysController.text),
         workingHours: emptyToNull(_hoursController.text),
       );
@@ -199,6 +215,10 @@ class _ContractDetailScreenState extends State<ContractDetailScreen> {
         ),
         if (_contract!.allowance != null)
           _row(Strings.of('allowance', lang), '${_contract!.allowance}'),
+        _row(
+          Strings.of('contractDuration', lang),
+          Strings.contractDuration(_contract!.durationMonths, lang),
+        ),
         _row(Strings.of('offDays', lang), _contract!.offDays ?? '—'),
         _row(Strings.of('workingHours', lang), _contract!.workingHours ?? '—'),
       ],
@@ -226,6 +246,20 @@ class _ContractDetailScreenState extends State<ContractDetailScreen> {
           onPayTypeChanged: (v) => setState(() => _payType = v),
           rateController: _rateController,
           allowanceController: _allowanceController,
+          durationMonths: _durationMonths,
+          customDuration: _customDuration,
+          customDurationController: _customDurationController,
+          durationInYears: _durationInYears,
+          onDurationOptionChanged: (value) => setState(() {
+            _customDuration = value == -1;
+            if (_customDuration && _customDurationController.text.isEmpty) {
+              _customDurationController.text = '1';
+            } else if (!_customDuration) {
+              _durationMonths = value == 0 ? null : value;
+            }
+          }),
+          onDurationInYearsChanged: (value) =>
+              setState(() => _durationInYears = value),
           offDaysController: _offDaysController,
           hoursController: _hoursController,
         ),
@@ -241,16 +275,33 @@ class _ContractDetailScreenState extends State<ContractDetailScreen> {
       ],
     );
   }
+
+  int? _durationForSave(AppLanguage lang) {
+    if (!_customDuration) return _durationMonths;
+    final months = parseCustomContractDuration(
+      _customDurationController.text,
+      _durationInYears,
+    );
+    if (months == null) {
+      setState(() => _error = Strings.of('enterValidDuration', lang));
+    }
+    return months;
+  }
 }
 
-/// The contract terms an owner fills in: pay type, rate (required), and
-/// optionally a fixed allowance, off days and working hours. Shared by this screen and adding a maid.
+/// Contract terms shared by the edit-contract and invite forms.
 class ContractFields extends StatelessWidget {
   final AppLanguage lang;
   final String payType;
   final ValueChanged<String> onPayTypeChanged;
   final TextEditingController rateController;
   final TextEditingController allowanceController;
+  final int? durationMonths;
+  final bool customDuration;
+  final TextEditingController customDurationController;
+  final bool durationInYears;
+  final ValueChanged<int> onDurationOptionChanged;
+  final ValueChanged<bool> onDurationInYearsChanged;
   final TextEditingController offDaysController;
   final TextEditingController hoursController;
 
@@ -261,6 +312,12 @@ class ContractFields extends StatelessWidget {
     required this.onPayTypeChanged,
     required this.rateController,
     required this.allowanceController,
+    required this.durationMonths,
+    required this.customDuration,
+    required this.customDurationController,
+    required this.durationInYears,
+    required this.onDurationOptionChanged,
+    required this.onDurationInYearsChanged,
     required this.offDaysController,
     required this.hoursController,
   });
@@ -302,6 +359,62 @@ class ContractFields extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
+        DropdownButtonFormField<int>(
+          initialValue: customDuration ? -1 : durationMonths ?? 0,
+          decoration: InputDecoration(
+            labelText: Strings.of('contractDuration', lang),
+          ),
+          items: [0, -1]
+              .map(
+                (months) => DropdownMenuItem(
+                  value: months,
+                  child: Text(months == -1
+                      ? Strings.of('durationCustom', lang)
+                      : Strings.contractDuration(
+                          months == 0 ? null : months,
+                          lang,
+                        )),
+                ),
+              )
+              .toList(),
+          onChanged: (months) {
+            if (months != null) onDurationOptionChanged(months);
+          },
+        ),
+        if (customDuration) ...[
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: customDurationController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: Strings.of('customDurationAmount', lang),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              DropdownButton<bool>(
+                value: durationInYears,
+                items: [
+                  DropdownMenuItem(
+                    value: false,
+                    child: Text(Strings.of('months', lang)),
+                  ),
+                  DropdownMenuItem(
+                    value: true,
+                    child: Text(Strings.of('years', lang)),
+                  ),
+                ],
+                onChanged: (value) {
+                  if (value != null) onDurationInYearsChanged(value);
+                },
+              ),
+            ],
+          ),
+        ],
+        const SizedBox(height: 12),
         TextField(
           controller: offDaysController,
           decoration: InputDecoration(
@@ -320,6 +433,14 @@ class ContractFields extends StatelessWidget {
       ],
     );
   }
+}
+
+int? parseCustomContractDuration(String text, bool inYears) {
+  final amount = int.tryParse(text.trim());
+  if (amount == null || amount <= 0 || (inYears && amount > 2147483647 ~/ 12)) {
+    return null;
+  }
+  return inYears ? amount * 12 : amount;
 }
 
 /// [text] trimmed, or null when it's blank — for optional contract fields.

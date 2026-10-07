@@ -163,6 +163,7 @@ class MyHouseholdInvitesHouseholdMembersContractsOnMember {
   final EnumValue<PayType> payType;
   final double rate;
   final double? allowance;
+  final int? durationMonths;
   final String? offDays;
   final String? workingHours;
   MyHouseholdInvitesHouseholdMembersContractsOnMember.fromJson(dynamic json):
@@ -170,6 +171,7 @@ class MyHouseholdInvitesHouseholdMembersContractsOnMember {
   payType = payTypeDeserializer(json['payType']),
   rate = nativeFromJson<double>(json['rate']),
   allowance = json['allowance'] == null ? null : nativeFromJson<double>(json['allowance']),
+  durationMonths = json['durationMonths'] == null ? null : nativeFromJson<int>(json['durationMonths']),
   offDays = json['offDays'] == null ? null : nativeFromJson<String>(json['offDays']),
   workingHours = json['workingHours'] == null ? null : nativeFromJson<String>(json['workingHours']);
   @override
@@ -185,12 +187,13 @@ class MyHouseholdInvitesHouseholdMembersContractsOnMember {
     return payType == otherTyped.payType && 
     rate == otherTyped.rate && 
     allowance == otherTyped.allowance && 
+    durationMonths == otherTyped.durationMonths && 
     offDays == otherTyped.offDays && 
     workingHours == otherTyped.workingHours;
     
   }
   @override
-  int get hashCode => Object.hashAll([payType.hashCode, rate.hashCode, allowance.hashCode, offDays.hashCode, workingHours.hashCode]);
+  int get hashCode => Object.hashAll([payType.hashCode, rate.hashCode, allowance.hashCode, durationMonths.hashCode, offDays.hashCode, workingHours.hashCode]);
   
 
   Map<String, dynamic> toJson() {
@@ -201,6 +204,9 @@ class MyHouseholdInvitesHouseholdMembersContractsOnMember {
     json['rate'] = nativeToJson<double>(rate);
     if (allowance != null) {
       json['allowance'] = nativeToJson<double?>(allowance);
+    }
+    if (durationMonths != null) {
+      json['durationMonths'] = nativeToJson<int?>(durationMonths);
     }
     if (offDays != null) {
       json['offDays'] = nativeToJson<String?>(offDays);
@@ -215,6 +221,7 @@ class MyHouseholdInvitesHouseholdMembersContractsOnMember {
     required this.payType,
     required this.rate,
     this.allowance,
+    this.durationMonths,
     this.offDays,
     this.workingHours,
   });

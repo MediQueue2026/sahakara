@@ -7,11 +7,16 @@ class ReinviteHouseholdMemberVariablesBuilder {
   PayType payType;
   double rate;
   Optional<double> _allowance = Optional.optional(nativeFromJson, nativeToJson);
+  Optional<int> _durationMonths = Optional.optional(nativeFromJson, nativeToJson);
   Optional<String> _offDays = Optional.optional(nativeFromJson, nativeToJson);
   Optional<String> _workingHours = Optional.optional(nativeFromJson, nativeToJson);
 
   final FirebaseDataConnect _dataConnect;  ReinviteHouseholdMemberVariablesBuilder allowance(double? t) {
    _allowance.value = t;
+   return this;
+  }
+  ReinviteHouseholdMemberVariablesBuilder durationMonths(int? t) {
+   _durationMonths.value = t;
    return this;
   }
   ReinviteHouseholdMemberVariablesBuilder offDays(String? t) {
@@ -31,7 +36,7 @@ class ReinviteHouseholdMemberVariablesBuilder {
   }
 
   MutationRef<ReinviteHouseholdMemberData, ReinviteHouseholdMemberVariables> ref() {
-    ReinviteHouseholdMemberVariables vars= ReinviteHouseholdMemberVariables(householdId: householdId,userId: userId,role: role,payType: payType,rate: rate,allowance: _allowance,offDays: _offDays,workingHours: _workingHours,);
+    ReinviteHouseholdMemberVariables vars= ReinviteHouseholdMemberVariables(householdId: householdId,userId: userId,role: role,payType: payType,rate: rate,allowance: _allowance,durationMonths: _durationMonths,offDays: _offDays,workingHours: _workingHours,);
     return _dataConnect.mutation("ReinviteHouseholdMember", dataDeserializer, varsSerializer, vars);
   }
 }
@@ -117,6 +122,7 @@ class ReinviteHouseholdMemberVariables {
   final PayType payType;
   final double rate;
   late final Optional<double>allowance;
+  late final Optional<int>durationMonths;
   late final Optional<String>offDays;
   late final Optional<String>workingHours;
   @Deprecated('fromJson is deprecated for Variable classes as they are no longer required for deserialization.')
@@ -136,6 +142,10 @@ class ReinviteHouseholdMemberVariables {
   
     allowance = Optional.optional(nativeFromJson, nativeToJson);
     allowance.value = json['allowance'] == null ? null : nativeFromJson<double>(json['allowance']);
+  
+  
+    durationMonths = Optional.optional(nativeFromJson, nativeToJson);
+    durationMonths.value = json['durationMonths'] == null ? null : nativeFromJson<int>(json['durationMonths']);
   
   
     offDays = Optional.optional(nativeFromJson, nativeToJson);
@@ -162,12 +172,13 @@ class ReinviteHouseholdMemberVariables {
     payType == otherTyped.payType && 
     rate == otherTyped.rate && 
     allowance == otherTyped.allowance && 
+    durationMonths == otherTyped.durationMonths && 
     offDays == otherTyped.offDays && 
     workingHours == otherTyped.workingHours;
     
   }
   @override
-  int get hashCode => Object.hashAll([householdId.hashCode, userId.hashCode, role.hashCode, payType.hashCode, rate.hashCode, allowance.hashCode, offDays.hashCode, workingHours.hashCode]);
+  int get hashCode => Object.hashAll([householdId.hashCode, userId.hashCode, role.hashCode, payType.hashCode, rate.hashCode, allowance.hashCode, durationMonths.hashCode, offDays.hashCode, workingHours.hashCode]);
   
 
   Map<String, dynamic> toJson() {
@@ -183,6 +194,9 @@ class ReinviteHouseholdMemberVariables {
     json['rate'] = nativeToJson<double>(rate);
     if(allowance.state == OptionalState.set) {
       json['allowance'] = allowance.toJson();
+    }
+    if(durationMonths.state == OptionalState.set) {
+      json['durationMonths'] = durationMonths.toJson();
     }
     if(offDays.state == OptionalState.set) {
       json['offDays'] = offDays.toJson();
@@ -200,6 +214,7 @@ class ReinviteHouseholdMemberVariables {
     required this.payType,
     required this.rate,
     required this.allowance,
+    required this.durationMonths,
     required this.offDays,
     required this.workingHours,
   });
