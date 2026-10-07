@@ -194,6 +194,10 @@ class _WaitingForHouseholdScreenState extends State<WaitingForHouseholdScreen> {
               ),
               if (contract.allowance != null)
                 _row(Strings.of('allowance', lang), '${contract.allowance}'),
+              _row(
+                Strings.of('contractDuration', lang),
+                Strings.contractDuration(contract.durationMonths, lang),
+              ),
               _row(Strings.of('offDays', lang), contract.offDays ?? '—'),
               _row(
                 Strings.of('workingHours', lang),

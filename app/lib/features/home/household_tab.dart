@@ -169,7 +169,7 @@ class _HouseholdTabState extends State<HouseholdTab> {
             FilledButton.icon(
               onPressed: _addMaid,
               icon: const Icon(Icons.person_add_alt_1_outlined),
-              label: Text(Strings.of('addMaid', lang)),
+              label: Text(Strings.of('browseAvailableMaids', lang)),
             ),
           ],
         );

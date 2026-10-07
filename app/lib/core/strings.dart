@@ -249,9 +249,42 @@ class Strings {
       AppLanguage.ta: 'உருவாக்கு',
     },
     'addMaid': {
-      AppLanguage.en: 'Add a maid by email',
-      AppLanguage.si: 'ඊමේල් මගින් සහායකයෙකු එක් කරන්න',
-      AppLanguage.ta: 'மின்னஞ்சல் மூலம் உதவியாளரைச் சேர்க்கவும்',
+      AppLanguage.en: 'Add a maid',
+      AppLanguage.si: 'සහායකයෙකු එක් කරන්න',
+      AppLanguage.ta: 'உதவியாளரைச் சேர்க்கவும்',
+    },
+    'browseAvailableMaids': {
+      AppLanguage.en: 'Browse available maids',
+      AppLanguage.si: 'රැකියාවක් සොයන සහායකයන් බලන්න',
+      AppLanguage.ta: 'வேலை தேடும் உதவியாளர்களைப் பார்க்கவும்',
+    },
+    'availableMaidsIntro': {
+      AppLanguage.en:
+          'These registered maids have no current contract or pending offer.',
+      AppLanguage.si:
+          'මෙම ලියාපදිංචි සහායකයන්ට දැනට ගිවිසුමක් හෝ පොරොත්තු ඉල්ලීමක් නැත.',
+      AppLanguage.ta:
+          'இந்தப் பதிவு செய்த உதவியாளர்களுக்கு தற்போது ஒப்பந்தமோ நிலுவையிலுள்ள அழைப்போ இல்லை.',
+    },
+    'noAvailableMaids': {
+      AppLanguage.en: 'No available maids right now.',
+      AppLanguage.si: 'දැනට රැකියාවක් සොයන සහායකයන් නැත.',
+      AppLanguage.ta: 'தற்போது வேலை தேடும் உதவியாளர்கள் இல்லை.',
+    },
+    'inviteByEmail': {
+      AppLanguage.en: 'Invite someone by email instead',
+      AppLanguage.si: 'ඊමේල් මගින් වෙනත් අයෙකුට ආරාධනා කරන්න',
+      AppLanguage.ta: 'மின்னஞ்சல் மூலம் ஒருவரை அழைக்கவும்',
+    },
+    'selectMaid': {
+      AppLanguage.en: 'Select this maid',
+      AppLanguage.si: 'මෙම සහායකයා තෝරන්න',
+      AppLanguage.ta: 'இந்த உதவியாளரைத் தேர்ந்தெடுக்கவும்',
+    },
+    'chooseDifferentMaid': {
+      AppLanguage.en: 'Choose a different maid',
+      AppLanguage.si: 'වෙනත් සහායකයෙකු තෝරන්න',
+      AppLanguage.ta: 'வேறு உதவியாளரைத் தேர்ந்தெடுக்கவும்',
     },
     'enterMaidEmail': {
       AppLanguage.en: "Enter the maid's email address",
@@ -299,16 +332,16 @@ class Strings {
     'confirmRemoveMember': {
       AppLanguage.en:
           'Remove {name} from the household? Their contract ends today and '
-          'their upcoming tasks become unassigned. Their attendance and pay '
-          'history is kept.',
+              'their upcoming tasks become unassigned. Their attendance and pay '
+              'history is kept.',
       AppLanguage.si:
           '{name} නිවසින් ඉවත් කරන්නද? ඔවුන්ගේ ගිවිසුම අදින් අවසන් වන අතර '
-          'ඉදිරි කාර්යයන් කිසිවෙකුට පවරා නොමැති වේ. පැමිණීමේ සහ වැටුප් '
-          'ඉතිහාසය තබා ගැනේ.',
+              'ඉදිරි කාර්යයන් කිසිවෙකුට පවරා නොමැති වේ. පැමිණීමේ සහ වැටුප් '
+              'ඉතිහාසය තබා ගැනේ.',
       AppLanguage.ta:
           '{name} ஐ வீட்டிலிருந்து நீக்கவா? அவர்களின் ஒப்பந்தம் இன்றுடன் '
-          'முடிவடையும், வரவிருக்கும் பணிகள் யாருக்கும் ஒதுக்கப்படாமல் '
-          'இருக்கும். வருகை மற்றும் சம்பள வரலாறு வைத்திருக்கப்படும்.',
+              'முடிவடையும், வரவிருக்கும் பணிகள் யாருக்கும் ஒதுக்கப்படாமல் '
+              'இருக்கும். வருகை மற்றும் சம்பள வரலாறு வைத்திருக்கப்படும்.',
     },
     'joinRequests': {
       AppLanguage.en: 'Requests',
@@ -461,6 +494,51 @@ class Strings {
       AppLanguage.en: 'Working hours',
       AppLanguage.si: 'වැඩ කරන වේලාව',
       AppLanguage.ta: 'வேலை நேரம்',
+    },
+    'contractDuration': {
+      AppLanguage.en: 'Contract duration',
+      AppLanguage.si: 'ගිවිසුම් කාලය',
+      AppLanguage.ta: 'ஒப்பந்த கால அளவு',
+    },
+    'durationOngoing': {
+      AppLanguage.en: 'Ongoing',
+      AppLanguage.si: 'අඛණ්ඩව',
+      AppLanguage.ta: 'காலவரையறையற்றது',
+    },
+    'durationCustom': {
+      AppLanguage.en: 'Custom',
+      AppLanguage.si: 'අභිරුචි',
+      AppLanguage.ta: 'தனிப்பயன்',
+    },
+    'customDurationAmount': {
+      AppLanguage.en: 'Duration',
+      AppLanguage.si: 'කාලසීමාව',
+      AppLanguage.ta: 'கால அளவு',
+    },
+    'months': {
+      AppLanguage.en: 'Months',
+      AppLanguage.si: 'මාස',
+      AppLanguage.ta: 'மாதங்கள்',
+    },
+    'years': {
+      AppLanguage.en: 'Years',
+      AppLanguage.si: 'වසර',
+      AppLanguage.ta: 'ஆண்டுகள்',
+    },
+    'month': {
+      AppLanguage.en: 'month',
+      AppLanguage.si: 'මාසය',
+      AppLanguage.ta: 'மாதம்',
+    },
+    'year': {
+      AppLanguage.en: 'year',
+      AppLanguage.si: 'වසර',
+      AppLanguage.ta: 'ஆண்டு',
+    },
+    'enterValidDuration': {
+      AppLanguage.en: 'Enter a whole duration greater than zero.',
+      AppLanguage.si: 'ශුන්‍යයට වඩා වැඩි පූර්ණ කාලසීමාවක් ඇතුළත් කරන්න.',
+      AppLanguage.ta: 'பூஜ்ஜியத்தை விட அதிகமான முழு கால அளவை உள்ளிடவும்.',
     },
     'saveContract': {
       AppLanguage.en: 'Save contract',
@@ -1084,6 +1162,13 @@ class Strings {
       AppLanguage.ta: 'நிராகரி',
     },
   };
+
+  static String contractDuration(int? months, AppLanguage lang) {
+    if (months == null) return of('durationOngoing', lang);
+    return months % 12 == 0
+        ? '${months ~/ 12} ${of(months == 12 ? 'year' : 'years', lang)}'
+        : '$months ${of(months == 1 ? 'month' : 'months', lang)}';
+  }
 
   static String of(String key, AppLanguage lang) {
     return _values[key]?[lang] ?? _values[key]?[AppLanguage.en] ?? key;

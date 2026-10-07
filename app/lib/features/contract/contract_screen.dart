@@ -30,6 +30,7 @@ class ContractScreen extends StatelessWidget {
             .where(
               (m) =>
                   m.role.stringValue != 'owner' &&
+                  m.active &&
                   m.status.stringValue == 'accepted',
             )
             .toList();

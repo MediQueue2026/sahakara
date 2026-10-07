@@ -109,6 +109,7 @@ mutation AddHouseholdMember(
   $payType: PayType!
   $rate: Float!
   $allowance: Float
+  $durationMonths: Int
   $offDays: String
   $workingHours: String
 ) @auth(expr: "auth.uid != '' && vars.role != 'owner'") @transaction {
@@ -137,6 +138,29 @@ mutation AddHouseholdMember(
       ) {
       id
     }
+    users(
+      where: {
+        _and: [
+          { id: { eq: $userId } }
+          { accountType: { eq: maid } }
+          {
+            _not: {
+              householdMembers_on_user: {
+                exist: {
+                  contracts_on_member: { exist: { endDate: { isNull: true } } }
+                }
+              }
+            }
+          }
+        ]
+      }
+    )
+      @check(
+        expr: "this.size() == 1"
+        message: "This maid already has a current contract or request"
+      ) {
+      id
+    }
   }
   householdMember_insert(
     data: {
@@ -153,6 +177,7 @@ mutation AddHouseholdMember(
       payType: $payType
       rate: $rate
       allowance: $allowance
+      durationMonths: $durationMonths
       offDays: $offDays
       workingHours: $workingHours
     }
@@ -169,6 +194,7 @@ mutation InviteHouseholdMember(
   $payType: PayType!
   $rate: Float!
   $allowance: Float
+  $durationMonths: Int
   $offDays: String
   $workingHours: String
 ) @auth(expr: "auth.uid != '' && vars.role != 'owner'") @transaction {
@@ -202,6 +228,7 @@ mutation InviteHouseholdMember(
       payType: $payType
       rate: $rate
       allowance: $allowance
+      durationMonths: $durationMonths
       offDays: $offDays
       workingHours: $workingHours
     }
@@ -219,6 +246,7 @@ mutation ReinviteHouseholdMember(
   $payType: PayType!
   $rate: Float!
   $allowance: Float
+  $durationMonths: Int
   $offDays: String
   $workingHours: String
 ) @auth(expr: "auth.uid != '' && vars.role != 'owner'") @transaction {
@@ -249,6 +277,29 @@ mutation ReinviteHouseholdMember(
       ) {
       id
     }
+    users(
+      where: {
+        _and: [
+          { id: { eq: $userId } }
+          { accountType: { eq: maid } }
+          {
+            _not: {
+              householdMembers_on_user: {
+                exist: {
+                  contracts_on_member: { exist: { endDate: { isNull: true } } }
+                }
+              }
+            }
+          }
+        ]
+      }
+    )
+      @check(
+        expr: "this.size() == 1"
+        message: "This maid already has a current contract or request"
+      ) {
+      id
+    }
   }
   householdMember_updateMany(
     where: {
@@ -265,6 +316,7 @@ mutation ReinviteHouseholdMember(
       payType: $payType
       rate: $rate
       allowance: $allowance
+      durationMonths: $durationMonths
       offDays: $offDays
       workingHours: $workingHours
     }
@@ -277,16 +329,16 @@ mutation AcceptHouseholdInvite($id: UUID!) @auth(level: USER) @transaction {
   query @redact {
     householdMembers(
       where: {
-        id: { eq: $id }
-        status: { eq: pending }
         user: { authUid: { eq_expr: "auth.uid" } }
+        contracts_on_member: { exist: { endDate: { isNull: true } } }
       }
     )
       @check(
-        expr: "this.size() == 1"
-        message: "This request is no longer waiting for you"
+        expr: "this.size() == 1 && this[0].id == vars.id && this[0].status == 'pending'"
+        message: "This request is no longer available or you already have another current contract or request"
       ) {
       id
+      status
     }
   }
   householdMember_update(
@@ -410,6 +462,7 @@ mutation SaveContract(
   $payType: PayType!
   $rate: Float!
   $allowance: Float
+  $durationMonths: Int
   $offDays: String
   $workingHours: String
 ) @auth(level: USER) @transaction {
@@ -437,6 +490,7 @@ mutation SaveContract(
       payType: $payType
       rate: $rate
       allowance: $allowance
+      durationMonths: $durationMonths
       offDays: $offDays
       workingHours: $workingHours
     }

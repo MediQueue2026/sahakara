@@ -99,6 +99,7 @@ query MyHouseholdInvites @auth(level: USER) {
       payType
       rate
       allowance
+      durationMonths
       offDays
       workingHours
     }
@@ -164,6 +165,39 @@ query MaidProfileByEmail($email: String!)
   }
 }
 
+# A signed-in owner can browse registered maid accounts that have no current
+# contract or pending contract offer in any household. Only profile fields
+# already shown in the email invite flow are returned; contact details are
+# deliberately excluded.
+query AvailableMaids @auth(
+  level: USER
+  insecureReason: "An owner needs to browse available maids before inviting them; only registered maid profiles with no current contract are returned, without contact details."
+) {
+  users(
+    where: {
+      _and: [
+        { accountType: { eq: maid } }
+        { authUid: { isNull: false } }
+        {
+          _not: {
+            householdMembers_on_user: {
+              exist: {
+                contracts_on_member: { exist: { endDate: { isNull: true } } }
+              }
+            }
+          }
+        }
+      ]
+    }
+    orderBy: [{ name: ASC }]
+  ) {
+    id
+    name
+    preferredAreas
+    spokenLanguages
+  }
+}
+
 # ── contracts ────────────────────────────────────────────────────────────
 
 query CurrentContract($memberId: UUID!) @auth(level: USER) {
@@ -196,6 +230,7 @@ query CurrentContract($memberId: UUID!) @auth(level: USER) {
     payType
     rate
     allowance
+    durationMonths
     offDays
     workingHours
     startDate
