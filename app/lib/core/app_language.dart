@@ -4,16 +4,16 @@ enum AppLanguage { en, si, ta }
 
 extension AppLanguageLabel on AppLanguage {
   String get short => switch (this) {
-    AppLanguage.en => 'EN',
-    AppLanguage.si => 'සි',
-    AppLanguage.ta => 'த',
-  };
+        AppLanguage.en => 'EN',
+        AppLanguage.si => 'සි',
+        AppLanguage.ta => 'த',
+      };
 
   String get label => switch (this) {
-    AppLanguage.en => 'English',
-    AppLanguage.si => 'සිංහල',
-    AppLanguage.ta => 'தமிழ்',
-  };
+        AppLanguage.en => 'English',
+        AppLanguage.si => 'සිංහල',
+        AppLanguage.ta => 'தமிழ்',
+      };
 }
 
 /// Holds the user's chosen display language for the whole app.

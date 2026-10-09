@@ -12,6 +12,7 @@ import '../tasks/my_tasks_screen.dart';
 import '../attendance/attendance_tab.dart';
 import '../onboarding/waiting_for_household_screen.dart';
 import '../payroll/payroll_screen.dart';
+import '../grocery/grocery_list_screen.dart';
 import 'household_tab.dart';
 
 /// Bottom-nav shell shown once a signed-in user has a household. The owner
@@ -145,6 +146,17 @@ class _HomeShellState extends State<HomeShell> {
           Strings.of('pay', lang),
           PayrollScreen(lang: widget.lang, membership: widget.membership),
         ),
+        _Tab(
+          Icons.shopping_cart_outlined,
+          Icons.shopping_cart,
+          lang == AppLanguage.si
+              ? 'බඩු ලැයිස්තුව'
+              : lang == AppLanguage.ta
+                  ? 'பொருட்கள் பட்டியல்'
+                  : 'Groceries',
+          GroceryListScreen(
+              householdId: widget.membership.household.id, lang: widget.lang),
+        ),
       ];
 
   List<_Tab> _staffTabs(AppLanguage lang) => [
@@ -195,6 +207,17 @@ class _HomeShellState extends State<HomeShell> {
           Icons.payments,
           Strings.of('pay', lang),
           PayrollScreen(lang: widget.lang, membership: widget.membership),
+        ),
+        _Tab(
+          Icons.shopping_cart_outlined,
+          Icons.shopping_cart,
+          lang == AppLanguage.si
+              ? 'බඩු ලැයිස්තුව'
+              : lang == AppLanguage.ta
+                  ? 'பொருட்கள் பட்டியல்'
+                  : 'Groceries',
+          GroceryListScreen(
+              householdId: widget.membership.household.id, lang: widget.lang),
         ),
       ];
 }

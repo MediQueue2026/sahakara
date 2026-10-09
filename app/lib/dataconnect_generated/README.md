@@ -1056,6 +1056,104 @@ ref.execute();
 ref.subscribe(...);
 ```
 
+
+### GetGroceryItems
+#### Required Arguments
+```dart
+String householdId = ...;
+SahakaraConnector.instance.getGroceryItems(
+  householdId: householdId,
+).execute();
+```
+
+
+
+#### Return Type
+`execute()` returns a `QueryResult<GetGroceryItemsData, GetGroceryItemsVariables>`
+```dart
+/// Result of an Operation Request (query/mutation).
+class OperationResult<Data, Variables> {
+  OperationResult(this.dataConnect, this.data, this.ref);
+  Data data;
+  OperationRef<Data, Variables> ref;
+  FirebaseDataConnect dataConnect;
+}
+
+/// Result of a query request. Created to hold extra variables in the future.
+class QueryResult<Data, Variables> extends OperationResult<Data, Variables> {
+  QueryResult(super.dataConnect, super.data, super.ref);
+}
+
+final result = await SahakaraConnector.instance.getGroceryItems(
+  householdId: householdId,
+);
+GetGroceryItemsData data = result.data;
+final ref = result.ref;
+```
+
+#### Getting the Ref
+Each builder returns an `execute` function, which is a helper function that creates a `Ref` object, and executes the underlying operation.
+An example of how to use the `Ref` object is shown below:
+```dart
+String householdId = ...;
+
+final ref = SahakaraConnector.instance.getGroceryItems(
+  householdId: householdId,
+).ref();
+ref.execute();
+
+ref.subscribe(...);
+```
+
+
+### ActiveTaskTemplates
+#### Required Arguments
+```dart
+String householdId = ...;
+SahakaraConnector.instance.activeTaskTemplates(
+  householdId: householdId,
+).execute();
+```
+
+
+
+#### Return Type
+`execute()` returns a `QueryResult<ActiveTaskTemplatesData, ActiveTaskTemplatesVariables>`
+```dart
+/// Result of an Operation Request (query/mutation).
+class OperationResult<Data, Variables> {
+  OperationResult(this.dataConnect, this.data, this.ref);
+  Data data;
+  OperationRef<Data, Variables> ref;
+  FirebaseDataConnect dataConnect;
+}
+
+/// Result of a query request. Created to hold extra variables in the future.
+class QueryResult<Data, Variables> extends OperationResult<Data, Variables> {
+  QueryResult(super.dataConnect, super.data, super.ref);
+}
+
+final result = await SahakaraConnector.instance.activeTaskTemplates(
+  householdId: householdId,
+);
+ActiveTaskTemplatesData data = result.data;
+final ref = result.ref;
+```
+
+#### Getting the Ref
+Each builder returns an `execute` function, which is a helper function that creates a `Ref` object, and executes the underlying operation.
+An example of how to use the `Ref` object is shown below:
+```dart
+String householdId = ...;
+
+final ref = SahakaraConnector.instance.activeTaskTemplates(
+  householdId: householdId,
+).ref();
+ref.execute();
+
+ref.subscribe(...);
+```
+
 ## Mutations
 
 ### ClaimInvitedProfile
@@ -1994,6 +2092,10 @@ class AddDailyTaskVariablesBuilder {
    _photoUrl.value = t;
    return this;
   }
+  AddDailyTaskVariablesBuilder recurrence(RecurrenceType? t) {
+   _recurrence.value = t;
+   return this;
+  }
 
   ...
 }
@@ -2009,6 +2111,7 @@ SahakaraConnector.instance.addDailyTask(
 .customTitleTa(customTitleTa)
 .estMinutes(estMinutes)
 .photoUrl(photoUrl)
+.recurrence(recurrence)
 .execute();
 ```
 
@@ -3184,6 +3287,213 @@ String id = ...;
 
 final ref = SahakaraConnector.instance.deleteLeaveRequest(
   id: id,
+).ref();
+ref.execute();
+```
+
+
+### AddGroceryItem
+#### Required Arguments
+```dart
+String householdId = ...;
+String nameEn = ...;
+SahakaraConnector.instance.addGroceryItem(
+  householdId: householdId,
+  nameEn: nameEn,
+).execute();
+```
+
+#### Optional Arguments
+We return a builder for each query. For AddGroceryItem, we created `AddGroceryItemBuilder`. For queries and mutations with optional parameters, we return a builder class.
+The builder pattern allows Data Connect to distinguish between fields that haven't been set and fields that have been set to null. A field can be set by calling its respective setter method like below:
+```dart
+class AddGroceryItemVariablesBuilder {
+  ...
+   AddGroceryItemVariablesBuilder nameSi(String? t) {
+   _nameSi.value = t;
+   return this;
+  }
+  AddGroceryItemVariablesBuilder nameTa(String? t) {
+   _nameTa.value = t;
+   return this;
+  }
+
+  ...
+}
+SahakaraConnector.instance.addGroceryItem(
+  householdId: householdId,
+  nameEn: nameEn,
+)
+.nameSi(nameSi)
+.nameTa(nameTa)
+.execute();
+```
+
+#### Return Type
+`execute()` returns a `OperationResult<AddGroceryItemData, AddGroceryItemVariables>`
+```dart
+/// Result of an Operation Request (query/mutation).
+class OperationResult<Data, Variables> {
+  OperationResult(this.dataConnect, this.data, this.ref);
+  Data data;
+  OperationRef<Data, Variables> ref;
+  FirebaseDataConnect dataConnect;
+}
+
+final result = await SahakaraConnector.instance.addGroceryItem(
+  householdId: householdId,
+  nameEn: nameEn,
+);
+AddGroceryItemData data = result.data;
+final ref = result.ref;
+```
+
+#### Getting the Ref
+Each builder returns an `execute` function, which is a helper function that creates a `Ref` object, and executes the underlying operation.
+An example of how to use the `Ref` object is shown below:
+```dart
+String householdId = ...;
+String nameEn = ...;
+
+final ref = SahakaraConnector.instance.addGroceryItem(
+  householdId: householdId,
+  nameEn: nameEn,
+).ref();
+ref.execute();
+```
+
+
+### UpdateGroceryItemStatus
+#### Required Arguments
+```dart
+String id = ...;
+bool isBought = ...;
+SahakaraConnector.instance.updateGroceryItemStatus(
+  id: id,
+  isBought: isBought,
+).execute();
+```
+
+
+
+#### Return Type
+`execute()` returns a `OperationResult<UpdateGroceryItemStatusData, UpdateGroceryItemStatusVariables>`
+```dart
+/// Result of an Operation Request (query/mutation).
+class OperationResult<Data, Variables> {
+  OperationResult(this.dataConnect, this.data, this.ref);
+  Data data;
+  OperationRef<Data, Variables> ref;
+  FirebaseDataConnect dataConnect;
+}
+
+final result = await SahakaraConnector.instance.updateGroceryItemStatus(
+  id: id,
+  isBought: isBought,
+);
+UpdateGroceryItemStatusData data = result.data;
+final ref = result.ref;
+```
+
+#### Getting the Ref
+Each builder returns an `execute` function, which is a helper function that creates a `Ref` object, and executes the underlying operation.
+An example of how to use the `Ref` object is shown below:
+```dart
+String id = ...;
+bool isBought = ...;
+
+final ref = SahakaraConnector.instance.updateGroceryItemStatus(
+  id: id,
+  isBought: isBought,
+).ref();
+ref.execute();
+```
+
+
+### DeleteGroceryItem
+#### Required Arguments
+```dart
+String id = ...;
+SahakaraConnector.instance.deleteGroceryItem(
+  id: id,
+).execute();
+```
+
+
+
+#### Return Type
+`execute()` returns a `OperationResult<DeleteGroceryItemData, DeleteGroceryItemVariables>`
+```dart
+/// Result of an Operation Request (query/mutation).
+class OperationResult<Data, Variables> {
+  OperationResult(this.dataConnect, this.data, this.ref);
+  Data data;
+  OperationRef<Data, Variables> ref;
+  FirebaseDataConnect dataConnect;
+}
+
+final result = await SahakaraConnector.instance.deleteGroceryItem(
+  id: id,
+);
+DeleteGroceryItemData data = result.data;
+final ref = result.ref;
+```
+
+#### Getting the Ref
+Each builder returns an `execute` function, which is a helper function that creates a `Ref` object, and executes the underlying operation.
+An example of how to use the `Ref` object is shown below:
+```dart
+String id = ...;
+
+final ref = SahakaraConnector.instance.deleteGroceryItem(
+  id: id,
+).ref();
+ref.execute();
+```
+
+
+### CreateTaskFromTemplate
+#### Required Arguments
+```dart
+String templateId = ...;
+DateTime dueDate = ...;
+SahakaraConnector.instance.createTaskFromTemplate(
+  templateId: templateId,
+  dueDate: dueDate,
+).execute();
+```
+
+
+
+#### Return Type
+`execute()` returns a `OperationResult<CreateTaskFromTemplateData, CreateTaskFromTemplateVariables>`
+```dart
+/// Result of an Operation Request (query/mutation).
+class OperationResult<Data, Variables> {
+  OperationResult(this.dataConnect, this.data, this.ref);
+  Data data;
+  OperationRef<Data, Variables> ref;
+  FirebaseDataConnect dataConnect;
+}
+
+final result = await SahakaraConnector.instance.createTaskFromTemplate(
+  templateId: templateId,
+  dueDate: dueDate,
+);
+CreateTaskFromTemplateData data = result.data;
+final ref = result.ref;
+```
+
+#### Getting the Ref
+Each builder returns an `execute` function, which is a helper function that creates a `Ref` object, and executes the underlying operation.
+An example of how to use the `Ref` object is shown below:
+```dart
+String templateId = ...;
+DateTime dueDate = ...;
+
+final ref = SahakaraConnector.instance.createTaskFromTemplate(
+  templateId: templateId,
+  dueDate: dueDate,
 ).ref();
 ref.execute();
 ```

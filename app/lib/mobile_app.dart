@@ -141,10 +141,10 @@ class _AuthedRouterState extends State<_AuthedRouter> {
         _future = _bootstrap();
       });
 
-      void _onHouseholdAccepted(String memberId) {
-        _preferredMembershipId = memberId;
-        refresh();
-      }
+  void _onHouseholdAccepted(String memberId) {
+    _preferredMembershipId = memberId;
+    refresh();
+  }
 
   void _chooseAccountType(AccountType type) {
     _intent = AuthIntent(accountType: type);

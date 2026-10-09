@@ -3,6 +3,8 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:confetti/confetti.dart';
 
 import '../../core/app_data.dart';
 import '../../core/app_language.dart';
@@ -33,9 +35,13 @@ class _MyTasksScreenState extends State<MyTasksScreen> {
   late Future<List<TaskRow>> _tasks;
   late FlutterTts _flutterTts;
 
+  late ConfettiController _confettiController;
+
   @override
   void initState() {
     super.initState();
+    _confettiController =
+        ConfettiController(duration: const Duration(seconds: 1));
     _flutterTts = FlutterTts();
     final now = DateTime.now();
     _day = DateTime(now.year, now.month, now.day);
@@ -86,7 +92,10 @@ class _MyTasksScreenState extends State<MyTasksScreen> {
   }
 
   Future<List<TaskRow>> _fetchTasks() async {
-    final tasks = await AppData.fetchMyTasks(_day);
+    final tasks = await AppData.fetchMyTasks(
+      householdId: widget.membership.household.id,
+      day: _day,
+    );
     return tasks
         .map(
           (t) => TaskRow(
@@ -177,6 +186,9 @@ class _MyTasksScreenState extends State<MyTasksScreen> {
       );
       if (!mounted) return;
       Navigator.of(context).pop();
+      if (status == 'done') {
+        _confettiController.play();
+      }
       setState(_load);
     } catch (e) {
       if (!mounted) return;
@@ -191,7 +203,7 @@ class _MyTasksScreenState extends State<MyTasksScreen> {
     return ValueListenableBuilder<AppLanguage>(
       valueListenable: widget.lang,
       builder: (context, lang, _) {
-        return FutureBuilder<List<TaskRow>>(
+        final futureBuilder = FutureBuilder<List<TaskRow>>(
           future: _tasks,
           builder: (context, snapshot) {
             final tasks = snapshot.data;
@@ -205,9 +217,27 @@ class _MyTasksScreenState extends State<MyTasksScreen> {
                 if (snapshot.hasError)
                   Center(child: Text('${snapshot.error}'))
                 else if (tasks == null)
-                  const Padding(
-                    padding: EdgeInsets.all(32),
-                    child: Center(child: CircularProgressIndicator()),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    child: Shimmer.fromColors(
+                      baseColor: Colors.grey[300]!,
+                      highlightColor: Colors.grey[100]!,
+                      child: Column(
+                        children: List.generate(
+                          3,
+                          (index) => Padding(
+                            padding: const EdgeInsets.only(bottom: 8.0),
+                            child: Container(
+                              height: 120,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                   )
                 else if (tasks.isEmpty)
                   Padding(
@@ -224,6 +254,29 @@ class _MyTasksScreenState extends State<MyTasksScreen> {
               ],
             );
           },
+        );
+
+        return Stack(
+          alignment: Alignment.topCenter,
+          children: [
+            futureBuilder,
+            ConfettiWidget(
+              confettiController: _confettiController,
+              blastDirectionality: BlastDirectionality.explosive,
+              particleDrag: 0.05,
+              emissionFrequency: 0.05,
+              numberOfParticles: 50,
+              gravity: 0.2,
+              shouldLoop: false,
+              colors: const [
+                Colors.green,
+                Colors.blue,
+                Colors.pink,
+                Colors.orange,
+                Colors.purple
+              ],
+            ),
+          ],
         );
       },
     );

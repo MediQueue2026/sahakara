@@ -76,6 +76,14 @@ part 'review_leave_request.dart';
 
 part 'delete_leave_request.dart';
 
+part 'add_grocery_item.dart';
+
+part 'update_grocery_item_status.dart';
+
+part 'delete_grocery_item.dart';
+
+part 'create_task_from_template.dart';
+
 part 'my_profile.dart';
 
 part 'my_membership.dart';
@@ -121,6 +129,10 @@ part 'household_advance_requests.dart';
 part 'admin_households.dart';
 
 part 'admin_payment_plans.dart';
+
+part 'get_grocery_items.dart';
+
+part 'active_task_templates.dart';
 
 
 
@@ -577,6 +589,52 @@ part 'admin_payment_plans.dart';
   }
   
 
+  enum RecurrenceType {
+    
+      once,
+    
+      daily,
+    
+      weekly,
+    
+      fortnightly,
+    
+      monthly,
+    
+      quarterly,
+    
+  }
+  
+  String recurrenceTypeSerializer(EnumValue<RecurrenceType> e) {
+    return e.stringValue;
+  }
+  EnumValue<RecurrenceType> recurrenceTypeDeserializer(dynamic data) {
+    switch (data) {
+      
+      case 'once':
+        return const Known(RecurrenceType.once);
+      
+      case 'daily':
+        return const Known(RecurrenceType.daily);
+      
+      case 'weekly':
+        return const Known(RecurrenceType.weekly);
+      
+      case 'fortnightly':
+        return const Known(RecurrenceType.fortnightly);
+      
+      case 'monthly':
+        return const Known(RecurrenceType.monthly);
+      
+      case 'quarterly':
+        return const Known(RecurrenceType.quarterly);
+      
+      default:
+        return Unknown(data);
+    }
+  }
+  
+
   enum SalaryPaymentStatus {
     
       scheduled,
@@ -991,6 +1049,26 @@ class SahakaraConnector {
   }
   
   
+  AddGroceryItemVariablesBuilder addGroceryItem ({required String householdId, required String nameEn, }) {
+    return AddGroceryItemVariablesBuilder(dataConnect, householdId: householdId,nameEn: nameEn,);
+  }
+  
+  
+  UpdateGroceryItemStatusVariablesBuilder updateGroceryItemStatus ({required String id, required bool isBought, }) {
+    return UpdateGroceryItemStatusVariablesBuilder(dataConnect, id: id,isBought: isBought,);
+  }
+  
+  
+  DeleteGroceryItemVariablesBuilder deleteGroceryItem ({required String id, }) {
+    return DeleteGroceryItemVariablesBuilder(dataConnect, id: id,);
+  }
+  
+  
+  CreateTaskFromTemplateVariablesBuilder createTaskFromTemplate ({required String templateId, required DateTime dueDate, }) {
+    return CreateTaskFromTemplateVariablesBuilder(dataConnect, templateId: templateId,dueDate: dueDate,);
+  }
+  
+  
   MyProfileVariablesBuilder myProfile () {
     return MyProfileVariablesBuilder(dataConnect, );
   }
@@ -1103,6 +1181,16 @@ class SahakaraConnector {
   
   AdminPaymentPlansVariablesBuilder adminPaymentPlans () {
     return AdminPaymentPlansVariablesBuilder(dataConnect, );
+  }
+  
+  
+  GetGroceryItemsVariablesBuilder getGroceryItems ({required String householdId, }) {
+    return GetGroceryItemsVariablesBuilder(dataConnect, householdId: householdId,);
+  }
+  
+  
+  ActiveTaskTemplatesVariablesBuilder activeTaskTemplates ({required String householdId, }) {
+    return ActiveTaskTemplatesVariablesBuilder(dataConnect, householdId: householdId,);
   }
   
 

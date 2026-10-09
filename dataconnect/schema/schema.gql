@@ -361,3 +361,14 @@ type HouseholdSubscription @table(key: "household") {
   paidUntil: Date
   paymentRef: String
 }
+
+type GroceryItem @table {
+  id: UUID! @default(expr: "uuidV4()")
+  household: Household!
+  nameEn: String!
+  nameSi: String
+  nameTa: String
+  isBought: Boolean! @default(value: false)
+  addedBy: User!
+  createdAt: Timestamp! @default(expr: "request.time")
+}

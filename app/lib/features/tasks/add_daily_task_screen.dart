@@ -172,7 +172,7 @@ class _AddDailyTaskScreenState extends State<AddDailyTaskScreen> {
           bytes: _photo!,
         );
       }
-      
+
       String? customTitleSi;
       String? customTitleTa;
       if (custom && title.isNotEmpty) {

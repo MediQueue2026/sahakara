@@ -11,6 +11,7 @@ class AddDailyTaskVariablesBuilder {
   Optional<int> _estMinutes = Optional.optional(nativeFromJson, nativeToJson);
   TaskPriority priority;
   Optional<String> _photoUrl = Optional.optional(nativeFromJson, nativeToJson);
+  Optional<RecurrenceType> _recurrence = Optional.optional((data) => RecurrenceType.values.byName(data), enumSerializer);
 
   final FirebaseDataConnect _dataConnect;  AddDailyTaskVariablesBuilder assignedToId(String? t) {
    _assignedToId.value = t;
@@ -40,6 +41,10 @@ class AddDailyTaskVariablesBuilder {
    _photoUrl.value = t;
    return this;
   }
+  AddDailyTaskVariablesBuilder recurrence(RecurrenceType? t) {
+   _recurrence.value = t;
+   return this;
+  }
 
   AddDailyTaskVariablesBuilder(this._dataConnect, {required  this.householdId,required  this.dueDate,required  this.priority,});
   Deserializer<AddDailyTaskData> dataDeserializer = (dynamic json)  => AddDailyTaskData.fromJson(jsonDecode(json));
@@ -49,7 +54,7 @@ class AddDailyTaskVariablesBuilder {
   }
 
   MutationRef<AddDailyTaskData, AddDailyTaskVariables> ref() {
-    AddDailyTaskVariables vars= AddDailyTaskVariables(householdId: householdId,assignedToId: _assignedToId,dueDate: dueDate,libraryId: _libraryId,customTitle: _customTitle,customTitleSi: _customTitleSi,customTitleTa: _customTitleTa,estMinutes: _estMinutes,priority: priority,photoUrl: _photoUrl,);
+    AddDailyTaskVariables vars= AddDailyTaskVariables(householdId: householdId,assignedToId: _assignedToId,dueDate: dueDate,libraryId: _libraryId,customTitle: _customTitle,customTitleSi: _customTitleSi,customTitleTa: _customTitleTa,estMinutes: _estMinutes,priority: priority,photoUrl: _photoUrl,recurrence: _recurrence,);
     return _dataConnect.mutation("AddDailyTask", dataDeserializer, varsSerializer, vars);
   }
 }
@@ -173,6 +178,7 @@ class AddDailyTaskVariables {
   late final Optional<int>estMinutes;
   final TaskPriority priority;
   late final Optional<String>photoUrl;
+  late final Optional<RecurrenceType>recurrence;
   @Deprecated('fromJson is deprecated for Variable classes as they are no longer required for deserialization.')
   AddDailyTaskVariables.fromJson(Map<String, dynamic> json):
   
@@ -211,6 +217,10 @@ class AddDailyTaskVariables {
     photoUrl = Optional.optional(nativeFromJson, nativeToJson);
     photoUrl.value = json['photoUrl'] == null ? null : nativeFromJson<String>(json['photoUrl']);
   
+  
+    recurrence = Optional.optional((data) => RecurrenceType.values.byName(data), enumSerializer);
+    recurrence.value = json['recurrence'] == null ? null : RecurrenceType.values.byName(json['recurrence']);
+  
   }
   @override
   bool operator ==(Object other) {
@@ -231,11 +241,12 @@ class AddDailyTaskVariables {
     customTitleTa == otherTyped.customTitleTa && 
     estMinutes == otherTyped.estMinutes && 
     priority == otherTyped.priority && 
-    photoUrl == otherTyped.photoUrl;
+    photoUrl == otherTyped.photoUrl && 
+    recurrence == otherTyped.recurrence;
     
   }
   @override
-  int get hashCode => Object.hashAll([householdId.hashCode, assignedToId.hashCode, dueDate.hashCode, libraryId.hashCode, customTitle.hashCode, customTitleSi.hashCode, customTitleTa.hashCode, estMinutes.hashCode, priority.hashCode, photoUrl.hashCode]);
+  int get hashCode => Object.hashAll([householdId.hashCode, assignedToId.hashCode, dueDate.hashCode, libraryId.hashCode, customTitle.hashCode, customTitleSi.hashCode, customTitleTa.hashCode, estMinutes.hashCode, priority.hashCode, photoUrl.hashCode, recurrence.hashCode]);
   
 
   Map<String, dynamic> toJson() {
@@ -266,6 +277,9 @@ class AddDailyTaskVariables {
     if(photoUrl.state == OptionalState.set) {
       json['photoUrl'] = photoUrl.toJson();
     }
+    if(recurrence.state == OptionalState.set) {
+      json['recurrence'] = recurrence.toJson();
+    }
     return json;
   }
 
@@ -280,6 +294,7 @@ class AddDailyTaskVariables {
     required this.estMinutes,
     required this.priority,
     required this.photoUrl,
+    required this.recurrence,
   });
 }
 

@@ -227,7 +227,8 @@ class _AddMaidScreenState extends State<AddMaidScreen> {
               );
             }
             return Column(
-              children: maids.map((maid) => _availableMaidCard(maid, lang)).toList(),
+              children:
+                  maids.map((maid) => _availableMaidCard(maid, lang)).toList(),
             );
           },
         ),

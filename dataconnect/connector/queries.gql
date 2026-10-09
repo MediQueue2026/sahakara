@@ -271,6 +271,7 @@ query HouseholdTasksForDay($householdId: UUID!, $dueDate: Date!)
       }
     }
     template {
+      id
       customTitle
       customTitleSi
       customTitleTa
@@ -592,5 +593,35 @@ query AdminPaymentPlans @auth(level: USER) {
     householdSubscriptions_on_plan {
       householdId
     }
+  }
+}
+
+query GetGroceryItems($householdId: UUID!) @auth(level: USER) {
+  groceryItems(
+    where: { householdId: { eq: $householdId } }
+    orderBy: [{ createdAt: DESC }]
+  ) {
+    id
+    nameEn
+    nameSi
+    nameTa
+    isBought
+    createdAt
+    addedBy {
+      name
+    }
+  }
+}
+
+query ActiveTaskTemplates($householdId: UUID!) @auth(level: USER) {
+  taskTemplates(
+    where: { 
+      householdId: { eq: $householdId }
+      active: { eq: true }
+    }
+  ) {
+    id
+    recurrence
+    recurrenceDay
   }
 }

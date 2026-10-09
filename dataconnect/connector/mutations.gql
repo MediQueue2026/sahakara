@@ -516,6 +516,7 @@ mutation AddDailyTask(
   $estMinutes: Int
   $priority: TaskPriority!
   $photoUrl: String
+  $recurrence: RecurrenceType = once
 )
 @auth(
   expr: "auth.uid != '' && (vars.libraryId != null || (vars.customTitle != null && vars.customTitle != ''))"
@@ -561,6 +562,7 @@ mutation AddDailyTask(
       photoUrl: $photoUrl
       estMinutes: $estMinutes
       priority: $priority
+      recurrence: $recurrence
       createdById_expr: "response.query.households[0].owner.id"
     }
   )
@@ -1180,4 +1182,52 @@ mutation DeleteLeaveRequest(
     }
   }
   leaveRequest_delete(id: $id)
+}
+
+mutation AddGroceryItem(
+  $householdId: UUID!
+  $nameEn: String!
+  $nameSi: String
+  $nameTa: String
+) @auth(level: USER) @transaction {
+  query @redact {
+    users(where: { authUid: { eq_expr: "auth.uid" } }) { id }
+  }
+  groceryItem_insert(
+    data: {
+      householdId: $householdId
+      nameEn: $nameEn
+      nameSi: $nameSi
+      nameTa: $nameTa
+      addedById_expr: "response.query.users[0].id"
+    }
+  )
+}
+
+mutation UpdateGroceryItemStatus(
+  $id: UUID!
+  $isBought: Boolean!
+) @auth(level: USER) {
+  groceryItem_update(
+    id: $id
+    data: { isBought: $isBought }
+  )
+}
+
+mutation DeleteGroceryItem(
+  $id: UUID!
+) @auth(level: USER) {
+  groceryItem_delete(id: $id)
+}
+
+mutation CreateTaskFromTemplate(
+  $templateId: UUID!
+  $dueDate: Date!
+) @auth(level: USER) {
+  task_insert(
+    data: {
+      templateId: $templateId
+      dueDate: $dueDate
+    }
+  )
 }

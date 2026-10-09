@@ -362,14 +362,51 @@ class AppData {
     required String householdId,
     required DateTime day,
   }) async {
+    await generateRecurringTasksForDay(householdId: householdId, day: day);
     final result = await db
         .householdTasksForDay(householdId: householdId, dueDate: day)
         .execute();
     return result.data.tasks;
   }
 
+  /// Automatically generate recurring tasks that haven't been created yet for this day.
+  static Future<void> generateRecurringTasksForDay({
+    required String householdId,
+    required DateTime day,
+  }) async {
+    final templatesResult =
+        await db.activeTaskTemplates(householdId: householdId).execute();
+    final templates = templatesResult.data.taskTemplates;
+
+    final existingTasksResult = await db
+        .householdTasksForDay(householdId: householdId, dueDate: day)
+        .execute();
+    final existingTaskTemplateIds =
+        existingTasksResult.data.tasks.map((t) => t.template.id).toSet();
+
+    for (final template in templates) {
+      if (existingTaskTemplateIds.contains(template.id)) continue;
+
+      bool shouldRun = false;
+      if (template.recurrence.stringValue == 'daily') {
+        shouldRun = true;
+      }
+      // (Add weekly/monthly logic here later if needed)
+
+      if (shouldRun) {
+        await db
+            .createTaskFromTemplate(templateId: template.id, dueDate: day)
+            .execute();
+      }
+    }
+  }
+
   /// The signed-in staff member's own tasks due on [day].
-  static Future<List<MyTask>> fetchMyTasks(DateTime day) async {
+  static Future<List<MyTask>> fetchMyTasks({
+    required String householdId,
+    required DateTime day,
+  }) async {
+    await generateRecurringTasksForDay(householdId: householdId, day: day);
     final result = await db.myTasksForDay(dueDate: day).execute();
     return result.data.tasks;
   }
@@ -654,5 +691,37 @@ class AppData {
         throw ArgumentError.value(
             status, 'status', 'Must be approved or rejected');
     }
+  }
+
+  // --- Groceries ---
+
+  static Future<List<GetGroceryItemsGroceryItems>> fetchGroceryItems(
+      String householdId) async {
+    final result = await db.getGroceryItems(householdId: householdId).execute();
+    return result.data.groceryItems;
+  }
+
+  static Future<void> addGroceryItem({
+    required String householdId,
+    required String nameEn,
+    String? nameSi,
+    String? nameTa,
+  }) async {
+    await db
+        .addGroceryItem(householdId: householdId, nameEn: nameEn)
+        .nameSi(nameSi)
+        .nameTa(nameTa)
+        .execute();
+  }
+
+  static Future<void> updateGroceryItemStatus({
+    required String id,
+    required bool isBought,
+  }) async {
+    await db.updateGroceryItemStatus(id: id, isBought: isBought).execute();
+  }
+
+  static Future<void> deleteGroceryItem({required String id}) async {
+    await db.deleteGroceryItem(id: id).execute();
   }
 }
