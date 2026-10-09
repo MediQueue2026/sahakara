@@ -20,5 +20,12 @@
   },
   "storage": {
     "rules": "storage.rules"
+  },
+  "hosting": {
+    "public": "landing",
+    "ignore": [
+      "firebase.json",
+      "**/.*"
+    ]
   }
 }
