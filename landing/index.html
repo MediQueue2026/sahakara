@@ -6,6 +6,7 @@
   <title>Sahakara — Household work, made fair and simple</title>
   <meta name="description" content="Sahakara helps Sri Lankan households and domestic workers plan tasks, track attendance and pay salaries transparently — in Sinhala, Tamil and English.">
   <link rel="icon" href="favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Sinhala:wght@500;700&family=Noto+Sans+Tamil:wght@500;700&display=swap" rel="stylesheet">
@@ -16,7 +17,7 @@
 
   <header class="nav">
     <div class="wrap">
-      <a href="#" class="brand"><span class="brand-mark">ස</span>Sahakara</a>
+      <a href="#" class="brand brand-logo"><img src="logo.png" alt="Sahakara — People Together, Brighter Homes" width="600" height="160"></a>
       <div class="nav-actions"><label class="language-picker"><span class="sr-only" id="language-label">Website language</span><select id="site-language" aria-labelledby="language-label"><option value="en" lang="en">English</option><option value="si" lang="si">සිංහල</option><option value="ta" lang="ta">தமிழ்</option></select></label>
       <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-menu" aria-label="Menu"><span></span><span></span><span></span></button>
       <nav class="nav-links" id="site-menu" aria-label="Main navigation">
@@ -49,58 +50,71 @@
         <div class="hero-scene">
           <div class="scene-orbit" aria-hidden="true"></div>
           <span class="scene-note" aria-hidden="true">A little clarity. A lot more calm.</span>
-          <svg class="hero-person" viewBox="0 0 160 300" aria-hidden="true">
-            <path d="M35 150 Q37 105 80 102 Q122 105 126 152 L116 225 H45Z" fill="#F2A900"/>
-            <path d="M55 222 L52 280 M104 222 L110 280" stroke="#000000" stroke-width="20" stroke-linecap="round"/>
-            <path d="M42 284 H64 M104 284 H126" stroke="#000000" stroke-width="11" stroke-linecap="round"/>
-            <path d="M68 92 V108 Q80 118 92 106 V90" fill="#FFEFC7" stroke="#000000" stroke-width="2"/>
-            <ellipse cx="80" cy="68" rx="28" ry="33" fill="#FFEFC7" stroke="#000000" stroke-width="2"/>
-            <path d="M51 74 Q40 28 79 28 Q119 28 110 68 L97 48 Q74 62 52 58Z" fill="#000000"/>
-            <circle class="character-eye" cx="70" cy="70" r="2.2" fill="#000000"/><circle class="character-eye" cx="90" cy="70" r="2.2" fill="#000000"/>
-            <path d="M73 83 Q80 89 88 82" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
-            <path d="M44 132 Q22 168 50 186" fill="none" stroke="#000000" stroke-width="18" stroke-linecap="round"/>
-            <path d="M44 132 Q22 168 50 186" fill="none" stroke="#FFEFC7" stroke-width="14" stroke-linecap="round"/>
-            <g class="hero-wave">
-              <path d="M118 132 Q144 112 138 80" fill="none" stroke="#000000" stroke-width="18" stroke-linecap="round"/>
-              <path d="M118 132 Q144 112 138 80" fill="none" stroke="#FFEFC7" stroke-width="14" stroke-linecap="round"/>
+          <svg class="hero-drawing" viewBox="0 0 520 410" aria-hidden="true">
+            <g class="hero-sun"><circle cx="70" cy="66" r="20" fill="#EAA839"/><path class="hero-sun-rays" d="M70 32 V22 M70 100 V110 M36 66 H26 M104 66 H114 M46 42 L39 35 M94 90 L101 97 M46 90 L39 97 M94 42 L101 35" stroke="#000000" stroke-width="2" stroke-linecap="round"/></g>
+            <path d="M20 392 Q260 386 500 392" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+            <g transform="rotate(-2 260 160)">
+              <rect x="175" y="62" width="170" height="196" rx="14" fill="#FFFFFF" stroke="#000000" stroke-width="2"/>
+              <circle cx="260" cy="62" r="6" fill="#61040C"/>
+              <rect x="195" y="82" width="74" height="8" rx="4" fill="#61040C"/>
+              <rect x="195" y="108" width="22" height="22" rx="6" fill="#FDF6EB" stroke="#000000" stroke-width="2"/><rect x="229" y="114" width="90" height="10" rx="5" fill="#F9E5C4"/>
+              <rect x="195" y="150" width="22" height="22" rx="6" fill="#FDF6EB" stroke="#000000" stroke-width="2"/><rect x="229" y="156" width="70" height="10" rx="5" fill="#F9E5C4"/>
+              <rect x="195" y="192" width="22" height="22" rx="6" fill="#FDF6EB" stroke="#000000" stroke-width="2"/><rect x="229" y="198" width="82" height="10" rx="5" fill="#F9E5C4"/>
+              <g fill="none" stroke="#61040C" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+                <path class="board-check board-check-1" d="M200 119 L206 125 L217 112"/>
+                <path class="board-check board-check-2" d="M200 161 L206 167 L217 154"/>
+                <path class="board-check board-check-3" d="M200 203 L206 209 L217 196"/>
+              </g>
+              <rect x="195" y="232" width="130" height="8" rx="4" fill="#F9E5C4"/>
+              <rect class="board-load" x="195" y="232" width="130" height="8" rx="4" fill="#EAA839"/>
+            </g>
+            <path class="board-heart" d="M349 50 Q341 36 332 44 Q323 54 349 69 Q375 52 366 44 Q356 37 349 50Z" fill="#61040C"/>
+            <g class="hero-figure">
+              <g transform="translate(20 120) scale(.9)">
+                <path d="M55 222 L52 280 M104 222 L110 280" stroke="#61040C" stroke-width="20" stroke-linecap="round"/>
+                <path d="M42 284 H64 M104 284 H126" stroke="#000000" stroke-width="11" stroke-linecap="round"/>
+                <path d="M35 150 Q37 105 80 102 Q122 105 126 152 L116 225 H45Z" fill="#FFFFFF" stroke="#000000" stroke-width="2"/>
+                <path d="M68 92 V108 Q80 118 92 106 V90" fill="#F9E5C4" stroke="#000000" stroke-width="2"/>
+                <ellipse cx="80" cy="68" rx="28" ry="33" fill="#F9E5C4" stroke="#000000" stroke-width="2"/>
+                <path d="M51 74 Q40 28 79 28 Q119 28 110 68 L97 48 Q74 62 52 58Z" fill="#000000"/>
+                <circle class="character-eye" cx="70" cy="70" r="2.2" fill="#000000"/><circle class="character-eye" cx="90" cy="70" r="2.2" fill="#000000"/>
+                <path d="M73 83 Q80 89 88 82" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+                <path d="M44 132 Q22 168 50 186" fill="none" stroke="#000000" stroke-width="18" stroke-linecap="round"/>
+                <path d="M44 132 Q22 168 50 186" fill="none" stroke="#F9E5C4" stroke-width="14" stroke-linecap="round"/>
+                <g class="hero-arm owner-arm">
+                  <path d="M118 132 Q144 112 138 80" fill="none" stroke="#000000" stroke-width="18" stroke-linecap="round"/>
+                  <path d="M118 132 Q144 112 138 80" fill="none" stroke="#F9E5C4" stroke-width="14" stroke-linecap="round"/>
+                  <rect x="128" y="56" width="20" height="32" rx="5" fill="#000000"/><rect x="132" y="61" width="12" height="20" rx="2" fill="#EAA839"/>
+                </g>
+              </g>
+            </g>
+            <g class="hero-figure hero-figure-right">
+              <g transform="translate(500 120) scale(-.9 .9)">
+                <path d="M35 150 Q37 105 80 102 Q122 105 126 152 L116 225 H45Z" fill="#EAA839"/>
+                <path d="M55 222 L52 280 M104 222 L110 280" stroke="#000000" stroke-width="20" stroke-linecap="round"/>
+                <path d="M42 284 H64 M104 284 H126" stroke="#000000" stroke-width="11" stroke-linecap="round"/>
+                <path d="M68 92 V108 Q80 118 92 106 V90" fill="#F9E5C4" stroke="#000000" stroke-width="2"/>
+                <ellipse cx="80" cy="68" rx="28" ry="33" fill="#F9E5C4" stroke="#000000" stroke-width="2"/>
+                <circle cx="52" cy="40" r="13" fill="#000000"/>
+                <path d="M51 74 Q40 28 79 28 Q119 28 110 68 L97 48 Q74 62 52 58Z" fill="#000000"/>
+                <circle class="character-eye" cx="70" cy="70" r="2.2" fill="#000000"/><circle class="character-eye" cx="90" cy="70" r="2.2" fill="#000000"/>
+                <path d="M73 83 Q80 89 88 82" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+                <path d="M44 132 Q22 168 50 186" fill="none" stroke="#000000" stroke-width="18" stroke-linecap="round"/>
+                <path d="M44 132 Q22 168 50 186" fill="none" stroke="#F9E5C4" stroke-width="14" stroke-linecap="round"/>
+                <g class="hero-arm worker-arm">
+                  <path d="M118 132 Q144 112 138 80" fill="none" stroke="#000000" stroke-width="18" stroke-linecap="round"/>
+                  <path d="M118 132 Q144 112 138 80" fill="none" stroke="#F9E5C4" stroke-width="14" stroke-linecap="round"/>
+                </g>
+              </g>
+            </g>
+            <g transform="translate(225 90)"><g class="plant"><path d="M35 281 V227 M35 255 Q9 248 13 233 Q35 234 35 255 M35 242 Q58 217 62 234 Q57 247 35 250" fill="#F9E5C4" stroke="#000000" stroke-width="2"/><path d="M20 279 H51 L46 304 H25Z" fill="#EAA839" stroke="#000000" stroke-width="2"/></g></g>
+            <path d="M386 40 H492 Q504 40 504 52 V84 Q504 96 492 96 H424 L404 114 L408 96 H386 Q374 96 374 84 V52 Q374 40 386 40Z" fill="#FFFFFF" stroke="#000000" stroke-width="2"/>
+            <g class="hero-greeting" text-anchor="middle" font-size="17" font-weight="700" fill="#000000">
+              <text class="greet greet-si si" x="439" y="74">ආයුබෝවන්</text>
+              <text class="greet greet-ta ta" x="439" y="74" font-size="15">வணக்கம்</text>
+              <text class="greet greet-en" x="439" y="74">Hello</text>
             </g>
           </svg>
-          <div class="phone" aria-hidden="true">
-            <div class="phone-notch"></div>
-            <div class="screen">
-              <div class="appbar">
-                <small>A little more organised, together</small>
-                <h3>Good morning, Nirmala <span aria-hidden="true">☀︎</span></h3>
-                <div class="lang-chips"><span class="on si">සිං</span><span class="ta">த</span><span>EN</span></div>
-              </div>
-              <div class="task">
-                <div class="task-ico">▤</div>
-                <div class="task-body"><strong>Laundry &amp; ironing</strong><em>Daily · 9:00 AM</em></div>
-                <span class="badge done">Done</span>
-              </div>
-              <div class="task">
-                <div class="task-ico">◉</div>
-                <div class="task-body"><strong>Prepare lunch</strong><em>Daily · 11:30 AM</em></div>
-                <div class="play"></div>
-              </div>
-              <div class="task">
-                <div class="task-ico">⌁</div>
-                <div class="task-body"><strong>Clean the living room</strong><em>Weekly · Thu</em></div>
-                <span class="badge warn">Water cut</span>
-              </div>
-              <div class="task">
-                <div class="task-ico">❧</div>
-                <div class="task-body"><strong>Water the garden</strong><em>Daily · 5:00 PM</em></div>
-                <div class="play"></div>
-              </div>
-              <div class="load">
-                <small>Today's workload · comfortable</small>
-                <div class="bar"><i></i></div>
-              </div>
-            </div>
-          </div>
-          <div class="float-card a"><span class="notification-icon">♫</span>Understood, in your language<span>One task. Three languages.</span></div>
-          <div class="float-card b"><span class="notification-icon green">✓</span>A good day, together<span>Clear tasks. Comfortable workload.</span></div>
         </div>
       </div>
     </section>
@@ -131,45 +145,45 @@
           <span class="paper-note">A little more human.</span>
           <svg class="home-drawing" viewBox="0 0 560 360" aria-hidden="true">
             <path d="M44 305 Q279 299 518 305" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
-            <path d="M183 170 V89 A76 76 0 0 1 335 89 V170Z" fill="#FFEFC7" stroke="#000000" stroke-width="2"/>
+            <path d="M183 170 V89 A76 76 0 0 1 335 89 V170Z" fill="#F9E5C4" stroke="#000000" stroke-width="2"/>
             <path d="M259 14 V170 M183 105 H335" fill="none" stroke="#000000" stroke-width="2"/>
-            <circle cx="299" cy="69" r="19" fill="#F2A900"/>
+            <circle cx="299" cy="69" r="19" fill="#EAA839"/>
             <path d="M198 151 Q214 123 237 151 T283 151 T329 151" fill="none" stroke="#000000" stroke-width="2"/>
-            <path d="M70 211 Q63 184 94 184 H187 Q207 184 207 209 V284 H69Z" fill="#FFEFC7" stroke="#000000" stroke-width="2"/>
-            <path d="M347 211 Q340 184 371 184 H464 Q484 184 484 209 V284 H346Z" fill="#FFEFC7" stroke="#000000" stroke-width="2"/>
+            <path d="M70 211 Q63 184 94 184 H187 Q207 184 207 209 V284 H69Z" fill="#F9E5C4" stroke="#000000" stroke-width="2"/>
+            <path d="M347 211 Q340 184 371 184 H464 Q484 184 484 209 V284 H346Z" fill="#F9E5C4" stroke="#000000" stroke-width="2"/>
             <path d="M77 283 L72 303 M198 283 L203 303 M353 283 L348 303 M475 283 L480 303" stroke="#000000" stroke-width="6" stroke-linecap="round"/>
             <g class="tea-person tea-person-left">
-              <path d="M116 181 Q126 157 149 163 Q174 166 178 204 L169 251 H106Z" fill="#F2A900" stroke="#000000" stroke-width="2"/>
+              <path d="M116 181 Q126 157 149 163 Q174 166 178 204 L169 251 H106Z" fill="#EAA839" stroke="#000000" stroke-width="2"/>
               <path d="M116 248 L172 256 L189 295 M157 250 L140 269 L138 300" fill="none" stroke="#000000" stroke-width="15" stroke-linecap="round"/>
-              <path d="M133 156 V172 L151 175 V151" fill="#FFEFC7" stroke="#000000" stroke-width="2"/>
-              <ellipse cx="141" cy="135" rx="25" ry="30" fill="#FFEFC7" stroke="#000000" stroke-width="2"/>
+              <path d="M133 156 V172 L151 175 V151" fill="#F9E5C4" stroke="#000000" stroke-width="2"/>
+              <ellipse cx="141" cy="135" rx="25" ry="30" fill="#F9E5C4" stroke="#000000" stroke-width="2"/>
               <path d="M117 139 Q105 101 142 102 Q169 104 166 133 L151 119 Q136 133 117 125Z" fill="#000000"/>
               <circle class="character-eye" cx="134" cy="137" r="2"/><circle class="character-eye" cx="151" cy="135" r="2"/>
               <path d="M136 148 Q144 154 151 146" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
-              <g class="tea-gesture"><path d="M169 189 Q190 216 223 201" fill="none" stroke="#000000" stroke-width="17" stroke-linecap="round"/><path d="M169 189 Q190 216 223 201" fill="none" stroke="#FFEFC7" stroke-width="13" stroke-linecap="round"/></g>
+              <g class="tea-gesture"><path d="M169 189 Q190 216 223 201" fill="none" stroke="#000000" stroke-width="17" stroke-linecap="round"/><path d="M169 189 Q190 216 223 201" fill="none" stroke="#F9E5C4" stroke-width="13" stroke-linecap="round"/></g>
               <path d="M116 190 Q98 220 125 230" fill="none" stroke="#000000" stroke-width="17" stroke-linecap="round"/>
-              <path d="M116 190 Q98 220 125 230" fill="none" stroke="#FFEFC7" stroke-width="13" stroke-linecap="round"/>
+              <path d="M116 190 Q98 220 125 230" fill="none" stroke="#F9E5C4" stroke-width="13" stroke-linecap="round"/>
             </g>
             <g class="tea-person tea-person-right">
               <path d="M382 184 Q390 158 417 164 Q438 167 443 206 L451 250 H376Z" fill="#FFFFFF" stroke="#000000" stroke-width="2"/>
               <path d="M388 250 L369 267 L356 298 M430 250 L417 270 L422 300" fill="none" stroke="#000000" stroke-width="15" stroke-linecap="round"/>
-              <path d="M402 151 V173 L419 173 V150" fill="#FFEFC7" stroke="#000000" stroke-width="2"/>
-              <ellipse cx="411" cy="134" rx="25" ry="30" fill="#FFEFC7" stroke="#000000" stroke-width="2"/>
+              <path d="M402 151 V173 L419 173 V150" fill="#F9E5C4" stroke="#000000" stroke-width="2"/>
+              <ellipse cx="411" cy="134" rx="25" ry="30" fill="#F9E5C4" stroke="#000000" stroke-width="2"/>
               <circle cx="434" cy="109" r="13" fill="#000000"/>
               <path d="M386 136 Q380 103 409 102 Q439 103 436 134 Q416 129 401 118Z" fill="#000000"/>
               <circle class="character-eye" cx="401" cy="135" r="2"/><circle class="character-eye" cx="418" cy="137" r="2"/>
               <path d="M401 147 Q410 154 418 148" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
-              <g class="tea-gesture"><path d="M388 188 Q366 217 337 201" fill="none" stroke="#000000" stroke-width="17" stroke-linecap="round"/><path d="M388 188 Q366 217 337 201" fill="none" stroke="#FFEFC7" stroke-width="13" stroke-linecap="round"/></g>
+              <g class="tea-gesture"><path d="M388 188 Q366 217 337 201" fill="none" stroke="#000000" stroke-width="17" stroke-linecap="round"/><path d="M388 188 Q366 217 337 201" fill="none" stroke="#F9E5C4" stroke-width="13" stroke-linecap="round"/></g>
               <path d="M437 190 Q456 222 429 231" fill="none" stroke="#000000" stroke-width="17" stroke-linecap="round"/>
-              <path d="M437 190 Q456 222 429 231" fill="none" stroke="#FFEFC7" stroke-width="13" stroke-linecap="round"/>
+              <path d="M437 190 Q456 222 429 231" fill="none" stroke="#F9E5C4" stroke-width="13" stroke-linecap="round"/>
             </g>
-            <path d="M214 229 Q281 224 347 229 L341 241 H219Z" fill="#F2A900" stroke="#000000" stroke-width="2"/>
+            <path d="M214 229 Q281 224 347 229 L341 241 H219Z" fill="#EAA839" stroke="#000000" stroke-width="2"/>
             <path d="M231 241 L224 304 M330 241 L338 304" stroke="#000000" stroke-width="5" stroke-linecap="round"/>
             <path d="M243 211 H263 V228 H243Z M297 211 H317 V228 H297Z" fill="#FFFFFF" stroke="#000000" stroke-width="2"/>
             <path d="M263 214 Q276 214 263 223 M317 214 Q330 214 317 223" fill="none" stroke="#000000" stroke-width="2"/>
             <g class="tea-steam" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"><path d="M251 203 Q245 197 252 190"/><path d="M306 203 Q300 197 307 190"/></g>
-            <g class="plant"><path d="M35 281 V227 M35 255 Q9 248 13 233 Q35 234 35 255 M35 242 Q58 217 62 234 Q57 247 35 250" fill="#FFEFC7" stroke="#000000" stroke-width="2"/><path d="M20 279 H51 L46 304 H25Z" fill="#F2A900" stroke="#000000" stroke-width="2"/></g>
-            <path d="M359 86 Q351 72 342 80 Q333 90 359 105 Q385 88 376 80 Q366 73 359 86Z" fill="#F2A900" class="conversation-heart"/>
+            <g class="plant"><path d="M35 281 V227 M35 255 Q9 248 13 233 Q35 234 35 255 M35 242 Q58 217 62 234 Q57 247 35 250" fill="#F9E5C4" stroke="#000000" stroke-width="2"/><path d="M20 279 H51 L46 304 H25Z" fill="#EAA839" stroke="#000000" stroke-width="2"/></g>
+            <path d="M359 86 Q351 72 342 80 Q333 90 359 105 Q385 88 376 80 Q366 73 359 86Z" fill="#EAA839" class="conversation-heart"/>
           </svg>
         </div>
         <div class="story-copy reveal">
@@ -192,7 +206,7 @@
         </div>
         <div class="split">
           <div class="aud owner reveal">
-            <svg class="audience-face" viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="44" r="42" fill="#FFEFC7"/><path d="M17 81 Q19 59 44 59 Q69 59 71 81" fill="#F2A900" stroke="#000000" stroke-width="2"/><path d="M36 51 V63 Q44 70 52 63 V51" fill="#FFEFC7" stroke="#000000" stroke-width="2"/><ellipse cx="44" cy="37" rx="20" ry="23" fill="#FFEFC7" stroke="#000000" stroke-width="2"/><path d="M24 39 Q17 12 43 12 Q69 12 65 35 L51 24 Q35 34 24 29Z" fill="#000000"/><circle class="character-eye" cx="37" cy="38" r="2"/><circle class="character-eye" cx="51" cy="38" r="2"/><path d="M37 48 Q44 55 52 47" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round"/></svg><span class="tag">For house owners</span>
+            <svg class="audience-face" viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="44" r="42" fill="#F9E5C4"/><path d="M17 81 Q19 59 44 59 Q69 59 71 81" fill="#EAA839" stroke="#000000" stroke-width="2"/><path d="M36 51 V63 Q44 70 52 63 V51" fill="#F9E5C4" stroke="#000000" stroke-width="2"/><ellipse cx="44" cy="37" rx="20" ry="23" fill="#F9E5C4" stroke="#000000" stroke-width="2"/><path d="M24 39 Q17 12 43 12 Q69 12 65 35 L51 24 Q35 34 24 29Z" fill="#000000"/><circle class="character-eye" cx="37" cy="38" r="2"/><circle class="character-eye" cx="51" cy="38" r="2"/><path d="M37 48 Q44 55 52 47" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round"/></svg><span class="tag">For house owners</span>
             <h3>Run your home with less back-and-forth</h3>
             <ul>
               <li>Plan daily, weekly and monthly tasks once — they repeat on their own</li>
@@ -202,7 +216,7 @@
             </ul>
           </div>
           <div class="aud worker reveal">
-            <svg class="audience-face" viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="44" r="42" fill="#FFEFC7"/><path d="M17 81 Q19 59 44 59 Q69 59 71 81" fill="#F2A900" stroke="#000000" stroke-width="2"/><path d="M36 51 V63 Q44 70 52 63 V51" fill="#FFEFC7" stroke="#000000" stroke-width="2"/><ellipse cx="44" cy="37" rx="20" ry="23" fill="#FFEFC7" stroke="#000000" stroke-width="2"/><circle cx="64" cy="17" r="10" fill="#000000"/><path d="M24 39 Q17 12 43 12 Q69 12 65 35 L51 24 Q35 34 24 29Z" fill="#000000"/><circle class="character-eye" cx="37" cy="38" r="2"/><circle class="character-eye" cx="51" cy="38" r="2"/><path d="M37 48 Q44 55 52 47" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round"/></svg><span class="tag">For domestic workers</span>
+            <svg class="audience-face" viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="44" r="42" fill="#F9E5C4"/><path d="M17 81 Q19 59 44 59 Q69 59 71 81" fill="#EAA839" stroke="#000000" stroke-width="2"/><path d="M36 51 V63 Q44 70 52 63 V51" fill="#F9E5C4" stroke="#000000" stroke-width="2"/><ellipse cx="44" cy="37" rx="20" ry="23" fill="#F9E5C4" stroke="#000000" stroke-width="2"/><circle cx="64" cy="17" r="10" fill="#000000"/><path d="M24 39 Q17 12 43 12 Q69 12 65 35 L51 24 Q35 34 24 29Z" fill="#000000"/><circle class="character-eye" cx="37" cy="38" r="2"/><circle class="character-eye" cx="51" cy="38" r="2"/><path d="M37 48 Q44 55 52 47" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round"/></svg><span class="tag">For domestic workers</span>
             <h3>Know what's expected, and what you're owed</h3>
             <ul>
               <li>Today's tasks in your own language, with audio you can replay</li>
@@ -353,7 +367,7 @@
 
   <footer>
     <div class="wrap">
-      <a href="#" class="brand"><span class="brand-mark">ස</span>Sahakara</a>
+      <a href="#" class="brand brand-logo"><img src="logo.png" alt="Sahakara — People Together, Brighter Homes" width="600" height="160"></a>
       <span>© <span id="year">2026</span> Sahakara · Developed by <strong>TheInnoVibe</strong> · Made in Sri Lanka </span>
     </div>
   </footer>

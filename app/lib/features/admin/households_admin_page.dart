@@ -71,7 +71,7 @@ class _HouseholdsAdminPageState extends State<HouseholdsAdminPage> {
         const SizedBox(height: 16),
         if (_loading) const Center(child: CircularProgressIndicator()),
         if (_error != null)
-          Text(_error!, style: const TextStyle(color: Colors.red)),
+          Text(_error!, style: const TextStyle(color: brandMaroon)),
         if (!_loading && _households.isEmpty && _error == null)
           const Text('No households yet.'),
         if (!_loading)
@@ -221,7 +221,7 @@ class _SetPlanDialogState extends State<_SetPlanDialog> {
             if (_error != null)
               Padding(
                 padding: const EdgeInsets.only(top: 8),
-                child: Text(_error!, style: const TextStyle(color: Colors.red)),
+                child: Text(_error!, style: const TextStyle(color: brandMaroon)),
               ),
           ],
         ),

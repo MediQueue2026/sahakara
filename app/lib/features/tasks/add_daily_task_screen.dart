@@ -250,7 +250,7 @@ class _AddDailyTaskScreenState extends State<AddDailyTaskScreen> {
       child: Container(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
         decoration: const BoxDecoration(
-          color: Colors.white,
+          color: brandIvory,
           border: Border(top: BorderSide(color: Colors.black12)),
         ),
         child: Column(
@@ -337,7 +337,7 @@ class _AddDailyTaskScreenState extends State<AddDailyTaskScreen> {
             for (final m in _staff)
               ChoiceChip(
                 avatar: CircleAvatar(
-                  backgroundColor: brandAmber,
+                  backgroundColor: brandGold,
                   child: Text(
                     m.user.name.isEmpty ? '?' : m.user.name[0].toUpperCase(),
                     style: const TextStyle(fontSize: 12, color: Colors.black),
@@ -483,7 +483,7 @@ class _AddDailyTaskScreenState extends State<AddDailyTaskScreen> {
   Widget _selectedTaskCard(LibraryTask t, AppLanguage lang) {
     final category = t.category.stringValue;
     return Card(
-      color: brandCream,
+      color: brandGoldSoft,
       margin: EdgeInsets.zero,
       child: ListTile(
         leading: Icon(_categories[category] ?? Icons.task_alt),
@@ -585,7 +585,7 @@ class _AddDailyTaskScreenState extends State<AddDailyTaskScreen> {
     final photo = _photo;
     if (photo == null) {
       return Material(
-        color: brandCream.withValues(alpha: 0.4),
+        color: brandGoldSoft.withValues(alpha: 0.4),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
           side: const BorderSide(color: Colors.black12),
@@ -684,7 +684,7 @@ class _Section extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 16,
-                backgroundColor: brandCream,
+                backgroundColor: brandGoldSoft,
                 child: Icon(icon, size: 18, color: Colors.black87),
               ),
               const SizedBox(width: 12),

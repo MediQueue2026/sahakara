@@ -51,11 +51,16 @@ class _AdminShellState extends State<AdminShell> {
             selectedIndex: _index,
             onDestinationSelected: (i) => setState(() => _index = i),
             labelType: NavigationRailLabelType.all,
-            leading: const Padding(
-              padding: EdgeInsets.symmetric(vertical: 16),
-              child: Text(
-                'Sahakara',
-                style: TextStyle(fontWeight: FontWeight.bold),
+            leading: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Image.asset(
+                  'assets/images/app_icon.png',
+                  width: 64,
+                  height: 64,
+                  semanticLabel: 'Sahakara',
+                ),
               ),
             ),
             trailing: Expanded(

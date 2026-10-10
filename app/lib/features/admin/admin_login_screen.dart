@@ -47,8 +47,14 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  Image.asset(
+                    'assets/images/logo_broom.png',
+                    height: 80,
+                    semanticLabel: 'Sahakara',
+                  ),
+                  const SizedBox(height: 20),
                   Text(
-                    'Sahakara admin',
+                    'Admin sign in',
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   const SizedBox(height: 4),
@@ -75,7 +81,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                   ),
                   if (_error != null) ...[
                     const SizedBox(height: 12),
-                    Text(_error!, style: const TextStyle(color: Colors.red)),
+                    Text(_error!, style: const TextStyle(color: brandMaroon)),
                   ],
                   const SizedBox(height: 12),
                   const Text(

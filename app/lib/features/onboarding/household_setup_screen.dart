@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/app_data.dart';
 import '../../core/app_language.dart';
 import '../../core/strings.dart';
+import '../../core/theme.dart';
 
 /// Shown once, right after first login, to whoever has no household
 /// membership yet. Creates the household and makes the current user its
@@ -83,7 +84,7 @@ class _HouseholdSetupScreenState extends State<HouseholdSetupScreen> {
                     ),
                     if (_error != null) ...[
                       const SizedBox(height: 16),
-                      Text(_error!, style: const TextStyle(color: Colors.red)),
+                      Text(_error!, style: const TextStyle(color: brandMaroon)),
                     ],
                   ],
                 ),

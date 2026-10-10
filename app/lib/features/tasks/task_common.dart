@@ -30,7 +30,7 @@ const statusIcons = {
 
 /// Only finished tasks are coloured (amber); the icon tells the other
 /// statuses apart.
-Color? statusColor(String status) => status == 'done' ? brandAmber : null;
+Color? statusColor(String status) => status == 'done' ? brandGold : null;
 
 /// The fields the task screens show, from either the owner's or the staff
 /// member's query result.

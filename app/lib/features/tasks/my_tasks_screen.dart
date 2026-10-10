@@ -273,11 +273,10 @@ class _MyTasksScreenState extends State<MyTasksScreen> {
               gravity: 0.2,
               shouldLoop: false,
               colors: const [
-                Colors.green,
-                Colors.blue,
-                Colors.pink,
-                Colors.orange,
-                Colors.purple
+                brandGold,
+                brandMaroon,
+                brandGoldSoft,
+                Colors.black
               ],
             ),
           ],
@@ -292,7 +291,7 @@ class _MyTasksScreenState extends State<MyTasksScreen> {
     final total = tasks?.length ?? 0;
     final done = tasks?.where((t) => t.status == 'done').length ?? 0;
     return Card(
-      color: brandCream,
+      color: brandGoldSoft,
       margin: EdgeInsets.zero,
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -349,7 +348,7 @@ class _MyTasksScreenState extends State<MyTasksScreen> {
       margin: const EdgeInsets.only(top: 8),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: done ? brandAmber : Colors.black12),
+        side: BorderSide(color: done ? brandGold : Colors.black12),
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
