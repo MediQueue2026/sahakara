@@ -98,7 +98,10 @@ type Contract @table {
   member: HouseholdMember!
   payType: PayType!
   rate: Float! # for `monthly`, the basic salary — bonuses go in the ledger
-  durationMonths: Int # null means there is no fixed contract term
+  # For a fixed contract term, set either durationMonths or durationDays.
+  # Both are null for an ongoing contract.
+  durationMonths: Int
+  durationDays: Int
   # A fixed extra paid every month on top of the basic salary, if any.
   allowance: Float
   offDays: String

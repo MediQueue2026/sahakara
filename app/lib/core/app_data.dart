@@ -128,8 +128,28 @@ class AppData {
   /// the first one.
   static Future<Membership?> fetchMyMembership() async {
     final result = await db.myMembership().execute();
-    return result.data.householdMembers.firstOrNull;
+    final memberships = result.data.householdMembers;
+    for (final member in memberships) {
+      if (member.active && member.status.stringValue == 'accepted') {
+        return member;
+      }
+    }
+    for (final member in memberships) {
+      if (member.status.stringValue == 'pending') return member;
+    }
+    return null;
   }
+
+  static Membership previewMaidMembership() => MyMembershipHouseholdMembers(
+        id: '00000000-0000-0000-0000-000000000000',
+        role: const Known(MemberRole.maid),
+        active: false,
+        status: const Known(MembershipStatus.pending),
+        household: MyMembershipHouseholdMembersHousehold(
+          id: '00000000-0000-0000-0000-000000000000',
+          name: '',
+        ),
+      );
 
   static Future<Membership?> fetchMyMembershipById(String id) async {
     final result = await db.myMembershipById(id: id).execute();
@@ -138,6 +158,8 @@ class AppData {
     return Membership(
       id: member.id,
       role: member.role,
+      active: member.active,
+      status: member.status,
       household: MyMembershipHouseholdMembersHousehold(
         id: member.household.id,
         name: member.household.name,
@@ -173,6 +195,7 @@ class AppData {
     required double rate,
     double? allowance,
     int? durationMonths,
+    int? durationDays,
     String? offDays,
     String? workingHours,
   }) async {
@@ -193,6 +216,7 @@ class AppData {
           )
           .allowance(allowance)
           .durationMonths(durationMonths)
+          .durationDays(durationDays)
           .offDays(offDays)
           .workingHours(workingHours)
           .execute();
@@ -205,6 +229,7 @@ class AppData {
       rate: rate,
       allowance: allowance,
       durationMonths: durationMonths,
+      durationDays: durationDays,
       offDays: offDays,
       workingHours: workingHours,
     );
@@ -219,6 +244,7 @@ class AppData {
     required double rate,
     double? allowance,
     int? durationMonths,
+    int? durationDays,
     String? offDays,
     String? workingHours,
   }) async {
@@ -240,6 +266,7 @@ class AppData {
           )
           .allowance(allowance)
           .durationMonths(durationMonths)
+          .durationDays(durationDays)
           .offDays(offDays)
           .workingHours(workingHours)
           .execute();
@@ -254,6 +281,7 @@ class AppData {
           )
           .allowance(allowance)
           .durationMonths(durationMonths)
+          .durationDays(durationDays)
           .offDays(offDays)
           .workingHours(workingHours)
           .execute();
@@ -336,6 +364,7 @@ class AppData {
     required double rate,
     double? allowance,
     int? durationMonths,
+    int? durationDays,
     String? offDays,
     String? workingHours,
   }) async {
@@ -347,6 +376,7 @@ class AppData {
         )
         .allowance(allowance)
         .durationMonths(durationMonths)
+        .durationDays(durationDays)
         .offDays(offDays)
         .workingHours(workingHours)
         .execute();
@@ -405,8 +435,11 @@ class AppData {
   static Future<List<MyTask>> fetchMyTasks({
     required String householdId,
     required DateTime day,
+    bool generateRecurringTasks = true,
   }) async {
-    await generateRecurringTasksForDay(householdId: householdId, day: day);
+    if (generateRecurringTasks) {
+      await generateRecurringTasksForDay(householdId: householdId, day: day);
+    }
     final result = await db.myTasksForDay(dueDate: day).execute();
     return result.data.tasks;
   }

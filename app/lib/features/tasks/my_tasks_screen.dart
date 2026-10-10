@@ -18,12 +18,14 @@ class MyTasksScreen extends StatefulWidget {
   final LanguageController lang;
   final Profile profile;
   final Membership membership;
+  final bool readOnly;
 
   const MyTasksScreen({
     super.key,
     required this.lang,
     required this.profile,
     required this.membership,
+    this.readOnly = false,
   });
 
   @override
@@ -95,6 +97,7 @@ class _MyTasksScreenState extends State<MyTasksScreen> {
     final tasks = await AppData.fetchMyTasks(
       householdId: widget.membership.household.id,
       day: _day,
+      generateRecurringTasks: !widget.readOnly,
     );
     return tasks
         .map(
@@ -131,6 +134,7 @@ class _MyTasksScreenState extends State<MyTasksScreen> {
   /// Pick a new status for [t] — for "can't do", the reason — and for "need
   /// help" / "can't do", an optional note and photo for the owner.
   Future<void> _changeStatus(TaskRow t, AppLanguage lang) async {
+    if (widget.readOnly) return;
     final status = await pickOption(
       context,
       title: t.title(lang),
@@ -349,7 +353,7 @@ class _MyTasksScreenState extends State<MyTasksScreen> {
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
-        onTap: () => _changeStatus(t, lang),
+        onTap: widget.readOnly ? null : () => _changeStatus(t, lang),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
@@ -394,7 +398,7 @@ class _MyTasksScreenState extends State<MyTasksScreen> {
                 const SizedBox(width: 8),
                 TaskPhotoThumb(url: t.photoUrl!, size: 64),
               ],
-              const Icon(Icons.chevron_right),
+              if (!widget.readOnly) const Icon(Icons.chevron_right),
             ],
           ),
         ),

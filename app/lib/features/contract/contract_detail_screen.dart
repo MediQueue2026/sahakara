@@ -4,6 +4,7 @@ import '../../core/app_data.dart';
 import '../../core/app_language.dart';
 import '../../core/strings.dart';
 import '../../core/theme.dart';
+import '../onboarding/waiting_for_household_screen.dart';
 
 const payTypes = ['monthly', 'daily', 'hourly', 'per_visit'];
 
@@ -14,6 +15,9 @@ class ContractDetailScreen extends StatefulWidget {
   final String memberId;
   final String memberName;
   final bool editable;
+  final Profile? profile;
+  final ValueChanged<String>? onHouseholdAccepted;
+  final bool showMissingContract;
 
   /// False when shown as a home tab, under the shell's own top bar. Pull
   /// down to refresh then stands in for the refresh button.
@@ -25,6 +29,9 @@ class ContractDetailScreen extends StatefulWidget {
     required this.memberId,
     required this.memberName,
     required this.editable,
+    this.profile,
+    this.onHouseholdAccepted,
+    this.showMissingContract = true,
     this.showAppBar = true,
   });
 
@@ -40,8 +47,10 @@ class _ContractDetailScreenState extends State<ContractDetailScreen> {
 
   String _payType = payTypes.first;
   int? _durationMonths;
+  int? _durationDays;
   bool _customDuration = false;
   bool _durationInYears = false;
+  bool _durationInDays = false;
   final _rateController = TextEditingController();
   final _allowanceController = TextEditingController();
   final _customDurationController = TextEditingController();
@@ -76,12 +85,20 @@ class _ContractDetailScreenState extends State<ContractDetailScreen> {
       if (contract != null) {
         _payType = contract.payType.stringValue;
         _durationMonths = contract.durationMonths;
-        _customDuration = contract.durationMonths != null;
+        _durationDays = contract.durationDays;
+        _customDuration =
+            contract.durationMonths != null || contract.durationDays != null;
         if (_customDuration) {
-          final months = contract.durationMonths!;
-          _durationInYears = months % 12 == 0;
-          _customDurationController.text =
-              _durationInYears ? '${months ~/ 12}' : '$months';
+          if (contract.durationDays != null) {
+            _durationInDays = true;
+            _customDurationController.text = '${contract.durationDays}';
+          } else {
+            final months = contract.durationMonths!;
+            _durationInDays = false;
+            _durationInYears = months % 12 == 0;
+            _customDurationController.text =
+                _durationInYears ? '${months ~/ 12}' : '$months';
+          }
         }
         _rateController.text = contract.rate.toString();
         _allowanceController.text = contract.allowance?.toString() ?? '';
@@ -113,8 +130,12 @@ class _ContractDetailScreenState extends State<ContractDetailScreen> {
       setState(() => _error = Strings.of('enterValidAllowance', lang));
       return;
     }
-    final durationMonths = _durationForSave(lang);
-    if (_customDuration && durationMonths == null) return;
+    final durationMonths = _durationMonthsForSave(lang);
+    final durationDays = _durationDaysForSave(lang);
+    if (_customDuration &&
+        (_durationInDays ? durationDays == null : durationMonths == null)) {
+      return;
+    }
     setState(() {
       _busy = true;
       _error = null;
@@ -126,6 +147,7 @@ class _ContractDetailScreenState extends State<ContractDetailScreen> {
         rate: rate,
         allowance: allowance,
         durationMonths: durationMonths,
+        durationDays: durationDays,
         offDays: emptyToNull(_offDaysController.text),
         workingHours: emptyToNull(_hoursController.text),
       );
@@ -195,32 +217,48 @@ class _ContractDetailScreenState extends State<ContractDetailScreen> {
   }
 
   Widget _buildReadOnly(AppLanguage lang) {
-    if (_contract == null) {
-      return Text(
-        widget.editable
-            ? Strings.of('noContract', lang)
-            : Strings.of('contractMissingAskOwner', lang),
-      );
-    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _row(
-          Strings.of('payType', lang),
-          Strings.of('payType_${_contract!.payType.stringValue}', lang),
-        ),
-        _row(
-          Strings.of('rate_${_contract!.payType.stringValue}', lang),
-          '${_contract!.rate}',
-        ),
-        if (_contract!.allowance != null)
-          _row(Strings.of('allowance', lang), '${_contract!.allowance}'),
-        _row(
-          Strings.of('contractDuration', lang),
-          Strings.contractDuration(_contract!.durationMonths, lang),
-        ),
-        _row(Strings.of('offDays', lang), _contract!.offDays ?? '—'),
-        _row(Strings.of('workingHours', lang), _contract!.workingHours ?? '—'),
+        if (widget.profile != null)
+          WaitingForHouseholdScreen(
+            lang: widget.lang,
+            profile: widget.profile!,
+            email: widget.profile!.email,
+            onHouseholdAccepted: widget.onHouseholdAccepted ?? (_) => _load(),
+            inHomeShell: true,
+          ),
+        if (_contract == null && widget.showMissingContract)
+          Text(
+            widget.editable
+                ? Strings.of('noContract', lang)
+                : Strings.of('contractMissingAskOwner', lang),
+          )
+        else if (_contract != null) ...[
+          _row(
+            Strings.of('payType', lang),
+            Strings.of('payType_${_contract!.payType.stringValue}', lang),
+          ),
+          _row(
+            Strings.of('rate_${_contract!.payType.stringValue}', lang),
+            '${_contract!.rate}',
+          ),
+          if (_contract!.allowance != null)
+            _row(Strings.of('allowance', lang), '${_contract!.allowance}'),
+          _row(
+            Strings.of('contractDuration', lang),
+            Strings.contractDuration(
+              _contract!.durationMonths,
+              lang,
+              days: _contract!.durationDays,
+            ),
+          ),
+          _row(Strings.of('offDays', lang), _contract!.offDays ?? '—'),
+          _row(
+            Strings.of('workingHours', lang),
+            _contract!.workingHours ?? '—',
+          ),
+        ],
       ],
     );
   }
@@ -247,9 +285,11 @@ class _ContractDetailScreenState extends State<ContractDetailScreen> {
           rateController: _rateController,
           allowanceController: _allowanceController,
           durationMonths: _durationMonths,
+          durationDays: _durationDays,
           customDuration: _customDuration,
           customDurationController: _customDurationController,
           durationInYears: _durationInYears,
+          durationInDays: _durationInDays,
           onDurationOptionChanged: (value) => setState(() {
             _customDuration = value == -1;
             if (_customDuration && _customDurationController.text.isEmpty) {
@@ -258,8 +298,10 @@ class _ContractDetailScreenState extends State<ContractDetailScreen> {
               _durationMonths = value == 0 ? null : value;
             }
           }),
-          onDurationInYearsChanged: (value) =>
-              setState(() => _durationInYears = value),
+          onDurationUnitChanged: (value) => setState(() {
+            _durationInDays = value == 'days';
+            _durationInYears = value == 'years';
+          }),
           offDaysController: _offDaysController,
           hoursController: _hoursController,
         ),
@@ -276,8 +318,9 @@ class _ContractDetailScreenState extends State<ContractDetailScreen> {
     );
   }
 
-  int? _durationForSave(AppLanguage lang) {
+  int? _durationMonthsForSave(AppLanguage lang) {
     if (!_customDuration) return _durationMonths;
+    if (_durationInDays) return null;
     final months = parseCustomContractDuration(
       _customDurationController.text,
       _durationInYears,
@@ -286,6 +329,18 @@ class _ContractDetailScreenState extends State<ContractDetailScreen> {
       setState(() => _error = Strings.of('enterValidDuration', lang));
     }
     return months;
+  }
+
+  int? _durationDaysForSave(AppLanguage lang) {
+    if (!_customDuration || !_durationInDays) return null;
+    final days = parseCustomContractDuration(
+      _customDurationController.text,
+      false,
+    );
+    if (days == null) {
+      setState(() => _error = Strings.of('enterValidDuration', lang));
+    }
+    return days;
   }
 }
 
@@ -297,11 +352,13 @@ class ContractFields extends StatelessWidget {
   final TextEditingController rateController;
   final TextEditingController allowanceController;
   final int? durationMonths;
+  final int? durationDays;
   final bool customDuration;
   final TextEditingController customDurationController;
   final bool durationInYears;
+  final bool durationInDays;
   final ValueChanged<int> onDurationOptionChanged;
-  final ValueChanged<bool> onDurationInYearsChanged;
+  final ValueChanged<String> onDurationUnitChanged;
   final TextEditingController offDaysController;
   final TextEditingController hoursController;
 
@@ -313,11 +370,13 @@ class ContractFields extends StatelessWidget {
     required this.rateController,
     required this.allowanceController,
     required this.durationMonths,
+    required this.durationDays,
     required this.customDuration,
     required this.customDurationController,
     required this.durationInYears,
+    required this.durationInDays,
     required this.onDurationOptionChanged,
-    required this.onDurationInYearsChanged,
+    required this.onDurationUnitChanged,
     required this.offDaysController,
     required this.hoursController,
   });
@@ -395,20 +454,28 @@ class ContractFields extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              DropdownButton<bool>(
-                value: durationInYears,
+              DropdownButton<String>(
+                value: durationInDays
+                    ? 'days'
+                    : durationInYears
+                        ? 'years'
+                        : 'months',
                 items: [
                   DropdownMenuItem(
-                    value: false,
+                    value: 'days',
+                    child: Text(Strings.of('days', lang)),
+                  ),
+                  DropdownMenuItem(
+                    value: 'months',
                     child: Text(Strings.of('months', lang)),
                   ),
                   DropdownMenuItem(
-                    value: true,
+                    value: 'years',
                     child: Text(Strings.of('years', lang)),
                   ),
                 ],
                 onChanged: (value) {
-                  if (value != null) onDurationInYearsChanged(value);
+                  if (value != null) onDurationUnitChanged(value);
                 },
               ),
             ],

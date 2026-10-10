@@ -8,11 +8,13 @@ import '../../dataconnect_generated/sahakara.dart' hide AppLanguage;
 class PayrollScreen extends StatefulWidget {
   final LanguageController lang;
   final Membership membership;
+  final bool readOnly;
 
   const PayrollScreen({
     super.key,
     required this.lang,
     required this.membership,
+    this.readOnly = false,
   });
 
   @override
@@ -284,7 +286,7 @@ class _PayrollScreenState extends State<PayrollScreen> {
         Align(
           alignment: Alignment.centerRight,
           child: FilledButton.icon(
-            onPressed: _busy ? null : _requestAdvance,
+            onPressed: _busy || widget.readOnly ? null : _requestAdvance,
             icon: const Icon(Icons.payments_outlined),
             label: Text(Strings.of('requestAdvance', language)),
           ),

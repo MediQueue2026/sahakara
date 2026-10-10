@@ -9,7 +9,6 @@ import 'dataconnect_generated/sahakara.dart' show AccountType;
 import 'features/auth/email_login_screen.dart';
 import 'features/home/home_shell.dart';
 import 'features/onboarding/household_setup_screen.dart';
-import 'features/onboarding/waiting_for_household_screen.dart';
 
 /// Routes a signed-out user to login, a signed-in owner with no household
 /// yet to setup, a maid with none to a waiting screen, and everyone else
@@ -181,9 +180,10 @@ class _AuthedRouterState extends State<_AuthedRouter> {
         }
         if (membership == null) {
           if (profile.accountType.stringValue == AccountType.maid.name) {
-            return WaitingForHouseholdScreen(
+            return HomeShell(
               lang: widget.lang,
-              email: profile.email,
+              profile: profile,
+              membership: AppData.previewMaidMembership(),
               onHouseholdAccepted: _onHouseholdAccepted,
             );
           }

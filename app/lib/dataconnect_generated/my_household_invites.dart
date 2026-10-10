@@ -20,12 +20,16 @@ class MyHouseholdInvitesVariablesBuilder {
 class MyHouseholdInvitesHouseholdMembers {
   final String id;
   final EnumValue<MemberRole> role;
+  final bool active;
+  final EnumValue<MembershipStatus> status;
   final MyHouseholdInvitesHouseholdMembersHousehold household;
   final List<MyHouseholdInvitesHouseholdMembersContractsOnMember> contracts_on_member;
   MyHouseholdInvitesHouseholdMembers.fromJson(dynamic json):
   
   id = nativeFromJson<String>(json['id']),
   role = memberRoleDeserializer(json['role']),
+  active = nativeFromJson<bool>(json['active']),
+  status = membershipStatusDeserializer(json['status']),
   household = MyHouseholdInvitesHouseholdMembersHousehold.fromJson(json['household']),
   contracts_on_member = (json['contracts_on_member'] as List<dynamic>)
         .map((e) => MyHouseholdInvitesHouseholdMembersContractsOnMember.fromJson(e))
@@ -42,12 +46,14 @@ class MyHouseholdInvitesHouseholdMembers {
     final MyHouseholdInvitesHouseholdMembers otherTyped = other as MyHouseholdInvitesHouseholdMembers;
     return id == otherTyped.id && 
     role == otherTyped.role && 
+    active == otherTyped.active && 
+    status == otherTyped.status && 
     household == otherTyped.household && 
     contracts_on_member == otherTyped.contracts_on_member;
     
   }
   @override
-  int get hashCode => Object.hashAll([id.hashCode, role.hashCode, household.hashCode, contracts_on_member.hashCode]);
+  int get hashCode => Object.hashAll([id.hashCode, role.hashCode, active.hashCode, status.hashCode, household.hashCode, contracts_on_member.hashCode]);
   
 
   Map<String, dynamic> toJson() {
@@ -55,6 +61,10 @@ class MyHouseholdInvitesHouseholdMembers {
     json['id'] = nativeToJson<String>(id);
     json['role'] = 
     memberRoleSerializer(role)
+    ;
+    json['active'] = nativeToJson<bool>(active);
+    json['status'] = 
+    membershipStatusSerializer(status)
     ;
     json['household'] = household.toJson();
     json['contracts_on_member'] = contracts_on_member.map((e) => e.toJson()).toList();
@@ -64,6 +74,8 @@ class MyHouseholdInvitesHouseholdMembers {
   MyHouseholdInvitesHouseholdMembers({
     required this.id,
     required this.role,
+    required this.active,
+    required this.status,
     required this.household,
     required this.contracts_on_member,
   });
@@ -164,6 +176,7 @@ class MyHouseholdInvitesHouseholdMembersContractsOnMember {
   final double rate;
   final double? allowance;
   final int? durationMonths;
+  final int? durationDays;
   final String? offDays;
   final String? workingHours;
   MyHouseholdInvitesHouseholdMembersContractsOnMember.fromJson(dynamic json):
@@ -172,6 +185,7 @@ class MyHouseholdInvitesHouseholdMembersContractsOnMember {
   rate = nativeFromJson<double>(json['rate']),
   allowance = json['allowance'] == null ? null : nativeFromJson<double>(json['allowance']),
   durationMonths = json['durationMonths'] == null ? null : nativeFromJson<int>(json['durationMonths']),
+  durationDays = json['durationDays'] == null ? null : nativeFromJson<int>(json['durationDays']),
   offDays = json['offDays'] == null ? null : nativeFromJson<String>(json['offDays']),
   workingHours = json['workingHours'] == null ? null : nativeFromJson<String>(json['workingHours']);
   @override
@@ -188,12 +202,13 @@ class MyHouseholdInvitesHouseholdMembersContractsOnMember {
     rate == otherTyped.rate && 
     allowance == otherTyped.allowance && 
     durationMonths == otherTyped.durationMonths && 
+    durationDays == otherTyped.durationDays && 
     offDays == otherTyped.offDays && 
     workingHours == otherTyped.workingHours;
     
   }
   @override
-  int get hashCode => Object.hashAll([payType.hashCode, rate.hashCode, allowance.hashCode, durationMonths.hashCode, offDays.hashCode, workingHours.hashCode]);
+  int get hashCode => Object.hashAll([payType.hashCode, rate.hashCode, allowance.hashCode, durationMonths.hashCode, durationDays.hashCode, offDays.hashCode, workingHours.hashCode]);
   
 
   Map<String, dynamic> toJson() {
@@ -207,6 +222,9 @@ class MyHouseholdInvitesHouseholdMembersContractsOnMember {
     }
     if (durationMonths != null) {
       json['durationMonths'] = nativeToJson<int?>(durationMonths);
+    }
+    if (durationDays != null) {
+      json['durationDays'] = nativeToJson<int?>(durationDays);
     }
     if (offDays != null) {
       json['offDays'] = nativeToJson<String?>(offDays);
@@ -222,6 +240,7 @@ class MyHouseholdInvitesHouseholdMembersContractsOnMember {
     required this.rate,
     this.allowance,
     this.durationMonths,
+    this.durationDays,
     this.offDays,
     this.workingHours,
   });

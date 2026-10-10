@@ -49,6 +49,10 @@ generated from `dataconnect/connector/` into `lib/dataconnect_generated/`.
 Don't edit the generated folder — change the `.gql` files and run
 `firebase dataconnect:sdk:generate` from the repo root.
 
+Contract duration can be entered in days, months, or years. After changing
+the Data Connect schema, restart the local emulators or deploy Data Connect
+before running an app version that uses the new fields.
+
 ## Toolchain status
 
 `flutter doctor` on this machine currently shows:

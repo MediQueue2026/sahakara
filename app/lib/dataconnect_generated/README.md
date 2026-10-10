@@ -1524,6 +1524,10 @@ class AddHouseholdMemberVariablesBuilder {
    _durationMonths.value = t;
    return this;
   }
+  AddHouseholdMemberVariablesBuilder durationDays(int? t) {
+   _durationDays.value = t;
+   return this;
+  }
   AddHouseholdMemberVariablesBuilder offDays(String? t) {
    _offDays.value = t;
    return this;
@@ -1544,6 +1548,7 @@ SahakaraConnector.instance.addHouseholdMember(
 )
 .allowance(allowance)
 .durationMonths(durationMonths)
+.durationDays(durationDays)
 .offDays(offDays)
 .workingHours(workingHours)
 .execute();
@@ -1623,6 +1628,10 @@ class InviteHouseholdMemberVariablesBuilder {
    _durationMonths.value = t;
    return this;
   }
+  InviteHouseholdMemberVariablesBuilder durationDays(int? t) {
+   _durationDays.value = t;
+   return this;
+  }
   InviteHouseholdMemberVariablesBuilder offDays(String? t) {
    _offDays.value = t;
    return this;
@@ -1643,6 +1652,7 @@ SahakaraConnector.instance.inviteHouseholdMember(
 )
 .allowance(allowance)
 .durationMonths(durationMonths)
+.durationDays(durationDays)
 .offDays(offDays)
 .workingHours(workingHours)
 .execute();
@@ -1722,6 +1732,10 @@ class ReinviteHouseholdMemberVariablesBuilder {
    _durationMonths.value = t;
    return this;
   }
+  ReinviteHouseholdMemberVariablesBuilder durationDays(int? t) {
+   _durationDays.value = t;
+   return this;
+  }
   ReinviteHouseholdMemberVariablesBuilder offDays(String? t) {
    _offDays.value = t;
    return this;
@@ -1742,6 +1756,7 @@ SahakaraConnector.instance.reinviteHouseholdMember(
 )
 .allowance(allowance)
 .durationMonths(durationMonths)
+.durationDays(durationDays)
 .offDays(offDays)
 .workingHours(workingHours)
 .execute();
@@ -1985,6 +2000,10 @@ class SaveContractVariablesBuilder {
    _durationMonths.value = t;
    return this;
   }
+  SaveContractVariablesBuilder durationDays(int? t) {
+   _durationDays.value = t;
+   return this;
+  }
   SaveContractVariablesBuilder offDays(String? t) {
    _offDays.value = t;
    return this;
@@ -2003,6 +2022,7 @@ SahakaraConnector.instance.saveContract(
 )
 .allowance(allowance)
 .durationMonths(durationMonths)
+.durationDays(durationDays)
 .offDays(offDays)
 .workingHours(workingHours)
 .execute();

@@ -110,6 +110,7 @@ mutation AddHouseholdMember(
   $rate: Float!
   $allowance: Float
   $durationMonths: Int
+  $durationDays: Int
   $offDays: String
   $workingHours: String
 ) @auth(expr: "auth.uid != '' && vars.role != 'owner'") @transaction {
@@ -178,6 +179,7 @@ mutation AddHouseholdMember(
       rate: $rate
       allowance: $allowance
       durationMonths: $durationMonths
+      durationDays: $durationDays
       offDays: $offDays
       workingHours: $workingHours
     }
@@ -195,6 +197,7 @@ mutation InviteHouseholdMember(
   $rate: Float!
   $allowance: Float
   $durationMonths: Int
+  $durationDays: Int
   $offDays: String
   $workingHours: String
 ) @auth(expr: "auth.uid != '' && vars.role != 'owner'") @transaction {
@@ -229,6 +232,7 @@ mutation InviteHouseholdMember(
       rate: $rate
       allowance: $allowance
       durationMonths: $durationMonths
+      durationDays: $durationDays
       offDays: $offDays
       workingHours: $workingHours
     }
@@ -247,6 +251,7 @@ mutation ReinviteHouseholdMember(
   $rate: Float!
   $allowance: Float
   $durationMonths: Int
+  $durationDays: Int
   $offDays: String
   $workingHours: String
 ) @auth(expr: "auth.uid != '' && vars.role != 'owner'") @transaction {
@@ -317,6 +322,7 @@ mutation ReinviteHouseholdMember(
       rate: $rate
       allowance: $allowance
       durationMonths: $durationMonths
+      durationDays: $durationDays
       offDays: $offDays
       workingHours: $workingHours
     }
@@ -463,6 +469,7 @@ mutation SaveContract(
   $rate: Float!
   $allowance: Float
   $durationMonths: Int
+  $durationDays: Int
   $offDays: String
   $workingHours: String
 ) @auth(level: USER) @transaction {
@@ -491,6 +498,7 @@ mutation SaveContract(
       rate: $rate
       allowance: $allowance
       durationMonths: $durationMonths
+      durationDays: $durationDays
       offDays: $offDays
       workingHours: $workingHours
     }
@@ -1174,7 +1182,10 @@ mutation DeleteLeaveRequest(
     leaveRequests(
       where: {
         id: { eq: $id }
-        member: { user: { authUid: { eq_expr: "auth.uid" } } }
+        member: {
+          active: { eq: true }
+          user: { authUid: { eq_expr: "auth.uid" } }
+        }
         status: { eq: pending }
       }
     ) @check(expr: "this.size() == 1", message: "Only the maid can delete their own pending request") {
@@ -1191,7 +1202,21 @@ mutation AddGroceryItem(
   $nameTa: String
 ) @auth(level: USER) @transaction {
   query @redact {
-    users(where: { authUid: { eq_expr: "auth.uid" } }) { id }
+    householdMembers(
+      where: {
+        household: { id: { eq: $householdId } }
+        active: { eq: true }
+        user: { authUid: { eq_expr: "auth.uid" } }
+      }
+    )
+      @check(
+        expr: "this.size() == 1"
+        message: "Only active household members can add grocery items"
+      ) {
+      user {
+        id
+      }
+    }
   }
   groceryItem_insert(
     data: {
@@ -1199,7 +1224,7 @@ mutation AddGroceryItem(
       nameEn: $nameEn
       nameSi: $nameSi
       nameTa: $nameTa
-      addedById_expr: "response.query.users[0].id"
+      addedById_expr: "response.query.householdMembers[0].user.id"
     }
   )
 }
@@ -1207,7 +1232,28 @@ mutation AddGroceryItem(
 mutation UpdateGroceryItemStatus(
   $id: UUID!
   $isBought: Boolean!
-) @auth(level: USER) {
+) @auth(level: USER) @transaction {
+  query @redact {
+    groceryItems(
+      where: {
+        id: { eq: $id }
+        household: {
+          householdMembers_on_household: {
+            exist: {
+              active: { eq: true }
+              user: { authUid: { eq_expr: "auth.uid" } }
+            }
+          }
+        }
+      }
+    )
+      @check(
+        expr: "this.size() == 1"
+        message: "Only active household members can update grocery items"
+      ) {
+      id
+    }
+  }
   groceryItem_update(
     id: $id
     data: { isBought: $isBought }
@@ -1216,14 +1262,58 @@ mutation UpdateGroceryItemStatus(
 
 mutation DeleteGroceryItem(
   $id: UUID!
-) @auth(level: USER) {
+) @auth(level: USER) @transaction {
+  query @redact {
+    groceryItems(
+      where: {
+        id: { eq: $id }
+        household: {
+          householdMembers_on_household: {
+            exist: {
+              active: { eq: true }
+              user: { authUid: { eq_expr: "auth.uid" } }
+            }
+          }
+        }
+      }
+    )
+      @check(
+        expr: "this.size() == 1"
+        message: "Only active household members can remove grocery items"
+      ) {
+      id
+    }
+  }
   groceryItem_delete(id: $id)
 }
 
 mutation CreateTaskFromTemplate(
   $templateId: UUID!
   $dueDate: Date!
-) @auth(level: USER) {
+) @auth(level: USER) @transaction {
+  query @redact {
+    taskTemplates(
+      where: {
+        id: { eq: $templateId }
+        active: { eq: true }
+        recurrence: { ne: once }
+        household: {
+          householdMembers_on_household: {
+            exist: {
+              active: { eq: true }
+              user: { authUid: { eq_expr: "auth.uid" } }
+            }
+          }
+        }
+      }
+    )
+      @check(
+        expr: "this.size() == 1"
+        message: "Only active household members can create recurring tasks"
+      ) {
+      id
+    }
+  }
   task_insert(
     data: {
       templateId: $templateId

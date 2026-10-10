@@ -10,7 +10,6 @@ import '../settings/settings_screen.dart';
 import '../tasks/daily_tasks_screen.dart';
 import '../tasks/my_tasks_screen.dart';
 import '../attendance/attendance_tab.dart';
-import '../onboarding/waiting_for_household_screen.dart';
 import '../payroll/payroll_screen.dart';
 import '../grocery/grocery_list_screen.dart';
 import 'household_tab.dart';
@@ -18,7 +17,7 @@ import 'household_tab.dart';
 /// Bottom-nav shell shown once a signed-in user has a household. The owner
 /// and staff get different tabs:
 /// - owner: Household, Daily tasks, Contracts, Attendance and Pay
-/// - staff: My tasks, My contract, Join requests, Attendance and Pay
+/// - staff: My tasks, My contract and requests, Attendance and Pay
 /// Settings opens from the gear in the top bar, which every tab shares.
 class HomeShell extends StatefulWidget {
   final LanguageController lang;
@@ -73,7 +72,7 @@ class _HomeShellState extends State<HomeShell> {
                   label: tabs[i].label,
                   icon: _tabIcon(
                     i == index ? tabs[i].selectedIcon : tabs[i].icon,
-                    isStaff && i == 2,
+                    isStaff && i == 1,
                   ),
                 ),
             ],
@@ -168,6 +167,8 @@ class _HomeShellState extends State<HomeShell> {
             lang: widget.lang,
             profile: widget.profile,
             membership: widget.membership,
+            readOnly: !widget.membership.active ||
+                widget.membership.status.stringValue != 'accepted',
           ),
         ),
         _Tab(
@@ -179,18 +180,10 @@ class _HomeShellState extends State<HomeShell> {
             memberId: widget.membership.id,
             memberName: widget.profile.name,
             editable: false,
+            profile: widget.profile,
+            showMissingContract: widget.membership.active,
             showAppBar: false,
-          ),
-        ),
-        _Tab(
-          Icons.mail_outline,
-          Icons.mail,
-          Strings.of('joinRequests', lang),
-          WaitingForHouseholdScreen(
-            lang: widget.lang,
-            email: widget.profile.email,
             onHouseholdAccepted: widget.onHouseholdAccepted,
-            inHomeShell: true,
           ),
         ),
         _Tab(
@@ -200,13 +193,20 @@ class _HomeShellState extends State<HomeShell> {
           AttendanceTab(
               lang: widget.lang,
               membership: widget.membership,
-              profile: widget.profile),
+              profile: widget.profile,
+              readOnly: !widget.membership.active ||
+                  widget.membership.status.stringValue != 'accepted'),
         ),
         _Tab(
           Icons.payments_outlined,
           Icons.payments,
           Strings.of('pay', lang),
-          PayrollScreen(lang: widget.lang, membership: widget.membership),
+          PayrollScreen(
+            lang: widget.lang,
+            membership: widget.membership,
+            readOnly: !widget.membership.active ||
+                widget.membership.status.stringValue != 'accepted',
+          ),
         ),
         _Tab(
           Icons.shopping_cart_outlined,
@@ -217,7 +217,11 @@ class _HomeShellState extends State<HomeShell> {
                   ? 'பொருட்கள் பட்டியல்'
                   : 'Groceries',
           GroceryListScreen(
-              householdId: widget.membership.household.id, lang: widget.lang),
+            householdId: widget.membership.household.id,
+            lang: widget.lang,
+            readOnly: !widget.membership.active ||
+                widget.membership.status.stringValue != 'accepted',
+          ),
         ),
       ];
 }
