@@ -6,6 +6,7 @@ class SaveContractVariablesBuilder {
   double rate;
   Optional<double> _allowance = Optional.optional(nativeFromJson, nativeToJson);
   Optional<int> _durationMonths = Optional.optional(nativeFromJson, nativeToJson);
+  Optional<int> _durationDays = Optional.optional(nativeFromJson, nativeToJson);
   Optional<String> _offDays = Optional.optional(nativeFromJson, nativeToJson);
   Optional<String> _workingHours = Optional.optional(nativeFromJson, nativeToJson);
 
@@ -15,6 +16,10 @@ class SaveContractVariablesBuilder {
   }
   SaveContractVariablesBuilder durationMonths(int? t) {
    _durationMonths.value = t;
+   return this;
+  }
+  SaveContractVariablesBuilder durationDays(int? t) {
+   _durationDays.value = t;
    return this;
   }
   SaveContractVariablesBuilder offDays(String? t) {
@@ -34,7 +39,7 @@ class SaveContractVariablesBuilder {
   }
 
   MutationRef<SaveContractData, SaveContractVariables> ref() {
-    SaveContractVariables vars= SaveContractVariables(memberId: memberId,payType: payType,rate: rate,allowance: _allowance,durationMonths: _durationMonths,offDays: _offDays,workingHours: _workingHours,);
+    SaveContractVariables vars= SaveContractVariables(memberId: memberId,payType: payType,rate: rate,allowance: _allowance,durationMonths: _durationMonths,durationDays: _durationDays,offDays: _offDays,workingHours: _workingHours,);
     return _dataConnect.mutation("SaveContract", dataDeserializer, varsSerializer, vars);
   }
 }
@@ -119,6 +124,7 @@ class SaveContractVariables {
   final double rate;
   late final Optional<double>allowance;
   late final Optional<int>durationMonths;
+  late final Optional<int>durationDays;
   late final Optional<String>offDays;
   late final Optional<String>workingHours;
   @Deprecated('fromJson is deprecated for Variable classes as they are no longer required for deserialization.')
@@ -138,6 +144,10 @@ class SaveContractVariables {
   
     durationMonths = Optional.optional(nativeFromJson, nativeToJson);
     durationMonths.value = json['durationMonths'] == null ? null : nativeFromJson<int>(json['durationMonths']);
+  
+  
+    durationDays = Optional.optional(nativeFromJson, nativeToJson);
+    durationDays.value = json['durationDays'] == null ? null : nativeFromJson<int>(json['durationDays']);
   
   
     offDays = Optional.optional(nativeFromJson, nativeToJson);
@@ -163,12 +173,13 @@ class SaveContractVariables {
     rate == otherTyped.rate && 
     allowance == otherTyped.allowance && 
     durationMonths == otherTyped.durationMonths && 
+    durationDays == otherTyped.durationDays && 
     offDays == otherTyped.offDays && 
     workingHours == otherTyped.workingHours;
     
   }
   @override
-  int get hashCode => Object.hashAll([memberId.hashCode, payType.hashCode, rate.hashCode, allowance.hashCode, durationMonths.hashCode, offDays.hashCode, workingHours.hashCode]);
+  int get hashCode => Object.hashAll([memberId.hashCode, payType.hashCode, rate.hashCode, allowance.hashCode, durationMonths.hashCode, durationDays.hashCode, offDays.hashCode, workingHours.hashCode]);
   
 
   Map<String, dynamic> toJson() {
@@ -183,6 +194,9 @@ class SaveContractVariables {
     }
     if(durationMonths.state == OptionalState.set) {
       json['durationMonths'] = durationMonths.toJson();
+    }
+    if(durationDays.state == OptionalState.set) {
+      json['durationDays'] = durationDays.toJson();
     }
     if(offDays.state == OptionalState.set) {
       json['offDays'] = offDays.toJson();
@@ -199,6 +213,7 @@ class SaveContractVariables {
     required this.rate,
     required this.allowance,
     required this.durationMonths,
+    required this.durationDays,
     required this.offDays,
     required this.workingHours,
   });

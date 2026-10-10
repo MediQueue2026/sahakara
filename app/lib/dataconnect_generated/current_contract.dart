@@ -24,6 +24,7 @@ class CurrentContractContracts {
   final double rate;
   final double? allowance;
   final int? durationMonths;
+  final int? durationDays;
   final String? offDays;
   final String? workingHours;
   final DateTime startDate;
@@ -34,6 +35,7 @@ class CurrentContractContracts {
   rate = nativeFromJson<double>(json['rate']),
   allowance = json['allowance'] == null ? null : nativeFromJson<double>(json['allowance']),
   durationMonths = json['durationMonths'] == null ? null : nativeFromJson<int>(json['durationMonths']),
+  durationDays = json['durationDays'] == null ? null : nativeFromJson<int>(json['durationDays']),
   offDays = json['offDays'] == null ? null : nativeFromJson<String>(json['offDays']),
   workingHours = json['workingHours'] == null ? null : nativeFromJson<String>(json['workingHours']),
   startDate = nativeFromJson<DateTime>(json['startDate']);
@@ -52,13 +54,14 @@ class CurrentContractContracts {
     rate == otherTyped.rate && 
     allowance == otherTyped.allowance && 
     durationMonths == otherTyped.durationMonths && 
+    durationDays == otherTyped.durationDays && 
     offDays == otherTyped.offDays && 
     workingHours == otherTyped.workingHours && 
     startDate == otherTyped.startDate;
     
   }
   @override
-  int get hashCode => Object.hashAll([id.hashCode, payType.hashCode, rate.hashCode, allowance.hashCode, durationMonths.hashCode, offDays.hashCode, workingHours.hashCode, startDate.hashCode]);
+  int get hashCode => Object.hashAll([id.hashCode, payType.hashCode, rate.hashCode, allowance.hashCode, durationMonths.hashCode, durationDays.hashCode, offDays.hashCode, workingHours.hashCode, startDate.hashCode]);
   
 
   Map<String, dynamic> toJson() {
@@ -73,6 +76,9 @@ class CurrentContractContracts {
     }
     if (durationMonths != null) {
       json['durationMonths'] = nativeToJson<int?>(durationMonths);
+    }
+    if (durationDays != null) {
+      json['durationDays'] = nativeToJson<int?>(durationDays);
     }
     if (offDays != null) {
       json['offDays'] = nativeToJson<String?>(offDays);
@@ -90,6 +96,7 @@ class CurrentContractContracts {
     required this.rate,
     this.allowance,
     this.durationMonths,
+    this.durationDays,
     this.offDays,
     this.workingHours,
     required this.startDate,

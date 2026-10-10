@@ -6,6 +6,7 @@ import '../../core/firebase_client.dart';
 import '../../core/strings.dart';
 import '../../core/theme.dart';
 import '../profile/profile_details.dart';
+import '../settings/settings_screen.dart';
 
 /// Shown to a maid account with no household membership yet. An owner adds
 /// them by the email they signed up with, which sends them a request with
@@ -14,6 +15,7 @@ import '../profile/profile_details.dart';
 /// do but wait and check again.
 class WaitingForHouseholdScreen extends StatefulWidget {
   final LanguageController lang;
+  final Profile profile;
   final String email;
   final ValueChanged<String> onHouseholdAccepted;
   final bool inHomeShell;
@@ -21,6 +23,7 @@ class WaitingForHouseholdScreen extends StatefulWidget {
   const WaitingForHouseholdScreen({
     super.key,
     required this.lang,
+    required this.profile,
     required this.email,
     required this.onHouseholdAccepted,
     this.inHomeShell = false,
@@ -71,6 +74,54 @@ class _WaitingForHouseholdScreenState extends State<WaitingForHouseholdScreen> {
     return ValueListenableBuilder<AppLanguage>(
       valueListenable: widget.lang,
       builder: (context, lang, _) {
+        if (widget.inHomeShell) {
+          return FutureBuilder<List<HouseholdInvite>>(
+            future: _invites,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState != ConnectionState.done) {
+                return const LinearProgressIndicator();
+              }
+              final invites = snapshot.data ?? [];
+              if (snapshot.hasError) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      '${snapshot.error}',
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                    TextButton(
+                      onPressed: _checkAgain,
+                      child: Text(Strings.of('retry', lang)),
+                    ),
+                  ],
+                );
+              }
+              if (invites.isEmpty) return const SizedBox.shrink();
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          Strings.of('joinRequests', lang),
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                      ),
+                      IconButton(
+                        tooltip: Strings.of('refresh', lang),
+                        onPressed: _busy ? null : _checkAgain,
+                        icon: const Icon(Icons.refresh),
+                      ),
+                    ],
+                  ),
+                  for (final invite in invites) _inviteCard(invite, lang),
+                ],
+              );
+            },
+          );
+        }
         return Scaffold(
           body: SafeArea(
             child: Center(
@@ -94,13 +145,8 @@ class _WaitingForHouseholdScreenState extends State<WaitingForHouseholdScreen> {
                               '${snapshot.error}',
                               style: const TextStyle(color: Colors.red),
                             ),
-                          if (invites.isEmpty && !widget.inHomeShell)
+                          if (invites.isEmpty)
                             ..._waiting(lang)
-                          else if (invites.isEmpty)
-                            Text(
-                              Strings.of('noJoinRequests', lang),
-                              textAlign: TextAlign.center,
-                            )
                           else ...[
                             Text(
                               Strings.of('joinRequests', lang),
@@ -116,6 +162,28 @@ class _WaitingForHouseholdScreenState extends State<WaitingForHouseholdScreen> {
                             child: Text(Strings.of('checkAgain', lang)),
                           ),
                           if (!widget.inHomeShell) ...[
+                            const SizedBox(height: 8),
+                            OutlinedButton.icon(
+                              onPressed: () => Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => Scaffold(
+                                    appBar: AppBar(
+                                      title: Text(
+                                        Strings.of('settings', lang),
+                                      ),
+                                    ),
+                                    body: SettingsScreen(
+                                      lang: widget.lang,
+                                      profile: widget.profile,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              icon: const Icon(Icons.person_outline),
+                              label: Text(
+                                Strings.of('accountDetails', lang),
+                              ),
+                            ),
                             const SizedBox(height: 8),
                             TextButton(
                               onPressed: () => auth.signOut(),
@@ -196,7 +264,11 @@ class _WaitingForHouseholdScreenState extends State<WaitingForHouseholdScreen> {
                 _row(Strings.of('allowance', lang), '${contract.allowance}'),
               _row(
                 Strings.of('contractDuration', lang),
-                Strings.contractDuration(contract.durationMonths, lang),
+                Strings.contractDuration(
+                  contract.durationMonths,
+                  lang,
+                  days: contract.durationDays,
+                ),
               ),
               _row(Strings.of('offDays', lang), contract.offDays ?? '—'),
               _row(

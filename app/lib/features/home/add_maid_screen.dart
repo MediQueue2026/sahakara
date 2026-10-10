@@ -31,8 +31,10 @@ class _AddMaidScreenState extends State<AddMaidScreen> {
   final _offDaysController = TextEditingController();
   final _hoursController = TextEditingController();
   int? _durationMonths;
+  int? _durationDays;
   bool _customDuration = false;
   bool _durationInYears = false;
+  bool _durationInDays = false;
   String _payType = payTypes.first;
   bool _busy = false;
   bool _emailMode = false;
@@ -110,13 +112,17 @@ class _AddMaidScreenState extends State<AddMaidScreen> {
       setState(() => _error = Strings.of('enterValidAllowance', lang));
       return;
     }
-    final durationMonths = _customDuration
+    final durationMonths = _customDuration && !_durationInDays
         ? parseCustomContractDuration(
             _customDurationController.text,
             _durationInYears,
           )
         : _durationMonths;
-    if (_customDuration && durationMonths == null) {
+    final durationDays = _customDuration && _durationInDays
+        ? parseCustomContractDuration(_customDurationController.text, false)
+        : null;
+    if (_customDuration &&
+        (_durationInDays ? durationDays == null : durationMonths == null)) {
       setState(() => _error = Strings.of('enterValidDuration', lang));
       return;
     }
@@ -133,6 +139,7 @@ class _AddMaidScreenState extends State<AddMaidScreen> {
           rate: rate,
           allowance: allowance,
           durationMonths: durationMonths,
+          durationDays: durationDays,
           offDays: emptyToNull(_offDaysController.text),
           workingHours: emptyToNull(_hoursController.text),
         );
@@ -144,6 +151,7 @@ class _AddMaidScreenState extends State<AddMaidScreen> {
           rate: rate,
           allowance: allowance,
           durationMonths: durationMonths,
+          durationDays: durationDays,
           offDays: emptyToNull(_offDaysController.text),
           workingHours: emptyToNull(_hoursController.text),
         );
@@ -381,9 +389,11 @@ class _AddMaidScreenState extends State<AddMaidScreen> {
           rateController: _rateController,
           allowanceController: _allowanceController,
           durationMonths: _durationMonths,
+          durationDays: _durationDays,
           customDuration: _customDuration,
           customDurationController: _customDurationController,
           durationInYears: _durationInYears,
+          durationInDays: _durationInDays,
           onDurationOptionChanged: (value) => setState(() {
             _customDuration = value == -1;
             if (_customDuration && _customDurationController.text.isEmpty) {
@@ -392,8 +402,10 @@ class _AddMaidScreenState extends State<AddMaidScreen> {
               _durationMonths = value == 0 ? null : value;
             }
           }),
-          onDurationInYearsChanged: (value) =>
-              setState(() => _durationInYears = value),
+          onDurationUnitChanged: (value) => setState(() {
+            _durationInDays = value == 'days';
+            _durationInYears = value == 'years';
+          }),
           offDaysController: _offDaysController,
           hoursController: _hoursController,
         ),

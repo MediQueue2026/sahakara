@@ -10,11 +10,13 @@ import '../../core/strings.dart';
 class GroceryListScreen extends StatefulWidget {
   final String householdId;
   final ValueNotifier<AppLanguage> lang;
+  final bool readOnly;
 
   const GroceryListScreen({
     super.key,
     required this.householdId,
     required this.lang,
+    this.readOnly = false,
   });
 
   @override
@@ -225,7 +227,7 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
                       child: ListTile(
                         leading: Checkbox(
                           value: item.isBought,
-                          onChanged: (val) {
+                          onChanged: widget.readOnly ? null : (val) {
                             if (val != null) _toggleBought(item, val);
                           },
                         ),
@@ -244,7 +246,8 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
                         trailing: IconButton(
                           icon:
                               const Icon(Icons.delete_outline, color: Colors.red),
-                          onPressed: () => _deleteItem(item.id),
+                          onPressed:
+                              widget.readOnly ? null : () => _deleteItem(item.id),
                         ),
                       ),
                     );
@@ -253,10 +256,12 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
               );
             },
           ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: _addItem,
-            child: const Icon(Icons.add),
-          ),
+          floatingActionButton: widget.readOnly
+              ? null
+              : FloatingActionButton(
+                  onPressed: _addItem,
+                  child: const Icon(Icons.add),
+                ),
         );
       },
     );

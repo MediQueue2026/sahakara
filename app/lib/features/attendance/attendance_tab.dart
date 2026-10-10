@@ -9,12 +9,14 @@ class AttendanceTab extends StatefulWidget {
   final LanguageController lang;
   final Membership membership;
   final Profile profile;
+  final bool readOnly;
 
   const AttendanceTab({
     super.key,
     required this.lang,
     required this.membership,
     required this.profile,
+    this.readOnly = false,
   });
 
   @override
@@ -252,7 +254,7 @@ class _AttendanceTabState extends State<AttendanceTab> {
                   child: Text(Strings.of('dayType_half', l)),
                 ),
               ],
-              onChanged: canCheckIn
+              onChanged: canCheckIn && !widget.readOnly
                   ? (value) {
                       if (value != null) setState(() => _dayType = value);
                     }
@@ -263,7 +265,9 @@ class _AttendanceTabState extends State<AttendanceTab> {
               children: [
                 Expanded(
                   child: FilledButton.icon(
-                    onPressed: _busy || !canCheckIn ? null : _checkIn,
+                    onPressed: _busy || !canCheckIn || widget.readOnly
+                        ? null
+                        : _checkIn,
                     icon: const Icon(Icons.login),
                     label: Text(Strings.of('checkIn', widget.lang.value)),
                     style:
@@ -273,7 +277,9 @@ class _AttendanceTabState extends State<AttendanceTab> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: FilledButton.icon(
-                    onPressed: _busy || !canCheckOut ? null : _checkOut,
+                    onPressed: _busy || !canCheckOut || widget.readOnly
+                        ? null
+                        : _checkOut,
                     icon: const Icon(Icons.logout),
                     label: Text(Strings.of('checkOut', widget.lang.value)),
                     style:
@@ -286,7 +292,7 @@ class _AttendanceTabState extends State<AttendanceTab> {
             SizedBox(
               width: double.infinity,
               child: OutlinedButton.icon(
-                onPressed: _busy ? null : _requestLeave,
+                onPressed: _busy || widget.readOnly ? null : _requestLeave,
                 icon: const Icon(Icons.event_busy),
                 label: Text(Strings.of('requestLeave', widget.lang.value)),
               ),
@@ -359,7 +365,9 @@ class _AttendanceTabState extends State<AttendanceTab> {
                       ? IconButton(
                           icon: const Icon(Icons.delete_outline,
                               color: Colors.red),
-                          onPressed: _busy ? null : () => _cancelLeave(id),
+                          onPressed: _busy || widget.readOnly
+                              ? null
+                              : () => _cancelLeave(id),
                         )
                       : Icon(
                           statusStr == 'approved'

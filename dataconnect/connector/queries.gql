@@ -28,18 +28,27 @@ query MyProfile @auth(level: USER) {
   }
 }
 
-# The signed-in user's most recently joined active household.
+# The signed-in user's active household or, before a contract is accepted,
+# the household whose invitation is awaiting their answer.
 query MyMembership @auth(level: USER) {
   householdMembers(
     where: {
-      active: { eq: true }
-      user: { authUid: { eq_expr: "auth.uid" } }
+      _and: [
+        { user: { authUid: { eq_expr: "auth.uid" } } }
+        {
+          _or: [
+            { active: { eq: true }, status: { eq: accepted } }
+            { status: { eq: pending } }
+          ]
+        }
+      ]
     }
     orderBy: [{ joinedOn: DESC }]
-    limit: 1
   ) {
     id
     role
+    active
+    status
     household {
       id
       name
@@ -61,6 +70,8 @@ query MyMembershipById($id: UUID!) @auth(level: USER) {
   ) {
     id
     role
+    active
+    status
     household {
       id
       name
@@ -87,6 +98,8 @@ query MyHouseholdInvites @auth(level: USER) {
   ) {
     id
     role
+    active
+    status
     household {
       name
       area
@@ -100,6 +113,7 @@ query MyHouseholdInvites @auth(level: USER) {
       rate
       allowance
       durationMonths
+      durationDays
       offDays
       workingHours
     }
@@ -210,7 +224,6 @@ query CurrentContract($memberId: UUID!) @auth(level: USER) {
           {
             _or: [
               {
-                active: { eq: true }
                 user: { authUid: { eq_expr: "auth.uid" } }
               }
               {
@@ -231,6 +244,7 @@ query CurrentContract($memberId: UUID!) @auth(level: USER) {
     rate
     allowance
     durationMonths
+    durationDays
     offDays
     workingHours
     startDate
@@ -295,7 +309,6 @@ query MyTasksForDay($dueDate: Date!) @auth(level: USER) {
     where: {
       dueDate: { eq: $dueDate }
       assignedTo: {
-        active: { eq: true }
         user: { authUid: { eq_expr: "auth.uid" } }
       }
     }
@@ -360,7 +373,6 @@ query MyAttendance @auth(level: USER) {
   attendances(
     where: {
       member: {
-        active: { eq: true }
         user: { authUid: { eq_expr: "auth.uid" } }
       }
     }
@@ -408,7 +420,6 @@ query MyLeaveRequests @auth(level: USER) {
   leaveRequests(
     where: {
       member: {
-        active: { eq: true }
         user: { authUid: { eq_expr: "auth.uid" } }
       }
     }
@@ -460,7 +471,6 @@ query MySalaryPayments @auth(level: USER) {
   salaryPayments(
     where: {
       member: {
-        active: { eq: true }
         user: { authUid: { eq_expr: "auth.uid" } }
       }
     }
@@ -506,7 +516,6 @@ query MyAdvanceRequests @auth(level: USER) {
   advanceRequests(
     where: {
       member: {
-        active: { eq: true }
         user: { authUid: { eq_expr: "auth.uid" } }
       }
     }
@@ -598,7 +607,24 @@ query AdminPaymentPlans @auth(level: USER) {
 
 query GetGroceryItems($householdId: UUID!) @auth(level: USER) {
   groceryItems(
-    where: { householdId: { eq: $householdId } }
+    where: {
+      householdId: { eq: $householdId }
+      household: {
+        householdMembers_on_household: {
+          exist: {
+            _and: [
+              { user: { authUid: { eq_expr: "auth.uid" } } }
+              {
+                _or: [
+                  { active: { eq: true } }
+                  { status: { eq: pending } }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    }
     orderBy: [{ createdAt: DESC }]
   ) {
     id
@@ -615,9 +641,17 @@ query GetGroceryItems($householdId: UUID!) @auth(level: USER) {
 
 query ActiveTaskTemplates($householdId: UUID!) @auth(level: USER) {
   taskTemplates(
-    where: { 
+    where: {
       householdId: { eq: $householdId }
       active: { eq: true }
+      household: {
+        householdMembers_on_household: {
+          exist: {
+            active: { eq: true }
+            user: { authUid: { eq_expr: "auth.uid" } }
+          }
+        }
+      }
     }
   ) {
     id

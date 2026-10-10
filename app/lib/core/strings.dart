@@ -383,6 +383,19 @@ class Strings {
       AppLanguage.si: 'සැකසුම්',
       AppLanguage.ta: 'அமைப்புகள்',
     },
+    'accountDetails': {
+      AppLanguage.en: 'Account details',
+      AppLanguage.si: 'ගිණුම් විස්තර',
+      AppLanguage.ta: 'கணக்கு விவரங்கள்',
+    },
+    'contractPendingReadOnly': {
+      AppLanguage.en:
+          'You can browse all pages. Accept a household contract to unlock actions; account settings are available now.',
+      AppLanguage.si:
+          'ඔබට සියලු පිටු බැලිය හැක. කාර්යයන් සක්‍රිය කිරීමට ගෘහ ගිවිසුම පිළිගන්න; ගිණුම් සැකසුම් දැන් ලබා ගත හැක.',
+      AppLanguage.ta:
+          'அனைத்து பக்கங்களையும் பார்க்கலாம். செயல்களைத் திறக்க வீட்டின் ஒப்பந்தத்தை ஏற்கவும்; கணக்கு அமைப்புகள் இப்போது கிடைக்கும்.',
+    },
     'payType': {
       AppLanguage.en: 'Pay type',
       AppLanguage.si: 'ගෙවීම් වර්ගය',
@@ -524,6 +537,11 @@ class Strings {
       AppLanguage.en: 'Years',
       AppLanguage.si: 'වසර',
       AppLanguage.ta: 'ஆண்டுகள்',
+    },
+    'days': {
+      AppLanguage.en: 'Days',
+      AppLanguage.si: 'දින',
+      AppLanguage.ta: 'நாட்கள்',
     },
     'month': {
       AppLanguage.en: 'month',
@@ -1163,7 +1181,12 @@ class Strings {
     },
   };
 
-  static String contractDuration(int? months, AppLanguage lang) {
+  static String contractDuration(
+    int? months,
+    AppLanguage lang, {
+    int? days,
+  }) {
+    if (days != null) return '$days ${of('days', lang)}';
     if (months == null) return of('durationOngoing', lang);
     return months % 12 == 0
         ? '${months ~/ 12} ${of(months == 12 ? 'year' : 'years', lang)}'
