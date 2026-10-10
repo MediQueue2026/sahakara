@@ -21,15 +21,11 @@ class MyMembershipByIdVariablesBuilder {
 class MyMembershipByIdHouseholdMembers {
   final String id;
   final EnumValue<MemberRole> role;
-  final bool active;
-  final EnumValue<MembershipStatus> status;
   final MyMembershipByIdHouseholdMembersHousehold household;
   MyMembershipByIdHouseholdMembers.fromJson(dynamic json):
   
   id = nativeFromJson<String>(json['id']),
   role = memberRoleDeserializer(json['role']),
-  active = nativeFromJson<bool>(json['active']),
-  status = membershipStatusDeserializer(json['status']),
   household = MyMembershipByIdHouseholdMembersHousehold.fromJson(json['household']);
   @override
   bool operator ==(Object other) {
@@ -43,13 +39,11 @@ class MyMembershipByIdHouseholdMembers {
     final MyMembershipByIdHouseholdMembers otherTyped = other as MyMembershipByIdHouseholdMembers;
     return id == otherTyped.id && 
     role == otherTyped.role && 
-    active == otherTyped.active && 
-    status == otherTyped.status && 
     household == otherTyped.household;
     
   }
   @override
-  int get hashCode => Object.hashAll([id.hashCode, role.hashCode, active.hashCode, status.hashCode, household.hashCode]);
+  int get hashCode => Object.hashAll([id.hashCode, role.hashCode, household.hashCode]);
   
 
   Map<String, dynamic> toJson() {
@@ -58,10 +52,6 @@ class MyMembershipByIdHouseholdMembers {
     json['role'] = 
     memberRoleSerializer(role)
     ;
-    json['active'] = nativeToJson<bool>(active);
-    json['status'] = 
-    membershipStatusSerializer(status)
-    ;
     json['household'] = household.toJson();
     return json;
   }
@@ -69,8 +59,6 @@ class MyMembershipByIdHouseholdMembers {
   MyMembershipByIdHouseholdMembers({
     required this.id,
     required this.role,
-    required this.active,
-    required this.status,
     required this.household,
   });
 }
