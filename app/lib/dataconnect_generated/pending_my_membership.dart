@@ -1,31 +1,31 @@
 part of 'sahakara.dart';
 
-class MyMembershipVariablesBuilder {
+class PendingMyMembershipVariablesBuilder {
   
   final FirebaseDataConnect _dataConnect;
-  MyMembershipVariablesBuilder(this._dataConnect, );
-  Deserializer<MyMembershipData> dataDeserializer = (dynamic json)  => MyMembershipData.fromJson(jsonDecode(json));
+  PendingMyMembershipVariablesBuilder(this._dataConnect, );
+  Deserializer<PendingMyMembershipData> dataDeserializer = (dynamic json)  => PendingMyMembershipData.fromJson(jsonDecode(json));
   
-  Future<QueryResult<MyMembershipData, void>> execute() {
+  Future<QueryResult<PendingMyMembershipData, void>> execute() {
     return ref().execute();
   }
 
-  QueryRef<MyMembershipData, void> ref() {
+  QueryRef<PendingMyMembershipData, void> ref() {
     
-    return _dataConnect.query("MyMembership", dataDeserializer, emptySerializer, null);
+    return _dataConnect.query("PendingMyMembership", dataDeserializer, emptySerializer, null);
   }
 }
 
 @immutable
-class MyMembershipHouseholdMembers {
+class PendingMyMembershipHouseholdMembers {
   final String id;
   final EnumValue<MemberRole> role;
-  final MyMembershipHouseholdMembersHousehold household;
-  MyMembershipHouseholdMembers.fromJson(dynamic json):
+  final PendingMyMembershipHouseholdMembersHousehold household;
+  PendingMyMembershipHouseholdMembers.fromJson(dynamic json):
   
   id = nativeFromJson<String>(json['id']),
   role = memberRoleDeserializer(json['role']),
-  household = MyMembershipHouseholdMembersHousehold.fromJson(json['household']);
+  household = PendingMyMembershipHouseholdMembersHousehold.fromJson(json['household']);
   @override
   bool operator ==(Object other) {
     if(identical(this, other)) {
@@ -35,7 +35,7 @@ class MyMembershipHouseholdMembers {
       return false;
     }
 
-    final MyMembershipHouseholdMembers otherTyped = other as MyMembershipHouseholdMembers;
+    final PendingMyMembershipHouseholdMembers otherTyped = other as PendingMyMembershipHouseholdMembers;
     return id == otherTyped.id && 
     role == otherTyped.role && 
     household == otherTyped.household;
@@ -55,7 +55,7 @@ class MyMembershipHouseholdMembers {
     return json;
   }
 
-  MyMembershipHouseholdMembers({
+  PendingMyMembershipHouseholdMembers({
     required this.id,
     required this.role,
     required this.household,
@@ -63,12 +63,12 @@ class MyMembershipHouseholdMembers {
 }
 
 @immutable
-class MyMembershipHouseholdMembersHousehold {
+class PendingMyMembershipHouseholdMembersHousehold {
   final String id;
   final String name;
   final String? address;
   final String? area;
-  MyMembershipHouseholdMembersHousehold.fromJson(dynamic json):
+  PendingMyMembershipHouseholdMembersHousehold.fromJson(dynamic json):
   
   id = nativeFromJson<String>(json['id']),
   name = nativeFromJson<String>(json['name']),
@@ -83,7 +83,7 @@ class MyMembershipHouseholdMembersHousehold {
       return false;
     }
 
-    final MyMembershipHouseholdMembersHousehold otherTyped = other as MyMembershipHouseholdMembersHousehold;
+    final PendingMyMembershipHouseholdMembersHousehold otherTyped = other as PendingMyMembershipHouseholdMembersHousehold;
     return id == otherTyped.id && 
     name == otherTyped.name && 
     address == otherTyped.address && 
@@ -107,7 +107,7 @@ class MyMembershipHouseholdMembersHousehold {
     return json;
   }
 
-  MyMembershipHouseholdMembersHousehold({
+  PendingMyMembershipHouseholdMembersHousehold({
     required this.id,
     required this.name,
     this.address,
@@ -116,12 +116,12 @@ class MyMembershipHouseholdMembersHousehold {
 }
 
 @immutable
-class MyMembershipData {
-  final List<MyMembershipHouseholdMembers> householdMembers;
-  MyMembershipData.fromJson(dynamic json):
+class PendingMyMembershipData {
+  final List<PendingMyMembershipHouseholdMembers> householdMembers;
+  PendingMyMembershipData.fromJson(dynamic json):
   
   householdMembers = (json['householdMembers'] as List<dynamic>)
-        .map((e) => MyMembershipHouseholdMembers.fromJson(e))
+        .map((e) => PendingMyMembershipHouseholdMembers.fromJson(e))
         .toList();
   @override
   bool operator ==(Object other) {
@@ -132,7 +132,7 @@ class MyMembershipData {
       return false;
     }
 
-    final MyMembershipData otherTyped = other as MyMembershipData;
+    final PendingMyMembershipData otherTyped = other as PendingMyMembershipData;
     return householdMembers == otherTyped.householdMembers;
     
   }
@@ -146,7 +146,7 @@ class MyMembershipData {
     return json;
   }
 
-  MyMembershipData({
+  PendingMyMembershipData({
     required this.householdMembers,
   });
 }

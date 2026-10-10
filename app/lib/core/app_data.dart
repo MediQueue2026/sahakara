@@ -9,7 +9,6 @@ import 'firebase_client.dart';
 
 // Shorter names for the generated Data Connect result types the screens use.
 typedef Profile = MyProfileUsers;
-typedef Membership = MyMembershipHouseholdMembers;
 typedef MaidProfile = MaidProfileByEmailUsers;
 typedef AvailableMaid = AvailableMaidsUsers;
 typedef Household = MyMembershipHouseholdMembersHousehold;
@@ -27,6 +26,22 @@ typedef MySalaryPayment = MySalaryPaymentsSalaryPayments;
 typedef HouseholdSalaryPayment = HouseholdSalaryPaymentsSalaryPayments;
 typedef MyAdvanceRequest = MyAdvanceRequestsAdvanceRequests;
 typedef HouseholdAdvanceRequest = HouseholdAdvanceRequestsAdvanceRequests;
+
+class Membership {
+  final String id;
+  final EnumValue<MemberRole> role;
+  final bool active;
+  final EnumValue<MembershipStatus> status;
+  final MyMembershipHouseholdMembersHousehold household;
+
+  const Membership({
+    required this.id,
+    required this.role,
+    required this.active,
+    required this.status,
+    required this.household,
+  });
+}
 
 /// The account type and (on sign-up) name picked on the login screen,
 /// handed to [AppData.ensureUserProfile] once Firebase Auth has signed in.
@@ -128,19 +143,36 @@ class AppData {
   /// the first one.
   static Future<Membership?> fetchMyMembership() async {
     final result = await db.myMembership().execute();
-    final memberships = result.data.householdMembers;
-    for (final member in memberships) {
-      if (member.active && member.status.stringValue == 'accepted') {
-        return member;
-      }
+    final activeMember = result.data.householdMembers.firstOrNull;
+    if (activeMember != null) {
+      return Membership(
+        id: activeMember.id,
+        role: activeMember.role,
+        active: true,
+        status: const Known(MembershipStatus.accepted),
+        household: activeMember.household,
+      );
     }
-    for (final member in memberships) {
-      if (member.status.stringValue == 'pending') return member;
+    final pendingResult = await db.pendingMyMembership().execute();
+    final pendingMember = pendingResult.data.householdMembers.firstOrNull;
+    if (pendingMember != null) {
+      return Membership(
+        id: pendingMember.id,
+        role: pendingMember.role,
+        active: false,
+        status: const Known(MembershipStatus.pending),
+        household: MyMembershipHouseholdMembersHousehold(
+          id: pendingMember.household.id,
+          name: pendingMember.household.name,
+          address: pendingMember.household.address,
+          area: pendingMember.household.area,
+        ),
+      );
     }
     return null;
   }
 
-  static Membership previewMaidMembership() => MyMembershipHouseholdMembers(
+  static Membership previewMaidMembership() => Membership(
         id: '00000000-0000-0000-0000-000000000000',
         role: const Known(MemberRole.maid),
         active: false,
@@ -158,8 +190,8 @@ class AppData {
     return Membership(
       id: member.id,
       role: member.role,
-      active: member.active,
-      status: member.status,
+      active: true,
+      status: const Known(MembershipStatus.accepted),
       household: MyMembershipHouseholdMembersHousehold(
         id: member.household.id,
         name: member.household.name,

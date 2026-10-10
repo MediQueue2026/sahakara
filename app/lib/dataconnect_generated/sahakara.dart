@@ -88,6 +88,8 @@ part 'my_profile.dart';
 
 part 'my_membership.dart';
 
+part 'pending_my_membership.dart';
+
 part 'my_membership_by_id.dart';
 
 part 'my_household_invites.dart';
@@ -1076,6 +1078,11 @@ class SahakaraConnector {
   
   MyMembershipVariablesBuilder myMembership () {
     return MyMembershipVariablesBuilder(dataConnect, );
+  }
+  
+  
+  PendingMyMembershipVariablesBuilder pendingMyMembership () {
+    return PendingMyMembershipVariablesBuilder(dataConnect, );
   }
   
   

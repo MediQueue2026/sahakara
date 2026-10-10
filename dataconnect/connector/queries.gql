@@ -28,27 +28,39 @@ query MyProfile @auth(level: USER) {
   }
 }
 
-# The signed-in user's active household or, before a contract is accepted,
-# the household whose invitation is awaiting their answer.
+# The signed-in user's active household. Pending invitations are loaded
+# separately so legacy membership rows with no status do not break login.
 query MyMembership @auth(level: USER) {
   householdMembers(
     where: {
-      _and: [
-        { user: { authUid: { eq_expr: "auth.uid" } } }
-        {
-          _or: [
-            { active: { eq: true }, status: { eq: accepted } }
-            { status: { eq: pending } }
-          ]
-        }
-      ]
+      user: { authUid: { eq_expr: "auth.uid" } }
+      active: { eq: true }
+      status: { eq: accepted }
     }
     orderBy: [{ joinedOn: DESC }]
   ) {
     id
     role
-    active
-    status
+    household {
+      id
+      name
+      address
+      area
+    }
+  }
+}
+
+# The signed-in user's pending household request, if any.
+query PendingMyMembership @auth(level: USER) {
+  householdMembers(
+    where: {
+      user: { authUid: { eq_expr: "auth.uid" } }
+      status: { eq: pending }
+    }
+    orderBy: [{ joinedOn: DESC }]
+  ) {
+    id
+    role
     household {
       id
       name
@@ -70,8 +82,6 @@ query MyMembershipById($id: UUID!) @auth(level: USER) {
   ) {
     id
     role
-    active
-    status
     household {
       id
       name
