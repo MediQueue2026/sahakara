@@ -236,7 +236,7 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
                           style: TextStyle(
                             decoration:
                                 item.isBought ? TextDecoration.lineThrough : null,
-                            color: item.isBought ? Colors.grey : Colors.black87,
+                            color: item.isBought ? Colors.black38 : Colors.black87,
                           ),
                         ),
                         subtitle: Text(
@@ -245,7 +245,7 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
                         ),
                         trailing: IconButton(
                           icon:
-                              const Icon(Icons.delete_outline, color: Colors.red),
+                              const Icon(Icons.delete_outline, color: brandMaroon),
                           onPressed:
                               widget.readOnly ? null : () => _deleteItem(item.id),
                         ),

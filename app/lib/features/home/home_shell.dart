@@ -261,7 +261,7 @@ class _BottomBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        color: brandCream,
+        color: brandGold,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         boxShadow: [
           BoxShadow(
@@ -325,13 +325,13 @@ class _BottomBarButton extends StatelessWidget {
                 width: selected ? 52 : 40,
                 height: 30,
                 decoration: BoxDecoration(
-                  color: selected ? brandAmber : Colors.transparent,
+                  color: selected ? brandMaroon : Colors.transparent,
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: IconTheme(
                   data: IconThemeData(
                     size: 22,
-                    color: selected ? Colors.black : mutedText,
+                    color: selected ? Colors.white : Colors.black87,
                   ),
                   child: Center(child: item.icon),
                 ),
@@ -347,7 +347,7 @@ class _BottomBarButton extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                      color: selected ? Colors.black : mutedText,
+                      color: selected ? brandMaroon : Colors.black87,
                     ),
                   ),
                 ),

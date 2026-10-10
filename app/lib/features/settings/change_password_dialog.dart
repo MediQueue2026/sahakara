@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../core/app_language.dart';
 import '../../core/firebase_client.dart';
 import '../../core/strings.dart';
+import '../../core/theme.dart';
 
 /// Lets a signed-in owner or maid change their password. Firebase only
 /// allows this after a recent sign-in, so the current password is checked
@@ -115,7 +116,7 @@ class _ChangePasswordDialogState extends State<_ChangePasswordDialog> {
             ),
             if (_error != null) ...[
               const SizedBox(height: 16),
-              Text(_error!, style: const TextStyle(color: Colors.red)),
+              Text(_error!, style: const TextStyle(color: brandMaroon)),
             ],
           ],
         ),

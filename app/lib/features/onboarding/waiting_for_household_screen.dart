@@ -88,7 +88,7 @@ class _WaitingForHouseholdScreenState extends State<WaitingForHouseholdScreen> {
                   children: [
                     Text(
                       '${snapshot.error}',
-                      style: const TextStyle(color: Colors.red),
+                      style: const TextStyle(color: brandMaroon),
                     ),
                     TextButton(
                       onPressed: _checkAgain,
@@ -143,7 +143,7 @@ class _WaitingForHouseholdScreenState extends State<WaitingForHouseholdScreen> {
                           if (snapshot.hasError)
                             Text(
                               '${snapshot.error}',
-                              style: const TextStyle(color: Colors.red),
+                              style: const TextStyle(color: brandMaroon),
                             ),
                           if (invites.isEmpty)
                             ..._waiting(lang)

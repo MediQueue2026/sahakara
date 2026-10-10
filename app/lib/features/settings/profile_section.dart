@@ -198,7 +198,7 @@ class _ProfileSectionState extends State<ProfileSection> {
             ),
             if (_error != null) ...[
               const SizedBox(height: 12),
-              Text(_error!, style: const TextStyle(color: Colors.red)),
+              Text(_error!, style: const TextStyle(color: brandMaroon)),
             ],
             const SizedBox(height: 20),
             FilledButton(

@@ -158,7 +158,7 @@ class _HolidaysAdminPageState extends State<HolidaysAdminPage> {
         if (_error != null)
           Padding(
             padding: const EdgeInsets.only(top: 8),
-            child: Text(_error!, style: const TextStyle(color: Colors.red)),
+            child: Text(_error!, style: const TextStyle(color: brandMaroon)),
           ),
         const SizedBox(height: 16),
         if (_loading) const Center(child: CircularProgressIndicator()),

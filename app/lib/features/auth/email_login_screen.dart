@@ -5,6 +5,7 @@ import '../../core/app_data.dart';
 import '../../core/app_language.dart';
 import '../../core/firebase_client.dart';
 import '../../core/strings.dart';
+import '../../core/theme.dart';
 import '../../dataconnect_generated/sahakara.dart' show AccountType;
 
 /// Email + password sign in / sign up, with separate front doors for house
@@ -112,10 +113,10 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text(
-                        Strings.of('appName', lang),
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.headlineMedium,
+                      Image.asset(
+                        'assets/images/logo_vertical.png',
+                        height: 200,
+                        semanticLabel: Strings.of('appName', lang),
                       ),
                       const SizedBox(height: 24),
                       Row(
@@ -148,7 +149,7 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                           const SizedBox(height: 16),
                           Text(
                             _error!,
-                            style: const TextStyle(color: Colors.red),
+                            style: const TextStyle(color: brandMaroon),
                           ),
                         ],
                       ] else
@@ -238,7 +239,7 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
       ),
       if (_error != null) ...[
         const SizedBox(height: 16),
-        Text(_error!, style: const TextStyle(color: Colors.red)),
+        Text(_error!, style: const TextStyle(color: brandMaroon)),
       ],
     ];
   }

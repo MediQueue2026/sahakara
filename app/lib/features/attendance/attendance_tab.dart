@@ -3,6 +3,7 @@ import 'package:table_calendar/table_calendar.dart';
 import '../../core/app_data.dart';
 import '../../core/app_language.dart';
 import '../../core/strings.dart';
+import '../../core/theme.dart';
 import 'leave_request_dialog.dart';
 
 class AttendanceTab extends StatefulWidget {
@@ -270,8 +271,6 @@ class _AttendanceTabState extends State<AttendanceTab> {
                         : _checkIn,
                     icon: const Icon(Icons.login),
                     label: Text(Strings.of('checkIn', widget.lang.value)),
-                    style:
-                        FilledButton.styleFrom(backgroundColor: Colors.green),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -283,7 +282,9 @@ class _AttendanceTabState extends State<AttendanceTab> {
                     icon: const Icon(Icons.logout),
                     label: Text(Strings.of('checkOut', widget.lang.value)),
                     style:
-                        FilledButton.styleFrom(backgroundColor: Colors.orange),
+                        FilledButton.styleFrom(
+                            backgroundColor: brandMaroon,
+                            foregroundColor: Colors.white),
                   ),
                 ),
               ],
@@ -350,12 +351,12 @@ class _AttendanceTabState extends State<AttendanceTab> {
                       children: [
                         IconButton(
                           icon: const Icon(Icons.check_circle,
-                              color: Colors.green),
+                              color: brandGold),
                           onPressed:
                               _busy ? null : () => _reviewLeave(id, 'approved'),
                         ),
                         IconButton(
-                          icon: const Icon(Icons.cancel, color: Colors.red),
+                          icon: const Icon(Icons.cancel, color: brandMaroon),
                           onPressed:
                               _busy ? null : () => _reviewLeave(id, 'rejected'),
                         ),
@@ -364,7 +365,7 @@ class _AttendanceTabState extends State<AttendanceTab> {
                   : (!_isOwner && statusStr == 'pending')
                       ? IconButton(
                           icon: const Icon(Icons.delete_outline,
-                              color: Colors.red),
+                              color: brandMaroon),
                           onPressed: _busy || widget.readOnly
                               ? null
                               : () => _cancelLeave(id),
@@ -376,10 +377,10 @@ class _AttendanceTabState extends State<AttendanceTab> {
                                   ? Icons.cancel
                                   : Icons.hourglass_empty),
                           color: statusStr == 'approved'
-                              ? Colors.green
+                              ? brandGold
                               : (statusStr == 'rejected'
-                                  ? Colors.red
-                                  : Colors.grey),
+                                  ? brandMaroon
+                                  : Colors.black38),
                         ),
             ),
           );
@@ -452,14 +453,14 @@ class _AttendanceTabState extends State<AttendanceTab> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: events.take(4).map((e) {
-                        Color c = Colors.green;
+                        Color c = brandGold;
                         if (e.runtimeType.toString().contains('Leave')) {
                           final status = (e as dynamic).status.stringValue;
                           c = status == 'approved'
-                              ? Colors.blue
+                              ? brandMaroon
                               : (status == 'rejected'
-                                  ? Colors.red
-                                  : Colors.orange);
+                                  ? Colors.black
+                                  : Colors.black38);
                         }
                         return Container(
                           margin: const EdgeInsets.symmetric(horizontal: 1),

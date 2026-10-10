@@ -194,7 +194,7 @@ class _ContractDetailScreenState extends State<ContractDetailScreen> {
                             children: [
                               Text(
                                 Strings.of('contractLoadFailed', lang),
-                                style: const TextStyle(color: Colors.red),
+                                style: const TextStyle(color: brandMaroon),
                               ),
                               const SizedBox(height: 8),
                               SelectableText(_error!),
@@ -312,7 +312,7 @@ class _ContractDetailScreenState extends State<ContractDetailScreen> {
         ),
         if (_error != null) ...[
           const SizedBox(height: 12),
-          Text(_error!, style: const TextStyle(color: Colors.red)),
+          Text(_error!, style: const TextStyle(color: brandMaroon)),
         ],
       ],
     );
@@ -527,7 +527,7 @@ Future<void> showSuccessDialog(
   return showDialog<void>(
     context: context,
     builder: (context) => AlertDialog(
-      icon: const Icon(Icons.check_circle, color: Colors.green, size: 48),
+      icon: const Icon(Icons.check_circle, color: brandGold, size: 48),
       title: Text(title, textAlign: TextAlign.center),
       content:
           message == null ? null : Text(message, textAlign: TextAlign.center),

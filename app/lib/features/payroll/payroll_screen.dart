@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/app_data.dart';
 import '../../core/app_language.dart';
 import '../../core/strings.dart';
+import '../../core/theme.dart';
 import '../../dataconnect_generated/sahakara.dart' hide AppLanguage;
 
 class PayrollScreen extends StatefulWidget {
@@ -338,7 +339,7 @@ class _PayrollScreenState extends State<PayrollScreen> {
                 onPressed: _busy ? null : () => _markPaymentPaid(payment),
                 icon: const Icon(Icons.check_circle_outline),
               )
-            : const Icon(Icons.check_circle, color: Colors.green),
+            : const Icon(Icons.check_circle, color: brandGold),
       ),
     );
   }
@@ -379,14 +380,14 @@ class _PayrollScreenState extends State<PayrollScreen> {
                     onPressed: _busy
                         ? null
                         : () => _reviewAdvance(request, 'approved'),
-                    icon: const Icon(Icons.check_circle, color: Colors.green),
+                    icon: const Icon(Icons.check_circle, color: brandGold),
                   ),
                   IconButton(
                     tooltip: Strings.of('reject', language),
                     onPressed: _busy
                         ? null
                         : () => _reviewAdvance(request, 'rejected'),
-                    icon: const Icon(Icons.cancel_outlined, color: Colors.red),
+                    icon: const Icon(Icons.cancel_outlined, color: brandMaroon),
                   ),
                 ],
               )

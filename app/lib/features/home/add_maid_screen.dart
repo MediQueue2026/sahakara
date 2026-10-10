@@ -214,7 +214,7 @@ class _AddMaidScreenState extends State<AddMaidScreen> {
                 children: [
                   Text(
                     snapshot.error.toString(),
-                    style: const TextStyle(color: Colors.red),
+                    style: const TextStyle(color: brandMaroon),
                   ),
                   const SizedBox(height: 8),
                   OutlinedButton.icon(
@@ -330,7 +330,7 @@ class _AddMaidScreenState extends State<AddMaidScreen> {
           ),
           if (_error != null) ...[
             const SizedBox(height: 8),
-            Text(_error!, style: const TextStyle(color: Colors.red)),
+            Text(_error!, style: const TextStyle(color: brandMaroon)),
           ],
         ] else ...[
           _maidCard(lang),
@@ -417,7 +417,7 @@ class _AddMaidScreenState extends State<AddMaidScreen> {
         ),
         if (_error != null) ...[
           const SizedBox(height: 8),
-          Text(_error!, style: const TextStyle(color: Colors.red)),
+          Text(_error!, style: const TextStyle(color: brandMaroon)),
         ],
       ];
 }
