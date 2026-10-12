@@ -4,6 +4,7 @@ import '../../core/app_data.dart';
 import '../../core/app_language.dart';
 import '../../core/strings.dart';
 import '../../core/theme.dart';
+import '../../dataconnect_generated/sahakara.dart' show TaskCategory;
 import '../contract/contract_detail_screen.dart';
 import '../profile/profile_details.dart';
 
@@ -24,6 +25,7 @@ class AddMaidScreen extends StatefulWidget {
 }
 
 class _AddMaidScreenState extends State<AddMaidScreen> {
+  final _maidSearchController = TextEditingController();
   final _emailController = TextEditingController();
   final _rateController = TextEditingController();
   final _allowanceController = TextEditingController();
@@ -39,6 +41,7 @@ class _AddMaidScreenState extends State<AddMaidScreen> {
   bool _busy = false;
   bool _emailMode = false;
   String? _error;
+  TaskCategory? _categoryFilter;
   late Future<List<AvailableMaid>> _availableMaids;
   AvailableMaid? _selectedMaid;
 
@@ -61,6 +64,7 @@ class _AddMaidScreenState extends State<AddMaidScreen> {
 
   @override
   void dispose() {
+    _maidSearchController.dispose();
     _emailController.dispose();
     _rateController.dispose();
     _allowanceController.dispose();
@@ -234,9 +238,106 @@ class _AddMaidScreenState extends State<AddMaidScreen> {
                 style: const TextStyle(color: mutedText),
               );
             }
+            final query = _maidSearchController.text.trim().toLowerCase();
+            final filteredMaids = maids.where((maid) {
+              final matchesName = maid.name.toLowerCase().contains(query);
+              final matchesCategory = _categoryFilter == null ||
+                  maid.workCategories?.any(
+                        (category) =>
+                            category.stringValue == _categoryFilter!.name,
+                      ) ==
+                      true;
+              return matchesName && matchesCategory;
+            }).toList();
             return Column(
-              children:
-                  maids.map((maid) => _availableMaidCard(maid, lang)).toList(),
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                TextField(
+                  controller: _maidSearchController,
+                  textInputAction: TextInputAction.search,
+                  decoration: InputDecoration(
+                    hintText: Strings.of('searchMaidsByName', lang),
+                    prefixIcon: const Icon(Icons.search),
+                    suffixIcon: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (_maidSearchController.text.isNotEmpty)
+                          IconButton(
+                            tooltip: Strings.of('clearSearch', lang),
+                            onPressed: () {
+                              _maidSearchController.clear();
+                              setState(() {});
+                            },
+                            icon: const Icon(Icons.clear),
+                          ),
+                        IconButton(
+                          tooltip: Strings.of('filterByCategory', lang),
+                          onPressed: () => _showCategoryFilter(lang),
+                          icon: Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              const Icon(Icons.tune),
+                              if (_categoryFilter != null)
+                                Positioned(
+                                  top: -1,
+                                  right: -1,
+                                  child: Container(
+                                    width: 8,
+                                    height: 8,
+                                    decoration: const BoxDecoration(
+                                      color: brandMaroon,
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: const BorderSide(color: brandGold, width: 2),
+                    ),
+                  ),
+                  onChanged: (_) => setState(() {}),
+                ),
+                if (_categoryFilter != null) ...[
+                  const SizedBox(height: 8),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: InputChip(
+                      avatar: const Icon(Icons.filter_alt_outlined, size: 18),
+                      label: Text(
+                        Strings.of(
+                          'workCategory_${_categoryFilter!.name}',
+                          lang,
+                        ),
+                      ),
+                      onDeleted: () => setState(() => _categoryFilter = null),
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 16),
+                if (filteredMaids.isEmpty)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    child: Text(
+                      Strings.of('noMatchingMaids', lang),
+                      style: const TextStyle(color: mutedText),
+                    ),
+                  )
+                else
+                  ...filteredMaids.map(
+                    (maid) => _availableMaidCard(maid, lang),
+                  ),
+              ],
             );
           },
         ),
@@ -250,6 +351,76 @@ class _AddMaidScreenState extends State<AddMaidScreen> {
           label: Text(Strings.of('inviteByEmail', lang)),
         ),
       ];
+
+  Future<void> _showCategoryFilter(AppLanguage lang) =>
+      showModalBottomSheet<void>(
+        context: context,
+        showDragHandle: true,
+        isScrollControlled: true,
+        builder: (sheetContext) => SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.sizeOf(sheetContext).height * 0.7,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Text(
+                      Strings.of('filterByCategory', lang),
+                      style: Theme.of(sheetContext).textTheme.titleLarge,
+                    ),
+                  ),
+                  Flexible(
+                    child: ListView(
+                      shrinkWrap: true,
+                      children: [
+                        _categoryFilterOption(
+                          sheetContext,
+                          label: Strings.of('allCategories', lang),
+                          selected: _categoryFilter == null,
+                          onTap: () => setState(() => _categoryFilter = null),
+                        ),
+                        for (final category in AppData.maidWorkCategories)
+                          _categoryFilterOption(
+                            sheetContext,
+                            label: Strings.of(
+                              'workCategory_${category.name}',
+                              lang,
+                            ),
+                            selected: _categoryFilter == category,
+                            onTap: () =>
+                                setState(() => _categoryFilter = category),
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+
+  Widget _categoryFilterOption(
+    BuildContext sheetContext, {
+    required String label,
+    required bool selected,
+    required VoidCallback onTap,
+  }) =>
+      ListTile(
+        contentPadding: EdgeInsets.zero,
+        title: Text(label),
+        trailing: selected ? const Icon(Icons.check, color: brandMaroon) : null,
+        onTap: () {
+          onTap();
+          Navigator.of(sheetContext).pop();
+        },
+      );
 
   Widget _availableMaidCard(
     AvailableMaid maid,

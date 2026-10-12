@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/app_data.dart';
 import '../../core/app_language.dart';
 import '../../core/strings.dart';
 import '../../core/theme.dart';
@@ -34,9 +35,9 @@ class ProfileDetails extends StatelessWidget {
           l.label,
     ];
     final categories = [
-      for (final c in dc.TaskCategory.values)
+      for (final c in AppData.maidWorkCategories)
         if (workCategories?.any((w) => w.stringValue == c.name) == true)
-          Strings.of('category_${c.name}', lang),
+          Strings.of('workCategory_${c.name}', lang),
     ];
     final rows = [
       if (name?.isNotEmpty == true)

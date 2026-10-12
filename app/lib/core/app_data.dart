@@ -64,6 +64,21 @@ class WrongAccountTypeException implements Exception {
 /// calls an operation from dataconnect/connector/ — that's where the schema
 /// and the access rules live; this just wraps them thinly.
 class AppData {
+  /// Categories a maid can select as services offered in their profile.
+  /// The original kitchen and other options remain available for existing
+  /// profiles.
+  static const maidWorkCategories = [
+    TaskCategory.cleaning,
+    TaskCategory.cooking,
+    TaskCategory.childcare,
+    TaskCategory.elderly_care,
+    TaskCategory.newborn_care,
+    TaskCategory.laundry,
+    TaskCategory.pet_care,
+    TaskCategory.kitchen,
+    TaskCategory.other,
+  ];
+
   /// Finds or creates the `User` row for the signed-in account.
   ///
   /// [signUp] carries what the login screen collected: it's set for the
