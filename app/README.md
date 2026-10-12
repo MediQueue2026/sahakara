@@ -89,7 +89,8 @@ lib/
 
 This covers the **Sprint 1 basics** from the project plan: email sign in / sign up,
 per-user language (Sinhala/Tamil/English), household creation, adding a maid
-by email, contracts, and browsing the task library — plus the start of
+by email, maid-selected work categories shown to owners while browsing
+available staff, contracts, and browsing the task library — plus the start of
 Sprint 2: owners add one-off tasks for a day (from the library or typed in)
 and assign them to staff — straight away, or later, so tasks can be planned
 before any staff are added — who see their own list for the day and mark each

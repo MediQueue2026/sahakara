@@ -1333,7 +1333,27 @@ SahakaraConnector.instance.setMyProfile(
 ).execute();
 ```
 
+#### Optional Arguments
+We return a builder for each query. For SetMyProfile, we created `SetMyProfileBuilder`. For queries and mutations with optional parameters, we return a builder class.
+The builder pattern allows Data Connect to distinguish between fields that haven't been set and fields that have been set to null. A field can be set by calling its respective setter method like below:
+```dart
+class SetMyProfileVariablesBuilder {
+  ...
+   SetMyProfileVariablesBuilder workCategories(List<TaskCategory>? t) {
+   _workCategories.value = t;
+   return this;
+  }
 
+  ...
+}
+SahakaraConnector.instance.setMyProfile(
+  name: name,
+  preferredAreas: preferredAreas,
+  spokenLanguages: spokenLanguages,
+)
+.workCategories(workCategories)
+.execute();
+```
 
 #### Return Type
 `execute()` returns a `OperationResult<SetMyProfileData, SetMyProfileVariables>`

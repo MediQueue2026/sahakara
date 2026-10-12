@@ -127,6 +127,7 @@ class AppData {
     required String name,
     List<String> preferredAreas = const [],
     required List<String> spokenLanguages,
+    List<String> workCategories = const [],
   }) async {
     await db
         .setMyProfile(
@@ -135,6 +136,7 @@ class AppData {
           spokenLanguages:
               spokenLanguages.map(AppLanguage.values.byName).toList(),
         )
+        .workCategories(workCategories.map(TaskCategory.values.byName).toList())
         .execute();
   }
 

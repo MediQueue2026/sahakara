@@ -80,10 +80,12 @@ class TaskRow {
 
   String title(AppLanguage lang) {
     if (nameEn == null) {
-      if (lang == AppLanguage.si && customTitleSi != null)
+      if (lang == AppLanguage.si && customTitleSi != null) {
         return customTitleSi!;
-      if (lang == AppLanguage.ta && customTitleTa != null)
+      }
+      if (lang == AppLanguage.ta && customTitleTa != null) {
         return customTitleTa!;
+      }
       return customTitle ?? '';
     }
     return pickName(lang, en: nameEn!, si: nameSi, ta: nameTa);

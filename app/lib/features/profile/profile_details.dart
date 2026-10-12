@@ -12,6 +12,7 @@ class ProfileDetails extends StatelessWidget {
   final AppLanguage lang;
   final String? name;
   final List<dc.EnumValue<dc.AppLanguage>>? spokenLanguages;
+  final List<dc.EnumValue<dc.TaskCategory>>? workCategories;
   final List<String>? preferredAreas;
   final String? area;
 
@@ -20,6 +21,7 @@ class ProfileDetails extends StatelessWidget {
     required this.lang,
     this.name,
     this.spokenLanguages,
+    this.workCategories,
     this.preferredAreas,
     this.area,
   });
@@ -31,6 +33,11 @@ class ProfileDetails extends StatelessWidget {
         if (spokenLanguages?.any((s) => s.stringValue == l.name) == true)
           l.label,
     ];
+    final categories = [
+      for (final c in dc.TaskCategory.values)
+        if (workCategories?.any((w) => w.stringValue == c.name) == true)
+          Strings.of('category_${c.name}', lang),
+    ];
     final rows = [
       if (name?.isNotEmpty == true)
         _row(Icons.person_outline, Strings.of('name', lang), name!),
@@ -41,6 +48,12 @@ class ProfileDetails extends StatelessWidget {
           Icons.map_outlined,
           Strings.of('preferredAreas', lang),
           preferredAreas!.join(', '),
+        ),
+      if (categories.isNotEmpty)
+        _row(
+          Icons.work_outline,
+          Strings.of('workCategories', lang),
+          categories.join(', '),
         ),
       if (languages.isNotEmpty)
         _row(

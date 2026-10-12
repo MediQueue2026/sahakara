@@ -4,8 +4,13 @@ class SetMyProfileVariablesBuilder {
   String name;
   List<String> preferredAreas;
   List<AppLanguage> spokenLanguages;
+  Optional<List<TaskCategory>> _workCategories = Optional.optional(listDeserializer((data) => TaskCategory.values.byName(data)), listSerializer(enumSerializer));
 
-  final FirebaseDataConnect _dataConnect;
+  final FirebaseDataConnect _dataConnect;  SetMyProfileVariablesBuilder workCategories(List<TaskCategory>? t) {
+   _workCategories.value = t;
+   return this;
+  }
+
   SetMyProfileVariablesBuilder(this._dataConnect, {required  this.name,required  this.preferredAreas,required  this.spokenLanguages,});
   Deserializer<SetMyProfileData> dataDeserializer = (dynamic json)  => SetMyProfileData.fromJson(jsonDecode(json));
   Serializer<SetMyProfileVariables> varsSerializer = (SetMyProfileVariables vars) => jsonEncode(vars.toJson());
@@ -14,7 +19,7 @@ class SetMyProfileVariablesBuilder {
   }
 
   MutationRef<SetMyProfileData, SetMyProfileVariables> ref() {
-    SetMyProfileVariables vars= SetMyProfileVariables(name: name,preferredAreas: preferredAreas,spokenLanguages: spokenLanguages,);
+    SetMyProfileVariables vars= SetMyProfileVariables(name: name,preferredAreas: preferredAreas,spokenLanguages: spokenLanguages,workCategories: _workCategories,);
     return _dataConnect.mutation("SetMyProfile", dataDeserializer, varsSerializer, vars);
   }
 }
@@ -58,6 +63,7 @@ class SetMyProfileVariables {
   final String name;
   final List<String> preferredAreas;
   final List<AppLanguage> spokenLanguages;
+  late final Optional<List<TaskCategory>>workCategories;
   @Deprecated('fromJson is deprecated for Variable classes as they are no longer required for deserialization.')
   SetMyProfileVariables.fromJson(Map<String, dynamic> json):
   
@@ -67,7 +73,18 @@ class SetMyProfileVariables {
         .toList(),
   spokenLanguages = (json['spokenLanguages'] as List<dynamic>)
         .map((e) => AppLanguage.values.byName(e))
+        .toList() {
+  
+  
+  
+  
+  
+    workCategories = Optional.optional(listDeserializer((data) => TaskCategory.values.byName(data)), listSerializer(enumSerializer));
+    workCategories.value = json['workCategories'] == null ? null : (json['workCategories'] as List<dynamic>)
+        .map((e) => TaskCategory.values.byName(e))
         .toList();
+  
+  }
   @override
   bool operator ==(Object other) {
     if(identical(this, other)) {
@@ -80,11 +97,12 @@ class SetMyProfileVariables {
     final SetMyProfileVariables otherTyped = other as SetMyProfileVariables;
     return name == otherTyped.name && 
     preferredAreas == otherTyped.preferredAreas && 
-    spokenLanguages == otherTyped.spokenLanguages;
+    spokenLanguages == otherTyped.spokenLanguages && 
+    workCategories == otherTyped.workCategories;
     
   }
   @override
-  int get hashCode => Object.hashAll([name.hashCode, preferredAreas.hashCode, spokenLanguages.hashCode]);
+  int get hashCode => Object.hashAll([name.hashCode, preferredAreas.hashCode, spokenLanguages.hashCode, workCategories.hashCode]);
   
 
   Map<String, dynamic> toJson() {
@@ -92,6 +110,9 @@ class SetMyProfileVariables {
     json['name'] = nativeToJson<String>(name);
     json['preferredAreas'] = preferredAreas.map((e) => nativeToJson<String>(e)).toList();
     json['spokenLanguages'] = spokenLanguages.map((e) => e.name).toList();
+    if(workCategories.state == OptionalState.set) {
+      json['workCategories'] = workCategories.toJson();
+    }
     return json;
   }
 
@@ -99,6 +120,7 @@ class SetMyProfileVariables {
     required this.name,
     required this.preferredAreas,
     required this.spokenLanguages,
+    required this.workCategories,
   });
 }
 

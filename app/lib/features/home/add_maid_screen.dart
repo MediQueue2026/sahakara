@@ -268,6 +268,7 @@ class _AddMaidScreenState extends State<AddMaidScreen> {
                 name: maid.name,
                 preferredAreas: maid.preferredAreas,
                 spokenLanguages: maid.spokenLanguages,
+                workCategories: maid.workCategories,
               ),
               if (!selected) ...[
                 const SizedBox(height: 12),
@@ -364,6 +365,7 @@ class _AddMaidScreenState extends State<AddMaidScreen> {
                 name: maid.name,
                 preferredAreas: maid.preferredAreas,
                 spokenLanguages: maid.spokenLanguages,
+                workCategories: maid.workCategories,
               ),
           ],
         ),

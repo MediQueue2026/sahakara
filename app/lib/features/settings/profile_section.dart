@@ -4,6 +4,7 @@ import '../../core/app_data.dart';
 import '../../core/app_language.dart';
 import '../../core/strings.dart';
 import '../../core/theme.dart';
+import '../../dataconnect_generated/sahakara.dart' show TaskCategory;
 
 /// The signed-in user's own profile in Settings: their name and the
 /// languages they speak, plus, for maids, the areas they'd like to work in
@@ -44,6 +45,9 @@ class _ProfileSectionState extends State<ProfileSection> {
   late final List<String> _areas = [...?widget.profile.preferredAreas];
   late final Set<String> _spoken = {
     for (final l in widget.profile.spokenLanguages ?? const []) l.stringValue,
+  };
+  late final Set<String> _workCategories = {
+    for (final c in widget.profile.workCategories ?? const []) c.stringValue,
   };
   bool _busy = false;
   String? _error;
@@ -94,6 +98,10 @@ class _ProfileSectionState extends State<ProfileSection> {
           for (final l in AppLanguage.values)
             if (_spoken.contains(l.name)) l.name,
         ],
+        workCategories: [
+          for (final c in TaskCategory.values)
+            if (_workCategories.contains(c.name)) c.name,
+        ],
       );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -143,6 +151,32 @@ class _ProfileSectionState extends State<ProfileSection> {
               const SizedBox(height: 20),
             ],
             if (widget.showAreas) ...[
+              _OptionalHeading(
+                Strings.of('workCategories', lang),
+                lang: lang,
+              ),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 4,
+                children: [
+                  for (final category in TaskCategory.values)
+                    FilterChip(
+                      label: Text(
+                        Strings.of('category_${category.name}', lang),
+                      ),
+                      selected: _workCategories.contains(category.name),
+                      onSelected: _busy
+                          ? null
+                          : (selected) => setState(
+                                () => selected
+                                    ? _workCategories.add(category.name)
+                                    : _workCategories.remove(category.name),
+                              ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 20),
               _OptionalHeading(Strings.of('preferredAreas', lang), lang: lang),
               const SizedBox(height: 8),
               if (_areas.isNotEmpty) ...[

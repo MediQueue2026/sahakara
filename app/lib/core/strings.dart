@@ -65,6 +65,11 @@ class Strings {
       AppLanguage.si: 'කැමති වැඩ කරන ප්‍රදේශ',
       AppLanguage.ta: 'விரும்பும் பணிப் பகுதிகள்',
     },
+    'workCategories': {
+      AppLanguage.en: 'Work categories',
+      AppLanguage.si: 'වැඩ කරන කාණ්ඩ',
+      AppLanguage.ta: 'பணி வகைகள்',
+    },
     'addArea': {
       AppLanguage.en: 'Add an area, e.g. Nugegoda',
       AppLanguage.si: 'ප්‍රදේශයක් එක් කරන්න, උදා. නුගේගොඩ',

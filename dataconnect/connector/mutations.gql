@@ -41,6 +41,7 @@ mutation SetMyProfile(
   $name: String!
   $preferredAreas: [String!]!
   $spokenLanguages: [AppLanguage!]!
+  $workCategories: [TaskCategory!] = []
 ) @auth(level: USER) {
   user_updateMany(
     where: { authUid: { eq_expr: "auth.uid" } }
@@ -48,6 +49,7 @@ mutation SetMyProfile(
       name: $name
       preferredAreas: $preferredAreas
       spokenLanguages: $spokenLanguages
+      workCategories: $workCategories
     }
   )
 }
