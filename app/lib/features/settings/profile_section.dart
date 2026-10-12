@@ -4,7 +4,6 @@ import '../../core/app_data.dart';
 import '../../core/app_language.dart';
 import '../../core/strings.dart';
 import '../../core/theme.dart';
-import '../../dataconnect_generated/sahakara.dart' show TaskCategory;
 
 /// The signed-in user's own profile in Settings: their name and the
 /// languages they speak, plus, for maids, the areas they'd like to work in
@@ -99,7 +98,7 @@ class _ProfileSectionState extends State<ProfileSection> {
             if (_spoken.contains(l.name)) l.name,
         ],
         workCategories: [
-          for (final c in TaskCategory.values)
+          for (final c in AppData.maidWorkCategories)
             if (_workCategories.contains(c.name)) c.name,
         ],
       );
@@ -160,10 +159,10 @@ class _ProfileSectionState extends State<ProfileSection> {
                 spacing: 8,
                 runSpacing: 4,
                 children: [
-                  for (final category in TaskCategory.values)
+                  for (final category in AppData.maidWorkCategories)
                     FilterChip(
                       label: Text(
-                        Strings.of('category_${category.name}', lang),
+                        Strings.of('workCategory_${category.name}', lang),
                       ),
                       selected: _workCategories.contains(category.name),
                       onSelected: _busy

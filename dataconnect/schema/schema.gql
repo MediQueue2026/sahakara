@@ -27,7 +27,17 @@ enum MemberRole { owner adult maid driver cook gardener }
 # active members only once they accept it.
 enum MembershipStatus { pending accepted declined }
 enum PayType { monthly daily hourly per_visit }
-enum TaskCategory { kitchen cleaning laundry cooking other }
+enum TaskCategory {
+  kitchen
+  cleaning
+  laundry
+  cooking
+  childcare
+  elderly_care
+  newborn_care
+  pet_care
+  other
+}
 enum RecurrenceType { once daily weekly fortnightly monthly quarterly }
 enum TaskPriority { high medium low }
 enum TaskStatus { pending started done need_help cant_do carried_forward }
@@ -65,7 +75,9 @@ type User @table {
   profilePhoto: String
   # Profile kept up to date in Settings. Areas (maids only) are free text,
   # e.g. "Nugegoda"; spoken languages are app language codes. Work
-  # categories are optional for compatibility with existing profiles.
+  # categories are optional for compatibility with existing profiles. Maids
+  # can select cleaning, cooking, childcare, elderly care, newborn care,
+  # laundry, and pet care.
   preferredAreas: [String!]
   spokenLanguages: [AppLanguage!]
   workCategories: [TaskCategory!]

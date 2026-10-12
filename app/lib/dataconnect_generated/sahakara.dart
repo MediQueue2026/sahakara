@@ -673,6 +673,14 @@ part 'active_task_templates.dart';
     
       cooking,
     
+      childcare,
+    
+      elderly_care,
+    
+      newborn_care,
+    
+      pet_care,
+    
       other,
     
   }
@@ -694,6 +702,18 @@ part 'active_task_templates.dart';
       
       case 'cooking':
         return const Known(TaskCategory.cooking);
+      
+      case 'childcare':
+        return const Known(TaskCategory.childcare);
+      
+      case 'elderly_care':
+        return const Known(TaskCategory.elderly_care);
+      
+      case 'newborn_care':
+        return const Known(TaskCategory.newborn_care);
+      
+      case 'pet_care':
+        return const Known(TaskCategory.pet_care);
       
       case 'other':
         return const Known(TaskCategory.other);

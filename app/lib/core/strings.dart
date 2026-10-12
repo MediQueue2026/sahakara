@@ -276,6 +276,32 @@ class Strings {
       AppLanguage.si: 'දැනට රැකියාවක් සොයන සහායකයන් නැත.',
       AppLanguage.ta: 'தற்போது வேலை தேடும் உதவியாளர்கள் இல்லை.',
     },
+    'searchMaidsByName': {
+      AppLanguage.en: 'Search maids by name',
+      AppLanguage.si: 'නමින් සහායකයන් සොයන්න',
+      AppLanguage.ta: 'பெயரால் உதவியாளர்களைத் தேடுங்கள்',
+    },
+    'clearSearch': {
+      AppLanguage.en: 'Clear search',
+      AppLanguage.si: 'සෙවීම මකන්න',
+      AppLanguage.ta: 'தேடலை அழிக்கவும்',
+    },
+    'filterByCategory': {
+      AppLanguage.en: 'Filter by category',
+      AppLanguage.si: 'කාණ්ඩය අනුව පෙරහන් කරන්න',
+      AppLanguage.ta: 'வகையின்படி வடிகட்டவும்',
+    },
+    'allCategories': {
+      AppLanguage.en: 'All categories',
+      AppLanguage.si: 'සියලුම කාණ්ඩ',
+      AppLanguage.ta: 'அனைத்து வகைகளும்',
+    },
+    'noMatchingMaids': {
+      AppLanguage.en: 'No maids match your search or category filter.',
+      AppLanguage.si: 'ඔබගේ සෙවීමට හෝ කාණ්ඩ පෙරහනට ගැළපෙන සහායකයන් නැත.',
+      AppLanguage.ta:
+          'உங்கள் தேடல் அல்லது வகை வடிகட்டிக்கு பொருந்தும் உதவியாளர்கள் இல்லை.',
+    },
     'inviteByEmail': {
       AppLanguage.en: 'Invite someone by email instead',
       AppLanguage.si: 'ඊමේල් මගින් වෙනත් අයෙකුට ආරාධනා කරන්න',
@@ -732,6 +758,71 @@ class Strings {
       AppLanguage.en: 'Laundry',
       AppLanguage.si: 'රෙදි සේදීම',
       AppLanguage.ta: 'சலவை',
+    },
+    'category_childcare': {
+      AppLanguage.en: 'Childcare',
+      AppLanguage.si: 'ළමා රැකවරණය',
+      AppLanguage.ta: 'குழந்தை பராமரிப்பு',
+    },
+    'category_elderly_care': {
+      AppLanguage.en: 'Elderly care',
+      AppLanguage.si: 'වැඩිහිටි රැකවරණය',
+      AppLanguage.ta: 'முதியோர் பராமரிப்பு',
+    },
+    'category_newborn_care': {
+      AppLanguage.en: 'Newborn care',
+      AppLanguage.si: 'අලුත උපන් බිළිඳු රැකවරණය',
+      AppLanguage.ta: 'பிறந்த குழந்தை பராமரிப்பு',
+    },
+    'category_pet_care': {
+      AppLanguage.en: 'Pet care',
+      AppLanguage.si: 'සුරතල් සතුන් රැකවරණය',
+      AppLanguage.ta: 'செல்லப்பிராணி பராமரிப்பு',
+    },
+    'workCategory_cleaning': {
+      AppLanguage.en: 'Cleaning and housekeeping',
+      AppLanguage.si: 'පිරිසිදු කිරීම සහ ගෘහ පාලනය',
+      AppLanguage.ta: 'சுத்தம் மற்றும் வீட்டு பராமரிப்பு',
+    },
+    'workCategory_cooking': {
+      AppLanguage.en: 'Cooking and meal preparation',
+      AppLanguage.si: 'ආහාර පිසීම සහ ආහාර සකස් කිරීම',
+      AppLanguage.ta: 'சமையல் மற்றும் உணவு தயாரித்தல்',
+    },
+    'workCategory_kitchen': {
+      AppLanguage.en: 'Kitchen',
+      AppLanguage.si: 'කුස්සිය',
+      AppLanguage.ta: 'சமையலறை',
+    },
+    'workCategory_childcare': {
+      AppLanguage.en: 'Childcare',
+      AppLanguage.si: 'ළමා රැකවරණය',
+      AppLanguage.ta: 'குழந்தை பராமரிப்பு',
+    },
+    'workCategory_elderly_care': {
+      AppLanguage.en: 'Elderly care',
+      AppLanguage.si: 'වැඩිහිටි රැකවරණය',
+      AppLanguage.ta: 'முதியோர் பராமரிப்பு',
+    },
+    'workCategory_newborn_care': {
+      AppLanguage.en: 'Newborn care',
+      AppLanguage.si: 'අලුත උපන් බිළිඳු රැකවරණය',
+      AppLanguage.ta: 'பிறந்த குழந்தை பராமரிப்பு',
+    },
+    'workCategory_laundry': {
+      AppLanguage.en: 'Laundry and ironing',
+      AppLanguage.si: 'රෙදි සේදීම සහ මැදීම',
+      AppLanguage.ta: 'துணி துவைத்தல் மற்றும் அயர்னிங்',
+    },
+    'workCategory_pet_care': {
+      AppLanguage.en: 'Pet care',
+      AppLanguage.si: 'සුරතල් සතුන් රැකවරණය',
+      AppLanguage.ta: 'செல்லப்பிராணி பராமரிப்பு',
+    },
+    'workCategory_other': {
+      AppLanguage.en: 'Outdoor, errands and family',
+      AppLanguage.si: 'එළිමහන, පණිවිඩ සහ පවුල',
+      AppLanguage.ta: 'வெளிப்புறம், வேலைகள், குடும்பம்',
     },
     'category_other': {
       AppLanguage.en: 'Outdoor, errands and family',
