@@ -26,6 +26,7 @@ class MyProfileUsers {
   final EnumValue<AppLanguage> language;
   final List<String>? preferredAreas;
   final List<EnumValue<AppLanguage>>? spokenLanguages;
+  final List<EnumValue<TaskCategory>>? workCategories;
   MyProfileUsers.fromJson(dynamic json):
   
   id = nativeFromJson<String>(json['id']),
@@ -39,6 +40,9 @@ class MyProfileUsers {
         .toList(),
   spokenLanguages = json['spokenLanguages'] == null ? null : (json['spokenLanguages'] as List<dynamic>)
         .map((e) => appLanguageDeserializer(e))
+        .toList(),
+  workCategories = json['workCategories'] == null ? null : (json['workCategories'] as List<dynamic>)
+        .map((e) => taskCategoryDeserializer(e))
         .toList();
   @override
   bool operator ==(Object other) {
@@ -57,11 +61,12 @@ class MyProfileUsers {
     accountType == otherTyped.accountType && 
     language == otherTyped.language && 
     preferredAreas == otherTyped.preferredAreas && 
-    spokenLanguages == otherTyped.spokenLanguages;
+    spokenLanguages == otherTyped.spokenLanguages && 
+    workCategories == otherTyped.workCategories;
     
   }
   @override
-  int get hashCode => Object.hashAll([id.hashCode, authUid.hashCode, email.hashCode, name.hashCode, accountType.hashCode, language.hashCode, preferredAreas.hashCode, spokenLanguages.hashCode]);
+  int get hashCode => Object.hashAll([id.hashCode, authUid.hashCode, email.hashCode, name.hashCode, accountType.hashCode, language.hashCode, preferredAreas.hashCode, spokenLanguages.hashCode, workCategories.hashCode]);
   
 
   Map<String, dynamic> toJson() {
@@ -84,6 +89,9 @@ class MyProfileUsers {
     if (spokenLanguages != null) {
       json['spokenLanguages'] = spokenLanguages?.map((e) => appLanguageSerializer(e)).toList();
     }
+    if (workCategories != null) {
+      json['workCategories'] = workCategories?.map((e) => taskCategorySerializer(e)).toList();
+    }
     return json;
   }
 
@@ -96,6 +104,7 @@ class MyProfileUsers {
     required this.language,
     this.preferredAreas,
     this.spokenLanguages,
+    this.workCategories,
   });
 }
 

@@ -25,6 +25,7 @@ query MyProfile @auth(level: USER) {
     language
     preferredAreas
     spokenLanguages
+    workCategories
   }
 }
 
@@ -186,6 +187,7 @@ query MaidProfileByEmail($email: String!)
     name
     preferredAreas
     spokenLanguages
+    workCategories
   }
 }
 
@@ -219,6 +221,7 @@ query AvailableMaids @auth(
     name
     preferredAreas
     spokenLanguages
+    workCategories
   }
 }
 

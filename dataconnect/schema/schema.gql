@@ -64,9 +64,11 @@ type User @table {
   language: AppLanguage! @default(value: en)
   profilePhoto: String
   # Profile kept up to date in Settings. Areas (maids only) are free text,
-  # e.g. "Nugegoda"; spoken languages are app language codes.
+  # e.g. "Nugegoda"; spoken languages are app language codes. Work
+  # categories are optional for compatibility with existing profiles.
   preferredAreas: [String!]
   spokenLanguages: [AppLanguage!]
+  workCategories: [TaskCategory!]
   createdAt: Timestamp! @default(expr: "request.time")
 }
 

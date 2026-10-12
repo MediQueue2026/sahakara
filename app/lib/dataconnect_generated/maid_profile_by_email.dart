@@ -22,6 +22,7 @@ class MaidProfileByEmailUsers {
   final String name;
   final List<String>? preferredAreas;
   final List<EnumValue<AppLanguage>>? spokenLanguages;
+  final List<EnumValue<TaskCategory>>? workCategories;
   MaidProfileByEmailUsers.fromJson(dynamic json):
   
   name = nativeFromJson<String>(json['name']),
@@ -30,6 +31,9 @@ class MaidProfileByEmailUsers {
         .toList(),
   spokenLanguages = json['spokenLanguages'] == null ? null : (json['spokenLanguages'] as List<dynamic>)
         .map((e) => appLanguageDeserializer(e))
+        .toList(),
+  workCategories = json['workCategories'] == null ? null : (json['workCategories'] as List<dynamic>)
+        .map((e) => taskCategoryDeserializer(e))
         .toList();
   @override
   bool operator ==(Object other) {
@@ -43,11 +47,12 @@ class MaidProfileByEmailUsers {
     final MaidProfileByEmailUsers otherTyped = other as MaidProfileByEmailUsers;
     return name == otherTyped.name && 
     preferredAreas == otherTyped.preferredAreas && 
-    spokenLanguages == otherTyped.spokenLanguages;
+    spokenLanguages == otherTyped.spokenLanguages && 
+    workCategories == otherTyped.workCategories;
     
   }
   @override
-  int get hashCode => Object.hashAll([name.hashCode, preferredAreas.hashCode, spokenLanguages.hashCode]);
+  int get hashCode => Object.hashAll([name.hashCode, preferredAreas.hashCode, spokenLanguages.hashCode, workCategories.hashCode]);
   
 
   Map<String, dynamic> toJson() {
@@ -59,6 +64,9 @@ class MaidProfileByEmailUsers {
     if (spokenLanguages != null) {
       json['spokenLanguages'] = spokenLanguages?.map((e) => appLanguageSerializer(e)).toList();
     }
+    if (workCategories != null) {
+      json['workCategories'] = workCategories?.map((e) => taskCategorySerializer(e)).toList();
+    }
     return json;
   }
 
@@ -66,6 +74,7 @@ class MaidProfileByEmailUsers {
     required this.name,
     this.preferredAreas,
     this.spokenLanguages,
+    this.workCategories,
   });
 }
 

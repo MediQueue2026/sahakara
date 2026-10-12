@@ -5,7 +5,6 @@ import '../../core/app_data.dart';
 import '../../core/app_language.dart';
 import '../../core/theme.dart';
 import '../../dataconnect_generated/sahakara.dart' hide AppLanguage;
-import '../../core/strings.dart';
 
 class GroceryListScreen extends StatefulWidget {
   final String householdId;
@@ -82,6 +81,7 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
       },
     );
 
+    if (!mounted) return;
     if (result != null && result.isNotEmpty) {
       // Show loading indicator
       showDialog(
@@ -122,12 +122,14 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
           nameTa: nameTa,
         );
 
-        if (mounted) Navigator.pop(context); // pop loading
+        if (!mounted) return;
+        Navigator.pop(context);
         setState(() {
           _loadItems();
         });
       } catch (e) {
-        if (mounted) Navigator.pop(context); // pop loading
+        if (!mounted) return;
+        Navigator.pop(context);
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text('Error: $e')));
       }
@@ -138,10 +140,12 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
       GetGroceryItemsGroceryItems item, bool isBought) async {
     try {
       await AppData.updateGroceryItemStatus(id: item.id, isBought: isBought);
+      if (!mounted) return;
       setState(() {
         _loadItems();
       });
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('Error: $e')));
     }
@@ -150,10 +154,12 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
   Future<void> _deleteItem(String id) async {
     try {
       await AppData.deleteGroceryItem(id: id);
+      if (!mounted) return;
       setState(() {
         _loadItems();
       });
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('Error: $e')));
     }
@@ -162,10 +168,14 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
   String _getItemName(GetGroceryItemsGroceryItems item, AppLanguage lang) {
     if (lang == AppLanguage.si &&
         item.nameSi != null &&
-        item.nameSi!.isNotEmpty) return item.nameSi!;
+        item.nameSi!.isNotEmpty) {
+      return item.nameSi!;
+    }
     if (lang == AppLanguage.ta &&
         item.nameTa != null &&
-        item.nameTa!.isNotEmpty) return item.nameTa!;
+        item.nameTa!.isNotEmpty) {
+      return item.nameTa!;
+    }
     return item.nameEn;
   }
 
