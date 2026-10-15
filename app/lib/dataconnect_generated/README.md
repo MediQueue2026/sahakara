@@ -3448,9 +3448,11 @@ ref.execute();
 #### Required Arguments
 ```dart
 String id = ...;
+String householdId = ...;
 bool isBought = ...;
 SahakaraConnector.instance.updateGroceryItemStatus(
   id: id,
+  householdId: householdId,
   isBought: isBought,
 ).execute();
 ```
@@ -3470,6 +3472,7 @@ class OperationResult<Data, Variables> {
 
 final result = await SahakaraConnector.instance.updateGroceryItemStatus(
   id: id,
+  householdId: householdId,
   isBought: isBought,
 );
 UpdateGroceryItemStatusData data = result.data;
@@ -3481,10 +3484,12 @@ Each builder returns an `execute` function, which is a helper function that crea
 An example of how to use the `Ref` object is shown below:
 ```dart
 String id = ...;
+String householdId = ...;
 bool isBought = ...;
 
 final ref = SahakaraConnector.instance.updateGroceryItemStatus(
   id: id,
+  householdId: householdId,
   isBought: isBought,
 ).ref();
 ref.execute();
@@ -3495,8 +3500,10 @@ ref.execute();
 #### Required Arguments
 ```dart
 String id = ...;
+String householdId = ...;
 SahakaraConnector.instance.deleteGroceryItem(
   id: id,
+  householdId: householdId,
 ).execute();
 ```
 
@@ -3515,6 +3522,7 @@ class OperationResult<Data, Variables> {
 
 final result = await SahakaraConnector.instance.deleteGroceryItem(
   id: id,
+  householdId: householdId,
 );
 DeleteGroceryItemData data = result.data;
 final ref = result.ref;
@@ -3525,9 +3533,11 @@ Each builder returns an `execute` function, which is a helper function that crea
 An example of how to use the `Ref` object is shown below:
 ```dart
 String id = ...;
+String householdId = ...;
 
 final ref = SahakaraConnector.instance.deleteGroceryItem(
   id: id,
+  householdId: householdId,
 ).ref();
 ref.execute();
 ```

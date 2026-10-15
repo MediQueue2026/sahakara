@@ -1076,13 +1076,13 @@ class SahakaraConnector {
   }
   
   
-  UpdateGroceryItemStatusVariablesBuilder updateGroceryItemStatus ({required String id, required bool isBought, }) {
-    return UpdateGroceryItemStatusVariablesBuilder(dataConnect, id: id,isBought: isBought,);
+  UpdateGroceryItemStatusVariablesBuilder updateGroceryItemStatus ({required String id, required String householdId, required bool isBought, }) {
+    return UpdateGroceryItemStatusVariablesBuilder(dataConnect, id: id,householdId: householdId,isBought: isBought,);
   }
   
   
-  DeleteGroceryItemVariablesBuilder deleteGroceryItem ({required String id, }) {
-    return DeleteGroceryItemVariablesBuilder(dataConnect, id: id,);
+  DeleteGroceryItemVariablesBuilder deleteGroceryItem ({required String id, required String householdId, }) {
+    return DeleteGroceryItemVariablesBuilder(dataConnect, id: id,householdId: householdId,);
   }
   
   

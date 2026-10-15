@@ -618,7 +618,25 @@ query AdminPaymentPlans @auth(level: USER) {
   }
 }
 
-query GetGroceryItems($householdId: UUID!) @auth(level: USER) {
+# The owner and every accepted maid share one list per household, so any
+# change from one of them pushes a refresh to the others' open screens.
+query GetGroceryItems($householdId: UUID!) @auth(level: USER)
+  @refresh(
+    onMutationExecuted: [
+      {
+        operation: "AddGroceryItem"
+        condition: "mutation.variables.householdId == request.variables.householdId"
+      }
+      {
+        operation: "UpdateGroceryItemStatus"
+        condition: "mutation.variables.householdId == request.variables.householdId"
+      }
+      {
+        operation: "DeleteGroceryItem"
+        condition: "mutation.variables.householdId == request.variables.householdId"
+      }
+    ]
+  ) {
   groceryItems(
     where: {
       householdId: { eq: $householdId }
@@ -647,6 +665,9 @@ query GetGroceryItems($householdId: UUID!) @auth(level: USER) {
     isBought
     createdAt
     addedBy {
+      name
+    }
+    boughtBy {
       name
     }
   }

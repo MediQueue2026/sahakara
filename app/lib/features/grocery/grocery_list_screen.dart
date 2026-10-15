@@ -3,6 +3,7 @@ import 'package:translator/translator.dart';
 
 import '../../core/app_data.dart';
 import '../../core/app_language.dart';
+import '../../core/strings.dart';
 import '../../core/theme.dart';
 import '../../dataconnect_generated/sahakara.dart' hide AppLanguage;
 
@@ -22,18 +23,23 @@ class GroceryListScreen extends StatefulWidget {
   State<GroceryListScreen> createState() => _GroceryListScreenState();
 }
 
+/// The household's one shared list. The owner and every accepted maid see
+/// the same items, and the screen stays subscribed so changes made on
+/// someone else's phone show up here without a manual refresh.
 class _GroceryListScreenState extends State<GroceryListScreen> {
-  late Future<List<GetGroceryItemsGroceryItems>> _itemsFuture;
+  late Stream<List<GetGroceryItemsGroceryItems>> _items;
   final _translator = GoogleTranslator();
 
   @override
   void initState() {
     super.initState();
-    _loadItems();
+    _items = AppData.watchGroceryItems(widget.householdId);
   }
 
-  void _loadItems() {
-    _itemsFuture = AppData.fetchGroceryItems(widget.householdId);
+  /// Refetches the list. The result also lands on [_items], so this covers
+  /// pull-to-refresh and gives instant feedback after our own changes.
+  Future<void> _refresh() async {
+    await AppData.fetchGroceryItems(widget.householdId);
   }
 
   Future<void> _addItem() async {
@@ -124,9 +130,7 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
 
         if (!mounted) return;
         Navigator.pop(context);
-        setState(() {
-          _loadItems();
-        });
+        await _refresh();
       } catch (e) {
         if (!mounted) return;
         Navigator.pop(context);
@@ -139,11 +143,9 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
   Future<void> _toggleBought(
       GetGroceryItemsGroceryItems item, bool isBought) async {
     try {
-      await AppData.updateGroceryItemStatus(id: item.id, isBought: isBought);
-      if (!mounted) return;
-      setState(() {
-        _loadItems();
-      });
+      await AppData.updateGroceryItemStatus(
+          id: item.id, householdId: widget.householdId, isBought: isBought);
+      await _refresh();
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context)
@@ -153,11 +155,9 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
 
   Future<void> _deleteItem(String id) async {
     try {
-      await AppData.deleteGroceryItem(id: id);
-      if (!mounted) return;
-      setState(() {
-        _loadItems();
-      });
+      await AppData.deleteGroceryItem(
+          id: id, householdId: widget.householdId);
+      await _refresh();
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context)
@@ -184,20 +184,13 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
     return ValueListenableBuilder<AppLanguage>(
       valueListenable: widget.lang,
       builder: (context, lang, _) {
-        final title = lang == AppLanguage.si
-            ? 'බඩු ලැයිස්තුව'
-            : lang == AppLanguage.ta
-                ? 'பொருட்கள் பட்டியல்'
-                : 'Groceries';
-
+        // No app bar of its own: HomeShell's top bar already shows the
+        // tab's label.
         return Scaffold(
-          appBar: AppBar(
-            title: Text(title),
-          ),
-          body: FutureBuilder<List<GetGroceryItemsGroceryItems>>(
-            future: _itemsFuture,
+          body: StreamBuilder<List<GetGroceryItemsGroceryItems>>(
+            stream: _items,
             builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
+              if (!snapshot.hasData && !snapshot.hasError) {
                 return const Center(child: CircularProgressIndicator());
               }
               if (snapshot.hasError) {
@@ -206,27 +199,23 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
               final items = snapshot.data ?? [];
               if (items.isEmpty) {
                 return RefreshIndicator(
-                  onRefresh: () async {
-                    setState(() {
-                      _loadItems();
-                    });
-                    await _itemsFuture;
-                  },
+                  onRefresh: _refresh,
                   child: ListView(
-                    children: const [
-                      SizedBox(height: 100),
-                      Center(child: Text('No items yet.')),
+                    children: [
+                      const SizedBox(height: 100),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 32),
+                        child: Text(
+                          Strings.of('groceryEmpty', lang),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
                     ],
                   ),
                 );
               }
               return RefreshIndicator(
-                onRefresh: () async {
-                  setState(() {
-                    _loadItems();
-                  });
-                  await _itemsFuture;
-                },
+                onRefresh: _refresh,
                 child: ListView.builder(
                   padding: const EdgeInsets.all(16),
                   itemCount: items.length,
@@ -250,7 +239,13 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
                           ),
                         ),
                         subtitle: Text(
-                          'Added by ${item.addedBy.name}',
+                          [
+                            Strings.of('groceryAddedBy', lang)
+                                .replaceFirst('{name}', item.addedBy.name),
+                            if (item.isBought && item.boughtBy != null)
+                              Strings.of('groceryBoughtBy', lang)
+                                  .replaceFirst('{name}', item.boughtBy!.name),
+                          ].join(' · '),
                           style: const TextStyle(fontSize: 12),
                         ),
                         trailing: IconButton(

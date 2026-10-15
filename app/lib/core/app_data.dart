@@ -783,6 +783,18 @@ class AppData {
     return result.data.groceryItems;
   }
 
+  /// Live view of the household's shared grocery list: the server pushes a
+  /// fresh result whenever the owner or any maid adds, ticks or removes an
+  /// item.
+  static Stream<List<GetGroceryItemsGroceryItems>> watchGroceryItems(
+      String householdId) {
+    return db
+        .getGroceryItems(householdId: householdId)
+        .ref()
+        .subscribe()
+        .map((result) => result.data.groceryItems);
+  }
+
   static Future<void> addGroceryItem({
     required String householdId,
     required String nameEn,
@@ -798,12 +810,19 @@ class AppData {
 
   static Future<void> updateGroceryItemStatus({
     required String id,
+    required String householdId,
     required bool isBought,
   }) async {
-    await db.updateGroceryItemStatus(id: id, isBought: isBought).execute();
+    await db
+        .updateGroceryItemStatus(
+            id: id, householdId: householdId, isBought: isBought)
+        .execute();
   }
 
-  static Future<void> deleteGroceryItem({required String id}) async {
-    await db.deleteGroceryItem(id: id).execute();
+  static Future<void> deleteGroceryItem({
+    required String id,
+    required String householdId,
+  }) async {
+    await db.deleteGroceryItem(id: id, householdId: householdId).execute();
   }
 }
