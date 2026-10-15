@@ -5,6 +5,7 @@ import '../../core/app_language.dart';
 import '../../core/strings.dart';
 import '../../core/theme.dart';
 import '../../dataconnect_generated/sahakara.dart' hide AppLanguage;
+import '../home/staff_filter.dart';
 
 class PayrollScreen extends StatefulWidget {
   final LanguageController lang;
@@ -35,6 +36,10 @@ class _PayrollScreenState extends State<PayrollScreen> {
   List<HouseholdAdvanceRequest> _householdAdvanceRequests = [];
   List<MyAdvanceRequest> _myAdvanceRequests = [];
 
+  /// The staff member whose records the owner is looking at, or null for
+  /// everyone in the household.
+  String? _selectedMemberId;
+
   @override
   void initState() {
     super.initState();
@@ -60,6 +65,9 @@ class _PayrollScreenState extends State<PayrollScreen> {
         );
         _householdAdvanceRequests =
             await AppData.fetchHouseholdAdvanceRequests(_householdId);
+        if (!_staffOptions().any((option) => option.id == _selectedMemberId)) {
+          _selectedMemberId = null;
+        }
       } else {
         _myPayments = await AppData.fetchMySalaryPayments();
         _myAdvanceRequests = await AppData.fetchMyAdvanceRequests();
@@ -82,6 +90,7 @@ class _PayrollScreenState extends State<PayrollScreen> {
       builder: (context) => _SchedulePaymentDialog(
         lang: widget.lang,
         staff: _staff,
+        initialMemberId: _selectedMemberId,
       ),
     );
     if (result == null) return;
@@ -225,7 +234,32 @@ class _PayrollScreenState extends State<PayrollScreen> {
     );
   }
 
+  /// Everyone the owner can keep pay records for: current staff first, then
+  /// former staff who still have payments or advances on record.
+  List<StaffOption> _staffOptions() => StaffOption.collect(
+        [for (final member in _staff) StaffOption(member.id, member.user.name)],
+        [
+          for (final payment in _householdPayments)
+            (payment.member.id, payment.member.user.name),
+          for (final request in _householdAdvanceRequests)
+            (request.member.id, request.member.user.name),
+        ],
+      );
+
   List<Widget> _buildOwnerContent(AppLanguage language) {
+    final selected = _selectedMemberId;
+    final payments = selected == null
+        ? _householdPayments
+        : _householdPayments
+            .where((payment) => payment.member.id == selected)
+            .toList();
+    final advanceRequests = selected == null
+        ? _householdAdvanceRequests
+        : _householdAdvanceRequests
+            .where((request) => request.member.id == selected)
+            .toList();
+    final options = _staffOptions();
+
     final now = DateTime.now();
     final tomorrow = DateTime(now.year, now.month, now.day + 1);
     final dueTomorrow = _householdPayments.where(
@@ -258,6 +292,14 @@ class _PayrollScreenState extends State<PayrollScreen> {
             ),
           ),
         ),
+      if (options.isNotEmpty)
+        StaffFilter(
+          options: options,
+          selectedId: selected,
+          onSelected: (id) => setState(() => _selectedMemberId = id),
+          lang: language,
+        ),
+      if (selected != null) _staffSummary(payments, advanceRequests, language),
       Align(
         alignment: Alignment.centerRight,
         child: FilledButton.icon(
@@ -268,19 +310,59 @@ class _PayrollScreenState extends State<PayrollScreen> {
       ),
       const SizedBox(height: 8),
       _sectionTitle(Strings.of('scheduledPayments', language)),
-      if (_householdPayments.isEmpty)
+      if (payments.isEmpty)
         _empty(Strings.of('noPayments', language))
       else
-        for (final payment in _householdPayments)
+        for (final payment in payments)
           _householdPaymentTile(payment, language),
       const SizedBox(height: 16),
       _sectionTitle(Strings.of('advanceRequests', language)),
-      if (_householdAdvanceRequests.isEmpty)
+      if (advanceRequests.isEmpty)
         _empty(Strings.of('noAdvanceRequests', language))
       else
-        for (final request in _householdAdvanceRequests)
+        for (final request in advanceRequests)
           _householdAdvanceTile(request, language),
     ];
+  }
+
+  /// Running totals for the selected staff member.
+  Widget _staffSummary(
+    List<HouseholdSalaryPayment> payments,
+    List<HouseholdAdvanceRequest> advanceRequests,
+    AppLanguage language,
+  ) {
+    double sumPayments(String status) => payments
+        .where((payment) => payment.status.stringValue == status)
+        .fold(0, (total, payment) => total + payment.amount);
+    final advances = advanceRequests
+        .where((request) => request.status.stringValue == 'approved')
+        .fold<double>(0, (total, request) => total + request.amount);
+
+    Widget row(String key, double amount) => Padding(
+          padding: const EdgeInsets.symmetric(vertical: 2),
+          child: Row(
+            children: [
+              Expanded(child: Text(Strings.of(key, language))),
+              Text(
+                _formatAmount(amount),
+                style: const TextStyle(fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+        );
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            row('totalPaid', sumPayments('paid')),
+            row('totalScheduled', sumPayments('scheduled')),
+            row('totalAdvances', advances),
+          ],
+        ),
+      ),
+    );
   }
 
   List<Widget> _buildStaffContent(AppLanguage language) => [
@@ -432,8 +514,13 @@ class _AdvanceRequestInput {
 class _SchedulePaymentDialog extends StatefulWidget {
   final LanguageController lang;
   final List<Member> staff;
+  final String? initialMemberId;
 
-  const _SchedulePaymentDialog({required this.lang, required this.staff});
+  const _SchedulePaymentDialog({
+    required this.lang,
+    required this.staff,
+    this.initialMemberId,
+  });
 
   @override
   State<_SchedulePaymentDialog> createState() => _SchedulePaymentDialogState();
@@ -442,7 +529,10 @@ class _SchedulePaymentDialog extends StatefulWidget {
 class _SchedulePaymentDialogState extends State<_SchedulePaymentDialog> {
   final _amountController = TextEditingController();
   final _noteController = TextEditingController();
-  late String _memberId = widget.staff.first.id;
+  late String _memberId =
+      widget.staff.any((member) => member.id == widget.initialMemberId)
+          ? widget.initialMemberId!
+          : widget.staff.first.id;
   DateTime? _paymentDate;
   String? _error;
   bool _busy = false;

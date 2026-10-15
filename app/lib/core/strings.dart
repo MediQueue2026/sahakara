@@ -1275,6 +1275,46 @@ class Strings {
       AppLanguage.si: 'ප්‍රතික්ෂේප කරන්න',
       AppLanguage.ta: 'நிராகரி',
     },
+    'allStaff': {
+      AppLanguage.en: 'All staff',
+      AppLanguage.si: 'සියලු සේවකයින්',
+      AppLanguage.ta: 'அனைத்து பணியாளர்கள்',
+    },
+    'formerStaff': {
+      AppLanguage.en: 'former',
+      AppLanguage.si: 'හිටපු',
+      AppLanguage.ta: 'முன்னாள்',
+    },
+    'totalPaid': {
+      AppLanguage.en: 'Total paid',
+      AppLanguage.si: 'ගෙවූ මුළු මුදල',
+      AppLanguage.ta: 'செலுத்திய மொத்தம்',
+    },
+    'totalScheduled': {
+      AppLanguage.en: 'Still to pay',
+      AppLanguage.si: 'තවම ගෙවිය යුතු',
+      AppLanguage.ta: 'இன்னும் செலுத்த வேண்டியது',
+    },
+    'totalAdvances': {
+      AppLanguage.en: 'Advances approved',
+      AppLanguage.si: 'අනුමත අත්තිකාරම්',
+      AppLanguage.ta: 'அங்கீகரிக்கப்பட்ட முன்பணம்',
+    },
+    'fullDaysWorked': {
+      AppLanguage.en: 'Full days worked',
+      AppLanguage.si: 'වැඩ කළ සම්පූර්ණ දින',
+      AppLanguage.ta: 'வேலை செய்த முழு நாட்கள்',
+    },
+    'halfDaysWorked': {
+      AppLanguage.en: 'Half days worked',
+      AppLanguage.si: 'වැඩ කළ අර්ධ දින',
+      AppLanguage.ta: 'வேலை செய்த அரை நாட்கள்',
+    },
+    'leaveDaysApproved': {
+      AppLanguage.en: 'Approved leave days',
+      AppLanguage.si: 'අනුමත නිවාඩු දින',
+      AppLanguage.ta: 'அங்கீகரிக்கப்பட்ட விடுப்பு நாட்கள்',
+    },
     'groceryAddedBy': {
       AppLanguage.en: 'Added by {name}',
       AppLanguage.si: 'එකතු කළේ: {name}',

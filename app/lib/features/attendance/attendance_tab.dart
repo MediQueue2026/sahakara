@@ -4,6 +4,7 @@ import '../../core/app_data.dart';
 import '../../core/app_language.dart';
 import '../../core/strings.dart';
 import '../../core/theme.dart';
+import '../home/staff_filter.dart';
 import 'leave_request_dialog.dart';
 
 class AttendanceTab extends StatefulWidget {
@@ -31,6 +32,11 @@ class _AttendanceTabState extends State<AttendanceTab> {
 
   List<dynamic> _attendance = [];
   List<dynamic> _leaveRequests = [];
+  List<Member> _staff = [];
+
+  /// The staff member whose attendance the owner is looking at, or null for
+  /// everyone in the household.
+  String? _selectedMemberId;
   bool _busy = false;
   bool _loading = true;
   String _dayType = 'full';
@@ -51,6 +57,18 @@ class _AttendanceTabState extends State<AttendanceTab> {
         _attendance = await AppData.fetchHouseholdAttendance(_householdId);
         _leaveRequests =
             await AppData.fetchHouseholdLeaveRequests(_householdId);
+        final members = await AppData.fetchHouseholdMembers(_householdId);
+        _staff = members
+            .where(
+              (member) =>
+                  member.role.stringValue != 'owner' &&
+                  member.active &&
+                  member.status.stringValue == 'accepted',
+            )
+            .toList();
+        if (!_staffOptions().any((option) => option.id == _selectedMemberId)) {
+          _selectedMemberId = null;
+        }
       } else {
         _attendance = await AppData.fetchMyAttendance();
         _leaveRequests = await AppData.fetchMyLeaveRequests();
@@ -216,11 +234,99 @@ class _AttendanceTabState extends State<AttendanceTab> {
     return d.compareTo(from) >= 0 && d.compareTo(to) <= 0;
   }
 
+  /// Current staff first, then former staff who still have attendance or
+  /// leave on record.
+  List<StaffOption> _staffOptions() => StaffOption.collect(
+        [for (final member in _staff) StaffOption(member.id, member.user.name)],
+        [
+          for (final record in _attendance)
+            (record.member.id as String, record.member.user.name as String),
+          for (final request in _leaveRequests)
+            (request.member.id as String, request.member.user.name as String),
+        ],
+      );
+
+  // Staff only ever load their own records, so these filter just for the
+  // owner.
+  Iterable<dynamic> get _visibleAttendance => _selectedMemberId == null
+      ? _attendance
+      : _attendance.where((a) => a.member.id == _selectedMemberId);
+
+  Iterable<dynamic> get _visibleLeaveRequests => _selectedMemberId == null
+      ? _leaveRequests
+      : _leaveRequests.where((l) => l.member.id == _selectedMemberId);
+
   List<dynamic> _getEventsForDay(DateTime day) {
     final events = [];
-    events.addAll(_attendance.where((a) => isSameDay(a.day, day)));
-    events.addAll(_leaveRequests.where((l) => _isDayInLeave(day, l)));
+    events.addAll(_visibleAttendance.where((a) => isSameDay(a.day, day)));
+    events.addAll(_visibleLeaveRequests.where((l) => _isDayInLeave(day, l)));
     return events;
+  }
+
+  /// The selected staff member's totals for the month shown on the calendar.
+  Widget _buildMonthSummary(AppLanguage l) {
+    bool inMonth(DateTime day) =>
+        day.year == _focusedDay.year && day.month == _focusedDay.month;
+
+    final records = _visibleAttendance.where((a) => inMonth(a.day));
+    final fullDays =
+        records.where((a) => a.dayType.stringValue == 'full').length;
+    final halfDays =
+        records.where((a) => a.dayType.stringValue == 'half').length;
+    final overtime = records.fold<double>(
+      0,
+      (total, a) => total + (a.overtimeHours as num).toDouble(),
+    );
+
+    var leaveDays = 0.0;
+    final daysInMonth =
+        DateTime(_focusedDay.year, _focusedDay.month + 1, 0).day;
+    for (final request in _visibleLeaveRequests) {
+      if (request.status.stringValue != 'approved') continue;
+      for (var d = 1; d <= daysInMonth; d++) {
+        final day = DateTime(_focusedDay.year, _focusedDay.month, d);
+        if (_isDayInLeave(day, request)) {
+          leaveDays += request.isHalfDay ? 0.5 : 1;
+        }
+      }
+    }
+
+    String number(num value) =>
+        value == value.roundToDouble() ? '${value.round()}' : '$value';
+
+    Widget row(String key, num value) => Padding(
+          padding: const EdgeInsets.symmetric(vertical: 2),
+          child: Row(
+            children: [
+              Expanded(child: Text(Strings.of(key, l))),
+              Text(
+                number(value),
+                style: const TextStyle(fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+        );
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 16),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              MaterialLocalizations.of(context).formatMonthYear(_focusedDay),
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 8),
+            row('fullDaysWorked', fullDays),
+            row('halfDaysWorked', halfDays),
+            row('overtimeHours', overtime),
+            row('leaveDaysApproved', leaveDays),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildMaidActions(AppLanguage l) {
@@ -431,6 +537,14 @@ class _AttendanceTabState extends State<AttendanceTab> {
         padding: const EdgeInsets.all(16),
         children: [
           if (!_isOwner) _buildMaidActions(l),
+          if (_isOwner && _staffOptions().isNotEmpty)
+            StaffFilter(
+              options: _staffOptions(),
+              selectedId: _selectedMemberId,
+              onSelected: (id) => setState(() => _selectedMemberId = id),
+              lang: l,
+            ),
+          if (_isOwner && _selectedMemberId != null) _buildMonthSummary(l),
           Card(
             clipBehavior: Clip.antiAlias,
             child: TableCalendar(
@@ -444,6 +558,9 @@ class _AttendanceTabState extends State<AttendanceTab> {
                   _focusedDay = focusedDay;
                 });
               },
+              // Keeps the month summary in step with the month on screen.
+              onPageChanged: (focusedDay) =>
+                  setState(() => _focusedDay = focusedDay),
               eventLoader: _getEventsForDay,
               calendarBuilders: CalendarBuilders(
                 markerBuilder: (context, date, events) {
