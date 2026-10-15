@@ -1233,50 +1233,51 @@ mutation AddGroceryItem(
 
 mutation UpdateGroceryItemStatus(
   $id: UUID!
+  $householdId: UUID!
   $isBought: Boolean!
 ) @auth(level: USER) @transaction {
   query @redact {
-    groceryItems(
+    householdMembers(
       where: {
-        id: { eq: $id }
         household: {
-          householdMembers_on_household: {
-            exist: {
-              active: { eq: true }
-              user: { authUid: { eq_expr: "auth.uid" } }
-            }
-          }
+          id: { eq: $householdId }
+          groceryItems_on_household: { exist: { id: { eq: $id } } }
         }
+        active: { eq: true }
+        user: { authUid: { eq_expr: "auth.uid" } }
       }
     )
       @check(
         expr: "this.size() == 1"
         message: "Only active household members can update grocery items"
       ) {
-      id
+      user {
+        id
+      }
     }
   }
   groceryItem_update(
     id: $id
-    data: { isBought: $isBought }
+    data: {
+      isBought: $isBought
+      boughtById_expr: "response.query.householdMembers[0].user.id"
+    }
   )
 }
 
 mutation DeleteGroceryItem(
   $id: UUID!
+  $householdId: UUID!
 ) @auth(level: USER) @transaction {
   query @redact {
-    groceryItems(
+    householdMembers(
       where: {
-        id: { eq: $id }
         household: {
-          householdMembers_on_household: {
-            exist: {
-              active: { eq: true }
-              user: { authUid: { eq_expr: "auth.uid" } }
-            }
-          }
+          id: { eq: $householdId }
+          groceryItems_on_household: { exist: { id: { eq: $id } } }
         }
+        active: { eq: true }
+        user: { authUid: { eq_expr: "auth.uid" } }
       }
     )
       @check(

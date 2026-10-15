@@ -387,5 +387,7 @@ type GroceryItem @table {
   nameTa: String
   isBought: Boolean! @default(value: false)
   addedBy: User!
+  # Whoever last ticked or unticked the item; only shown while it is bought.
+  boughtBy: User
   createdAt: Timestamp! @default(expr: "request.time")
 }

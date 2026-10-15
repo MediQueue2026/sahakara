@@ -2,10 +2,11 @@ part of 'sahakara.dart';
 
 class UpdateGroceryItemStatusVariablesBuilder {
   String id;
+  String householdId;
   bool isBought;
 
   final FirebaseDataConnect _dataConnect;
-  UpdateGroceryItemStatusVariablesBuilder(this._dataConnect, {required  this.id,required  this.isBought,});
+  UpdateGroceryItemStatusVariablesBuilder(this._dataConnect, {required  this.id,required  this.householdId,required  this.isBought,});
   Deserializer<UpdateGroceryItemStatusData> dataDeserializer = (dynamic json)  => UpdateGroceryItemStatusData.fromJson(jsonDecode(json));
   Serializer<UpdateGroceryItemStatusVariables> varsSerializer = (UpdateGroceryItemStatusVariables vars) => jsonEncode(vars.toJson());
   Future<OperationResult<UpdateGroceryItemStatusData, UpdateGroceryItemStatusVariables>> execute() {
@@ -13,7 +14,7 @@ class UpdateGroceryItemStatusVariablesBuilder {
   }
 
   MutationRef<UpdateGroceryItemStatusData, UpdateGroceryItemStatusVariables> ref() {
-    UpdateGroceryItemStatusVariables vars= UpdateGroceryItemStatusVariables(id: id,isBought: isBought,);
+    UpdateGroceryItemStatusVariables vars= UpdateGroceryItemStatusVariables(id: id,householdId: householdId,isBought: isBought,);
     return _dataConnect.mutation("UpdateGroceryItemStatus", dataDeserializer, varsSerializer, vars);
   }
 }
@@ -91,11 +92,13 @@ class UpdateGroceryItemStatusData {
 @immutable
 class UpdateGroceryItemStatusVariables {
   final String id;
+  final String householdId;
   final bool isBought;
   @Deprecated('fromJson is deprecated for Variable classes as they are no longer required for deserialization.')
   UpdateGroceryItemStatusVariables.fromJson(Map<String, dynamic> json):
   
   id = nativeFromJson<String>(json['id']),
+  householdId = nativeFromJson<String>(json['householdId']),
   isBought = nativeFromJson<bool>(json['isBought']);
   @override
   bool operator ==(Object other) {
@@ -108,22 +111,25 @@ class UpdateGroceryItemStatusVariables {
 
     final UpdateGroceryItemStatusVariables otherTyped = other as UpdateGroceryItemStatusVariables;
     return id == otherTyped.id && 
+    householdId == otherTyped.householdId && 
     isBought == otherTyped.isBought;
     
   }
   @override
-  int get hashCode => Object.hashAll([id.hashCode, isBought.hashCode]);
+  int get hashCode => Object.hashAll([id.hashCode, householdId.hashCode, isBought.hashCode]);
   
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> json = {};
     json['id'] = nativeToJson<String>(id);
+    json['householdId'] = nativeToJson<String>(householdId);
     json['isBought'] = nativeToJson<bool>(isBought);
     return json;
   }
 
   UpdateGroceryItemStatusVariables({
     required this.id,
+    required this.householdId,
     required this.isBought,
   });
 }

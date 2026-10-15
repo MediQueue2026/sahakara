@@ -1275,6 +1275,21 @@ class Strings {
       AppLanguage.si: 'ප්‍රතික්ෂේප කරන්න',
       AppLanguage.ta: 'நிராகரி',
     },
+    'groceryAddedBy': {
+      AppLanguage.en: 'Added by {name}',
+      AppLanguage.si: 'එකතු කළේ: {name}',
+      AppLanguage.ta: 'சேர்த்தவர்: {name}',
+    },
+    'groceryBoughtBy': {
+      AppLanguage.en: 'Bought by {name}',
+      AppLanguage.si: 'මිලදී ගත්තේ: {name}',
+      AppLanguage.ta: 'வாங்கியவர்: {name}',
+    },
+    'groceryEmpty': {
+      AppLanguage.en: 'No items yet. Anyone in the household can add one.',
+      AppLanguage.si: 'තවම භාණ්ඩ නැත. නිවසේ ඕනෑම අයෙකුට එකතු කළ හැක.',
+      AppLanguage.ta: 'இன்னும் பொருட்கள் இல்லை. வீட்டில் உள்ள எவரும் சேர்க்கலாம்.',
+    },
   };
 
   static String contractDuration(

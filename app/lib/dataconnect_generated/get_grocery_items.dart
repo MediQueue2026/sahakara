@@ -26,6 +26,7 @@ class GetGroceryItemsGroceryItems {
   final bool isBought;
   final Timestamp createdAt;
   final GetGroceryItemsGroceryItemsAddedBy addedBy;
+  final GetGroceryItemsGroceryItemsBoughtBy? boughtBy;
   GetGroceryItemsGroceryItems.fromJson(dynamic json):
   
   id = nativeFromJson<String>(json['id']),
@@ -34,7 +35,8 @@ class GetGroceryItemsGroceryItems {
   nameTa = json['nameTa'] == null ? null : nativeFromJson<String>(json['nameTa']),
   isBought = nativeFromJson<bool>(json['isBought']),
   createdAt = Timestamp.fromJson(json['createdAt']),
-  addedBy = GetGroceryItemsGroceryItemsAddedBy.fromJson(json['addedBy']);
+  addedBy = GetGroceryItemsGroceryItemsAddedBy.fromJson(json['addedBy']),
+  boughtBy = json['boughtBy'] == null ? null : GetGroceryItemsGroceryItemsBoughtBy.fromJson(json['boughtBy']);
   @override
   bool operator ==(Object other) {
     if(identical(this, other)) {
@@ -51,11 +53,12 @@ class GetGroceryItemsGroceryItems {
     nameTa == otherTyped.nameTa && 
     isBought == otherTyped.isBought && 
     createdAt == otherTyped.createdAt && 
-    addedBy == otherTyped.addedBy;
+    addedBy == otherTyped.addedBy && 
+    boughtBy == otherTyped.boughtBy;
     
   }
   @override
-  int get hashCode => Object.hashAll([id.hashCode, nameEn.hashCode, nameSi.hashCode, nameTa.hashCode, isBought.hashCode, createdAt.hashCode, addedBy.hashCode]);
+  int get hashCode => Object.hashAll([id.hashCode, nameEn.hashCode, nameSi.hashCode, nameTa.hashCode, isBought.hashCode, createdAt.hashCode, addedBy.hashCode, boughtBy.hashCode]);
   
 
   Map<String, dynamic> toJson() {
@@ -71,6 +74,9 @@ class GetGroceryItemsGroceryItems {
     json['isBought'] = nativeToJson<bool>(isBought);
     json['createdAt'] = createdAt.toJson();
     json['addedBy'] = addedBy.toJson();
+    if (boughtBy != null) {
+      json['boughtBy'] = boughtBy!.toJson();
+    }
     return json;
   }
 
@@ -82,6 +88,7 @@ class GetGroceryItemsGroceryItems {
     required this.isBought,
     required this.createdAt,
     required this.addedBy,
+    this.boughtBy,
   });
 }
 
@@ -115,6 +122,40 @@ class GetGroceryItemsGroceryItemsAddedBy {
   }
 
   GetGroceryItemsGroceryItemsAddedBy({
+    required this.name,
+  });
+}
+
+@immutable
+class GetGroceryItemsGroceryItemsBoughtBy {
+  final String name;
+  GetGroceryItemsGroceryItemsBoughtBy.fromJson(dynamic json):
+  
+  name = nativeFromJson<String>(json['name']);
+  @override
+  bool operator ==(Object other) {
+    if(identical(this, other)) {
+      return true;
+    }
+    if(other.runtimeType != runtimeType) {
+      return false;
+    }
+
+    final GetGroceryItemsGroceryItemsBoughtBy otherTyped = other as GetGroceryItemsGroceryItemsBoughtBy;
+    return name == otherTyped.name;
+    
+  }
+  @override
+  int get hashCode => name.hashCode;
+  
+
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> json = {};
+    json['name'] = nativeToJson<String>(name);
+    return json;
+  }
+
+  GetGroceryItemsGroceryItemsBoughtBy({
     required this.name,
   });
 }

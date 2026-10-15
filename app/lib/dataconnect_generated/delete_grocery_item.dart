@@ -2,9 +2,10 @@ part of 'sahakara.dart';
 
 class DeleteGroceryItemVariablesBuilder {
   String id;
+  String householdId;
 
   final FirebaseDataConnect _dataConnect;
-  DeleteGroceryItemVariablesBuilder(this._dataConnect, {required  this.id,});
+  DeleteGroceryItemVariablesBuilder(this._dataConnect, {required  this.id,required  this.householdId,});
   Deserializer<DeleteGroceryItemData> dataDeserializer = (dynamic json)  => DeleteGroceryItemData.fromJson(jsonDecode(json));
   Serializer<DeleteGroceryItemVariables> varsSerializer = (DeleteGroceryItemVariables vars) => jsonEncode(vars.toJson());
   Future<OperationResult<DeleteGroceryItemData, DeleteGroceryItemVariables>> execute() {
@@ -12,7 +13,7 @@ class DeleteGroceryItemVariablesBuilder {
   }
 
   MutationRef<DeleteGroceryItemData, DeleteGroceryItemVariables> ref() {
-    DeleteGroceryItemVariables vars= DeleteGroceryItemVariables(id: id,);
+    DeleteGroceryItemVariables vars= DeleteGroceryItemVariables(id: id,householdId: householdId,);
     return _dataConnect.mutation("DeleteGroceryItem", dataDeserializer, varsSerializer, vars);
   }
 }
@@ -90,10 +91,12 @@ class DeleteGroceryItemData {
 @immutable
 class DeleteGroceryItemVariables {
   final String id;
+  final String householdId;
   @Deprecated('fromJson is deprecated for Variable classes as they are no longer required for deserialization.')
   DeleteGroceryItemVariables.fromJson(Map<String, dynamic> json):
   
-  id = nativeFromJson<String>(json['id']);
+  id = nativeFromJson<String>(json['id']),
+  householdId = nativeFromJson<String>(json['householdId']);
   @override
   bool operator ==(Object other) {
     if(identical(this, other)) {
@@ -104,21 +107,24 @@ class DeleteGroceryItemVariables {
     }
 
     final DeleteGroceryItemVariables otherTyped = other as DeleteGroceryItemVariables;
-    return id == otherTyped.id;
+    return id == otherTyped.id && 
+    householdId == otherTyped.householdId;
     
   }
   @override
-  int get hashCode => id.hashCode;
+  int get hashCode => Object.hashAll([id.hashCode, householdId.hashCode]);
   
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> json = {};
     json['id'] = nativeToJson<String>(id);
+    json['householdId'] = nativeToJson<String>(householdId);
     return json;
   }
 
   DeleteGroceryItemVariables({
     required this.id,
+    required this.householdId,
   });
 }
 
