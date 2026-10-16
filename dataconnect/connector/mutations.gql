@@ -932,6 +932,103 @@ mutation CheckOut(
   )
 }
 
+# Owner corrections: add a day a staff member forgot to record, or fix one
+# they got wrong. The app checks that check-out comes after check-in.
+mutation AddAttendanceRecord(
+  $memberId: UUID!
+  $day: Date!
+  $checkIn: Timestamp!
+  $checkOut: Timestamp
+  $dayType: AttendanceDayType!
+  $overtimeHours: Float!
+  $note: String
+) @auth(expr: "auth.uid != '' && vars.overtimeHours >= 0 && vars.overtimeHours <= 24") @transaction {
+  query @redact {
+    householdMembers(
+      where: {
+        id: { eq: $memberId }
+        role: { ne: owner }
+        household: { owner: { authUid: { eq_expr: "auth.uid" } } }
+      }
+    )
+      @check(
+        expr: "this.size() == 1"
+        message: "Only the household owner can record attendance"
+      ) {
+      id
+    }
+  }
+  attendance_insert(
+    data: {
+      memberId: $memberId
+      day: $day
+      checkIn: $checkIn
+      checkOut: $checkOut
+      dayType: $dayType
+      overtimeHours: $overtimeHours
+      note: $note
+    }
+  )
+}
+
+mutation UpdateAttendanceRecord(
+  $id: UUID!
+  $checkIn: Timestamp!
+  $checkOut: Timestamp
+  $dayType: AttendanceDayType!
+  $overtimeHours: Float!
+  $note: String
+) @auth(expr: "auth.uid != '' && vars.overtimeHours >= 0 && vars.overtimeHours <= 24") @transaction {
+  query @redact {
+    attendances(
+      where: {
+        id: { eq: $id }
+        member: {
+          role: { ne: owner }
+          household: { owner: { authUid: { eq_expr: "auth.uid" } } }
+        }
+      }
+    )
+      @check(
+        expr: "this.size() == 1"
+        message: "Only the household owner can correct attendance"
+      ) {
+      id
+    }
+  }
+  attendance_update(
+    id: $id
+    data: {
+      checkIn: $checkIn
+      checkOut: $checkOut
+      dayType: $dayType
+      overtimeHours: $overtimeHours
+      note: $note
+    }
+  )
+}
+
+mutation DeleteAttendanceRecord($id: UUID!) @auth(level: USER) @transaction {
+  query @redact {
+    attendances(
+      where: {
+        id: { eq: $id }
+        member: {
+          role: { ne: owner }
+          household: { owner: { authUid: { eq_expr: "auth.uid" } } }
+        }
+      }
+    )
+      @check(
+        expr: "this.size() == 1"
+        message: "Only the household owner can delete attendance"
+      ) {
+      id
+    }
+  }
+  attendance_delete(id: $id)
+}
+
 mutation SubmitLeaveRequest(
   $memberId: UUID!
   $fromDate: Date!

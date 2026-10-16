@@ -60,6 +60,12 @@ part 'check_in.dart';
 
 part 'check_out.dart';
 
+part 'add_attendance_record.dart';
+
+part 'update_attendance_record.dart';
+
+part 'delete_attendance_record.dart';
+
 part 'submit_leave_request.dart';
 
 part 'schedule_salary_payment.dart';
@@ -1028,6 +1034,21 @@ class SahakaraConnector {
   
   CheckOutVariablesBuilder checkOut ({required String memberId, required DateTime day, required double overtimeHours, }) {
     return CheckOutVariablesBuilder(dataConnect, memberId: memberId,day: day,overtimeHours: overtimeHours,);
+  }
+  
+  
+  AddAttendanceRecordVariablesBuilder addAttendanceRecord ({required String memberId, required DateTime day, required Timestamp checkIn, required AttendanceDayType dayType, required double overtimeHours, }) {
+    return AddAttendanceRecordVariablesBuilder(dataConnect, memberId: memberId,day: day,checkIn: checkIn,dayType: dayType,overtimeHours: overtimeHours,);
+  }
+  
+  
+  UpdateAttendanceRecordVariablesBuilder updateAttendanceRecord ({required String id, required Timestamp checkIn, required AttendanceDayType dayType, required double overtimeHours, }) {
+    return UpdateAttendanceRecordVariablesBuilder(dataConnect, id: id,checkIn: checkIn,dayType: dayType,overtimeHours: overtimeHours,);
+  }
+  
+  
+  DeleteAttendanceRecordVariablesBuilder deleteAttendanceRecord ({required String id, }) {
+    return DeleteAttendanceRecordVariablesBuilder(dataConnect, id: id,);
   }
   
   

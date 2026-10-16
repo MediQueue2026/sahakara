@@ -5,6 +5,7 @@ import '../../core/app_language.dart';
 import '../../core/strings.dart';
 import '../../core/theme.dart';
 import '../home/staff_filter.dart';
+import 'attendance_record_dialog.dart';
 import 'leave_request_dialog.dart';
 
 class AttendanceTab extends StatefulWidget {
@@ -224,6 +225,84 @@ class _AttendanceTabState extends State<AttendanceTab> {
     } finally {
       if (mounted) setState(() => _busy = false);
     }
+  }
+
+  /// Current staff with nothing recorded on [day], for the owner to add.
+  List<StaffOption> _staffWithoutRecord(DateTime day) => [
+        for (final member in _staff)
+          if (!_attendance.any(
+            (a) => a.member.id == member.id && isSameDay(a.day, day),
+          ))
+            StaffOption(member.id, member.user.name),
+      ];
+
+  /// Owner only: adds a missing day, or corrects or removes [record].
+  Future<void> _openRecordDialog(DateTime day, {dynamic record}) async {
+    final input = await showDialog<AttendanceRecordInput>(
+      context: context,
+      builder: (context) => AttendanceRecordDialog(
+        lang: widget.lang,
+        day: day,
+        staff: _staffWithoutRecord(day),
+        initialMemberId: _selectedMemberId,
+        record: record as HouseholdAttendance?,
+      ),
+    );
+    if (input == null) return;
+
+    setState(() => _busy = true);
+    try {
+      if (record == null) {
+        await AppData.addAttendanceRecord(
+          memberId: input.memberId,
+          day: DateTime(day.year, day.month, day.day),
+          checkIn: input.checkIn,
+          checkOut: input.checkOut,
+          dayType: input.dayType,
+          overtimeHours: input.overtimeHours,
+          note: input.note,
+        );
+      } else if (input.delete) {
+        await AppData.deleteAttendanceRecord(record.id);
+      } else {
+        await AppData.updateAttendanceRecord(
+          id: record.id,
+          checkIn: input.checkIn,
+          checkOut: input.checkOut,
+          dayType: input.dayType,
+          overtimeHours: input.overtimeHours,
+          note: input.note,
+        );
+      }
+      await _refresh();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(e.toString())));
+      }
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Widget _buildAddRecordButton(AppLanguage l) {
+    final day = _selectedDay!;
+    final now = DateTime.now();
+    final isFuture = DateTime(day.year, day.month, day.day)
+        .isAfter(DateTime(now.year, now.month, now.day));
+    return Align(
+      alignment: Alignment.centerRight,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 8),
+        child: FilledButton.icon(
+          onPressed: _busy || isFuture || _staffWithoutRecord(day).isEmpty
+              ? null
+              : () => _openRecordDialog(day),
+          icon: const Icon(Icons.edit_calendar),
+          label: Text(Strings.of('addAttendance', l)),
+        ),
+      ),
+    );
   }
 
   bool _isDayInLeave(DateTime day, dynamic req) {
@@ -512,12 +591,18 @@ class _AttendanceTabState extends State<AttendanceTab> {
             subtitle +=
                 '\n${Strings.of('overtimeHours', l)}: ${ev.overtimeHours}';
           }
+          if (ev.note != null) subtitle += '\n${ev.note}';
 
           return Card(
             child: ListTile(
               title: Text(title),
               subtitle: Text(subtitle),
-              trailing: const Icon(Icons.access_time),
+              onTap: _isOwner && !_busy
+                  ? () => _openRecordDialog(day, record: ev)
+                  : null,
+              trailing: Icon(
+                _isOwner ? Icons.edit_outlined : Icons.access_time,
+              ),
             ),
           );
         }
@@ -594,6 +679,8 @@ class _AttendanceTabState extends State<AttendanceTab> {
             ),
           ),
           const SizedBox(height: 16),
+          if (_isOwner && !_loading && _selectedDay != null)
+            _buildAddRecordButton(l),
           if (_loading)
             const Center(
                 child: Padding(

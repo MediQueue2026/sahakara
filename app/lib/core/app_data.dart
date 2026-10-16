@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:firebase_data_connect/firebase_data_connect.dart' show Timestamp;
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:translator/translator.dart';
 
@@ -627,6 +628,59 @@ class AppData {
           overtimeHours: overtimeHours,
         )
         .execute();
+  }
+
+  static Timestamp _timestamp(DateTime time) {
+    final ms = time.toUtc().millisecondsSinceEpoch;
+    return Timestamp((ms % 1000) * 1000000, ms ~/ 1000);
+  }
+
+  /// Owner only: records a day for a staff member who didn't check in.
+  static Future<void> addAttendanceRecord({
+    required String memberId,
+    required DateTime day,
+    required DateTime checkIn,
+    DateTime? checkOut,
+    required String dayType,
+    required double overtimeHours,
+    String? note,
+  }) async {
+    await db
+        .addAttendanceRecord(
+          memberId: memberId,
+          day: day,
+          checkIn: _timestamp(checkIn),
+          dayType: AttendanceDayType.values.byName(dayType),
+          overtimeHours: overtimeHours,
+        )
+        .checkOut(checkOut == null ? null : _timestamp(checkOut))
+        .note(note)
+        .execute();
+  }
+
+  /// Owner only: corrects a recorded day. A null [checkOut] clears it.
+  static Future<void> updateAttendanceRecord({
+    required String id,
+    required DateTime checkIn,
+    DateTime? checkOut,
+    required String dayType,
+    required double overtimeHours,
+    String? note,
+  }) async {
+    await db
+        .updateAttendanceRecord(
+          id: id,
+          checkIn: _timestamp(checkIn),
+          dayType: AttendanceDayType.values.byName(dayType),
+          overtimeHours: overtimeHours,
+        )
+        .checkOut(checkOut == null ? null : _timestamp(checkOut))
+        .note(note)
+        .execute();
+  }
+
+  static Future<void> deleteAttendanceRecord(String id) async {
+    await db.deleteAttendanceRecord(id: id).execute();
   }
 
   static Future<void> submitLeaveRequest({
