@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'core/env.dart';
 import 'core/firebase_client.dart';
+import 'core/remember_me.dart';
 import 'core/theme.dart';
 import 'features/admin/admin_app.dart';
 import 'firebase_options.dart';
@@ -30,6 +31,8 @@ Future<void> main() async {
     db.dataConnect.useDataConnectEmulator(host, 9399);
     await storage.useStorageEmulator(host, 9199);
   }
+
+  await RememberMe.applyOnLaunch();
 
   runApp(const RootApp());
 }

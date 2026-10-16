@@ -146,6 +146,11 @@ class Strings {
       AppLanguage.si: 'ලියාපදිංචි වන්න',
       AppLanguage.ta: 'பதிவு செய்',
     },
+    'rememberMe': {
+      AppLanguage.en: 'Remember me',
+      AppLanguage.si: 'මාව මතක තබා ගන්න',
+      AppLanguage.ta: 'என்னை நினைவில் வை',
+    },
     'noAccount': {
       AppLanguage.en: "Don't have an account? Sign up",
       AppLanguage.si: 'ගිණුමක් නැද්ද? ලියාපදිංචි වන්න',
