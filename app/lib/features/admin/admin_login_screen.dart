@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/firebase_client.dart';
+import '../../core/remember_me.dart';
 import '../../core/theme.dart';
 
 class AdminLoginScreen extends StatefulWidget {
@@ -14,6 +15,7 @@ class AdminLoginScreen extends StatefulWidget {
 class _AdminLoginScreenState extends State<AdminLoginScreen> {
   final _email = TextEditingController();
   final _password = TextEditingController();
+  bool _rememberMe = true;
   bool _busy = false;
   String? _error;
 
@@ -23,6 +25,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
       _error = null;
     });
     try {
+      await RememberMe.set(_rememberMe);
       await auth.signInWithEmailAndPassword(
         email: _email.text.trim(),
         password: _password.text,
@@ -74,7 +77,18 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                     decoration: const InputDecoration(labelText: 'Password'),
                     onSubmitted: (_) => _signIn(),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 8),
+                  CheckboxListTile(
+                    value: _rememberMe,
+                    onChanged: _busy
+                        ? null
+                        : (v) => setState(() => _rememberMe = v ?? true),
+                    title: const Text('Remember me'),
+                    controlAffinity: ListTileControlAffinity.leading,
+                    contentPadding: EdgeInsets.zero,
+                    dense: true,
+                  ),
+                  const SizedBox(height: 12),
                   FilledButton(
                     onPressed: _busy ? null : _signIn,
                     child: Text(_busy ? 'Signing in…' : 'Sign in'),

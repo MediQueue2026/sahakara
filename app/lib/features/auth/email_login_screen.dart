@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../core/app_data.dart';
 import '../../core/app_language.dart';
 import '../../core/firebase_client.dart';
+import '../../core/remember_me.dart';
 import '../../core/strings.dart';
 import '../../core/theme.dart';
 import '../../dataconnect_generated/sahakara.dart' show AccountType;
@@ -45,6 +46,7 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
   final _confirmController = TextEditingController();
   late AccountType? _accountType = widget.initialAccountType;
   bool _signUp = false;
+  bool _rememberMe = true;
   bool _busy = false;
   String? _error;
 
@@ -77,6 +79,7 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
       AuthIntent(accountType: _accountType!, name: _signUp ? name : null),
     );
     try {
+      await RememberMe.set(_rememberMe);
       if (_signUp) {
         await auth.createUserWithEmailAndPassword(
           email: _email,
@@ -222,7 +225,18 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
           onSubmitted: (_) => _submit(lang),
         ),
       ],
-      const SizedBox(height: 20),
+      const SizedBox(height: 8),
+      CheckboxListTile(
+        value: _rememberMe,
+        onChanged: _busy
+            ? null
+            : (v) => setState(() => _rememberMe = v ?? true),
+        title: Text(Strings.of('rememberMe', lang)),
+        controlAffinity: ListTileControlAffinity.leading,
+        contentPadding: EdgeInsets.zero,
+        dense: true,
+      ),
+      const SizedBox(height: 12),
       FilledButton(
         onPressed: _busy ? null : () => _submit(lang),
         child: Text(Strings.of(_signUp ? 'signUp' : 'signIn', lang)),
