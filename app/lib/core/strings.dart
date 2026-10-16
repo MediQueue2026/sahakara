@@ -1315,6 +1315,31 @@ class Strings {
       AppLanguage.si: 'අනුමත නිවාඩු දින',
       AppLanguage.ta: 'அங்கீகரிக்கப்பட்ட விடுப்பு நாட்கள்',
     },
+    'addAttendance': {
+      AppLanguage.en: 'Add attendance',
+      AppLanguage.si: 'පැමිණීම එකතු කරන්න',
+      AppLanguage.ta: 'வருகையைச் சேர்',
+    },
+    'editAttendance': {
+      AppLanguage.en: 'Edit attendance',
+      AppLanguage.si: 'පැමිණීම සංස්කරණය කරන්න',
+      AppLanguage.ta: 'வருகையைத் திருத்து',
+    },
+    'notCheckedOut': {
+      AppLanguage.en: 'Not checked out',
+      AppLanguage.si: 'තවම පිටවී නැත',
+      AppLanguage.ta: 'இன்னும் வெளியேறவில்லை',
+    },
+    'checkOutAfterCheckIn': {
+      AppLanguage.en: 'Check-out must be after check-in',
+      AppLanguage.si: 'පිටවීම පැමිණීමට පසුව විය යුතුය',
+      AppLanguage.ta: 'வெளியேறும் நேரம் வருகை நேரத்திற்குப் பிறகு இருக்க வேண்டும்',
+    },
+    'confirmDeleteAttendance': {
+      AppLanguage.en: 'Remove this attendance record?',
+      AppLanguage.si: 'මෙම පැමිණීමේ වාර්තාව ඉවත් කරන්නද?',
+      AppLanguage.ta: 'இந்த வருகைப் பதிவை அகற்றவா?',
+    },
     'groceryAddedBy': {
       AppLanguage.en: 'Added by {name}',
       AppLanguage.si: 'එකතු කළේ: {name}',

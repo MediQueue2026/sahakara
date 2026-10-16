@@ -2921,6 +2921,220 @@ ref.execute();
 ```
 
 
+### AddAttendanceRecord
+#### Required Arguments
+```dart
+String memberId = ...;
+DateTime day = ...;
+Timestamp checkIn = ...;
+AttendanceDayType dayType = ...;
+double overtimeHours = ...;
+SahakaraConnector.instance.addAttendanceRecord(
+  memberId: memberId,
+  day: day,
+  checkIn: checkIn,
+  dayType: dayType,
+  overtimeHours: overtimeHours,
+).execute();
+```
+
+#### Optional Arguments
+We return a builder for each query. For AddAttendanceRecord, we created `AddAttendanceRecordBuilder`. For queries and mutations with optional parameters, we return a builder class.
+The builder pattern allows Data Connect to distinguish between fields that haven't been set and fields that have been set to null. A field can be set by calling its respective setter method like below:
+```dart
+class AddAttendanceRecordVariablesBuilder {
+  ...
+   AddAttendanceRecordVariablesBuilder checkOut(Timestamp? t) {
+   _checkOut.value = t;
+   return this;
+  }
+  AddAttendanceRecordVariablesBuilder note(String? t) {
+   _note.value = t;
+   return this;
+  }
+
+  ...
+}
+SahakaraConnector.instance.addAttendanceRecord(
+  memberId: memberId,
+  day: day,
+  checkIn: checkIn,
+  dayType: dayType,
+  overtimeHours: overtimeHours,
+)
+.checkOut(checkOut)
+.note(note)
+.execute();
+```
+
+#### Return Type
+`execute()` returns a `OperationResult<AddAttendanceRecordData, AddAttendanceRecordVariables>`
+```dart
+/// Result of an Operation Request (query/mutation).
+class OperationResult<Data, Variables> {
+  OperationResult(this.dataConnect, this.data, this.ref);
+  Data data;
+  OperationRef<Data, Variables> ref;
+  FirebaseDataConnect dataConnect;
+}
+
+final result = await SahakaraConnector.instance.addAttendanceRecord(
+  memberId: memberId,
+  day: day,
+  checkIn: checkIn,
+  dayType: dayType,
+  overtimeHours: overtimeHours,
+);
+AddAttendanceRecordData data = result.data;
+final ref = result.ref;
+```
+
+#### Getting the Ref
+Each builder returns an `execute` function, which is a helper function that creates a `Ref` object, and executes the underlying operation.
+An example of how to use the `Ref` object is shown below:
+```dart
+String memberId = ...;
+DateTime day = ...;
+Timestamp checkIn = ...;
+AttendanceDayType dayType = ...;
+double overtimeHours = ...;
+
+final ref = SahakaraConnector.instance.addAttendanceRecord(
+  memberId: memberId,
+  day: day,
+  checkIn: checkIn,
+  dayType: dayType,
+  overtimeHours: overtimeHours,
+).ref();
+ref.execute();
+```
+
+
+### UpdateAttendanceRecord
+#### Required Arguments
+```dart
+String id = ...;
+Timestamp checkIn = ...;
+AttendanceDayType dayType = ...;
+double overtimeHours = ...;
+SahakaraConnector.instance.updateAttendanceRecord(
+  id: id,
+  checkIn: checkIn,
+  dayType: dayType,
+  overtimeHours: overtimeHours,
+).execute();
+```
+
+#### Optional Arguments
+We return a builder for each query. For UpdateAttendanceRecord, we created `UpdateAttendanceRecordBuilder`. For queries and mutations with optional parameters, we return a builder class.
+The builder pattern allows Data Connect to distinguish between fields that haven't been set and fields that have been set to null. A field can be set by calling its respective setter method like below:
+```dart
+class UpdateAttendanceRecordVariablesBuilder {
+  ...
+   UpdateAttendanceRecordVariablesBuilder checkOut(Timestamp? t) {
+   _checkOut.value = t;
+   return this;
+  }
+  UpdateAttendanceRecordVariablesBuilder note(String? t) {
+   _note.value = t;
+   return this;
+  }
+
+  ...
+}
+SahakaraConnector.instance.updateAttendanceRecord(
+  id: id,
+  checkIn: checkIn,
+  dayType: dayType,
+  overtimeHours: overtimeHours,
+)
+.checkOut(checkOut)
+.note(note)
+.execute();
+```
+
+#### Return Type
+`execute()` returns a `OperationResult<UpdateAttendanceRecordData, UpdateAttendanceRecordVariables>`
+```dart
+/// Result of an Operation Request (query/mutation).
+class OperationResult<Data, Variables> {
+  OperationResult(this.dataConnect, this.data, this.ref);
+  Data data;
+  OperationRef<Data, Variables> ref;
+  FirebaseDataConnect dataConnect;
+}
+
+final result = await SahakaraConnector.instance.updateAttendanceRecord(
+  id: id,
+  checkIn: checkIn,
+  dayType: dayType,
+  overtimeHours: overtimeHours,
+);
+UpdateAttendanceRecordData data = result.data;
+final ref = result.ref;
+```
+
+#### Getting the Ref
+Each builder returns an `execute` function, which is a helper function that creates a `Ref` object, and executes the underlying operation.
+An example of how to use the `Ref` object is shown below:
+```dart
+String id = ...;
+Timestamp checkIn = ...;
+AttendanceDayType dayType = ...;
+double overtimeHours = ...;
+
+final ref = SahakaraConnector.instance.updateAttendanceRecord(
+  id: id,
+  checkIn: checkIn,
+  dayType: dayType,
+  overtimeHours: overtimeHours,
+).ref();
+ref.execute();
+```
+
+
+### DeleteAttendanceRecord
+#### Required Arguments
+```dart
+String id = ...;
+SahakaraConnector.instance.deleteAttendanceRecord(
+  id: id,
+).execute();
+```
+
+
+
+#### Return Type
+`execute()` returns a `OperationResult<DeleteAttendanceRecordData, DeleteAttendanceRecordVariables>`
+```dart
+/// Result of an Operation Request (query/mutation).
+class OperationResult<Data, Variables> {
+  OperationResult(this.dataConnect, this.data, this.ref);
+  Data data;
+  OperationRef<Data, Variables> ref;
+  FirebaseDataConnect dataConnect;
+}
+
+final result = await SahakaraConnector.instance.deleteAttendanceRecord(
+  id: id,
+);
+DeleteAttendanceRecordData data = result.data;
+final ref = result.ref;
+```
+
+#### Getting the Ref
+Each builder returns an `execute` function, which is a helper function that creates a `Ref` object, and executes the underlying operation.
+An example of how to use the `Ref` object is shown below:
+```dart
+String id = ...;
+
+final ref = SahakaraConnector.instance.deleteAttendanceRecord(
+  id: id,
+).ref();
+ref.execute();
+```
+
+
 ### SubmitLeaveRequest
 #### Required Arguments
 ```dart
