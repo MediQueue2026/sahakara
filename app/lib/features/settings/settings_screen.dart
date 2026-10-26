@@ -12,7 +12,15 @@ class SettingsScreen extends StatefulWidget {
   final LanguageController lang;
   final Profile profile;
 
-  const SettingsScreen({super.key, required this.lang, required this.profile});
+  /// Opens with a note asking a newly signed-up maid to fill in the profile.
+  final bool welcome;
+
+  const SettingsScreen({
+    super.key,
+    required this.lang,
+    required this.profile,
+    this.welcome = false,
+  });
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -58,6 +66,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
         return ListView(
           padding: const EdgeInsets.all(16),
           children: [
+            if (widget.welcome) ...[
+              Card(
+                color: brandGoldSoft,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        Strings.of('completeProfile', current),
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(Strings.of('completeProfileBody', current)),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
             Text(profile.name, style: Theme.of(context).textTheme.titleMedium),
             Text(profile.email, style: const TextStyle(color: mutedText)),
             const SizedBox(height: 24),

@@ -20,6 +20,10 @@ class WaitingForHouseholdScreen extends StatefulWidget {
   final ValueChanged<String> onHouseholdAccepted;
   final bool inHomeShell;
 
+  /// In the home shell, show the "waiting to join" message when there are
+  /// no requests, rather than nothing (for a maid with no household yet).
+  final bool showWaitingIfNone;
+
   const WaitingForHouseholdScreen({
     super.key,
     required this.lang,
@@ -27,6 +31,7 @@ class WaitingForHouseholdScreen extends StatefulWidget {
     required this.email,
     required this.onHouseholdAccepted,
     this.inHomeShell = false,
+    this.showWaitingIfNone = false,
   });
 
   @override
@@ -97,7 +102,23 @@ class _WaitingForHouseholdScreenState extends State<WaitingForHouseholdScreen> {
                   ],
                 );
               }
-              if (invites.isEmpty) return const SizedBox.shrink();
+              if (invites.isEmpty) {
+                if (!widget.showWaitingIfNone) return const SizedBox.shrink();
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      ..._waiting(lang),
+                      const SizedBox(height: 24),
+                      FilledButton.tonal(
+                        onPressed: _busy ? null : _checkAgain,
+                        child: Text(Strings.of('checkAgain', lang)),
+                      ),
+                    ],
+                  ),
+                );
+              }
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
