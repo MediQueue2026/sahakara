@@ -7,6 +7,7 @@ import 'package:shimmer/shimmer.dart';
 import 'package:confetti/confetti.dart';
 
 import '../../core/app_data.dart';
+import '../../core/auto_refresh.dart';
 import '../../core/app_language.dart';
 import '../../core/strings.dart';
 import '../../core/theme.dart';
@@ -93,11 +94,13 @@ class _MyTasksScreenState extends State<MyTasksScreen> {
     _tasks = _fetchTasks();
   }
 
-  Future<List<TaskRow>> _fetchTasks() async {
+  /// [generate] also creates the day's copies of daily tasks first, which
+  /// takes extra round trips; the automatic reloads skip it.
+  Future<List<TaskRow>> _fetchTasks({bool generate = true}) async {
     final tasks = await AppData.fetchMyTasks(
       householdId: widget.membership.household.id,
       day: _day,
-      generateRecurringTasks: !widget.readOnly,
+      generateRecurringTasks: generate && !widget.readOnly,
     );
     return tasks
         .map(
@@ -122,6 +125,27 @@ class _MyTasksScreenState extends State<MyTasksScreen> {
           ),
         )
         .toList();
+  }
+
+  /// Reloads the day's tasks in the background. Unlike [_load], what's on
+  /// screen stays until the new list arrives, and stays if the reload fails
+  /// (e.g. still offline). [pulled] is for a pull-to-refresh the maid made:
+  /// it also shows errors and creates the day's daily tasks.
+  Future<void> _refresh({bool pulled = false}) async {
+    final day = _day;
+    final next = _fetchTasks(generate: pulled);
+    try {
+      await next;
+    } catch (_) {
+      if (pulled && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(Strings.of('couldNotRefresh', widget.lang.value)),
+        ));
+      }
+      return;
+    }
+    // A different day picked meanwhile already has its own load.
+    if (mounted && day == _day) setState(() => _tasks = next);
   }
 
   void _changeDay(DateTime day) {
@@ -212,6 +236,8 @@ class _MyTasksScreenState extends State<MyTasksScreen> {
           builder: (context, snapshot) {
             final tasks = snapshot.data;
             return ListView(
+              // Scrollable even when short, so pull-to-refresh always works.
+              physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
               children: [
                 _header(tasks, lang),
@@ -263,7 +289,13 @@ class _MyTasksScreenState extends State<MyTasksScreen> {
         return Stack(
           alignment: Alignment.topCenter,
           children: [
-            futureBuilder,
+            AutoRefresh(
+              onRefresh: _refresh,
+              child: RefreshIndicator(
+                onRefresh: () => _refresh(pulled: true),
+                child: futureBuilder,
+              ),
+            ),
             ConfettiWidget(
               confettiController: _confettiController,
               blastDirectionality: BlastDirectionality.explosive,

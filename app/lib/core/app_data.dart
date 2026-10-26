@@ -451,8 +451,11 @@ class AppData {
   static Future<List<HouseholdTask>> fetchHouseholdTasks({
     required String householdId,
     required DateTime day,
+    bool generateRecurringTasks = true,
   }) async {
-    await generateRecurringTasksForDay(householdId: householdId, day: day);
+    if (generateRecurringTasks) {
+      await generateRecurringTasksForDay(householdId: householdId, day: day);
+    }
     final result = await db
         .householdTasksForDay(householdId: householdId, dueDate: day)
         .execute();

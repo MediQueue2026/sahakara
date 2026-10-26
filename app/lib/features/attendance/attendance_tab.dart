@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import '../../core/app_data.dart';
+import '../../core/auto_refresh.dart';
 import '../../core/app_language.dart';
 import '../../core/strings.dart';
 import '../../core/theme.dart';
@@ -51,8 +52,12 @@ class _AttendanceTabState extends State<AttendanceTab> {
     _refresh();
   }
 
-  Future<void> _refresh() async {
-    setState(() => _loading = true);
+  /// Reloads everything. [quiet] is for the automatic reloads: no spinner
+  /// over what's on screen and no error message, and it skips while an
+  /// action is running, since that reloads when it's done.
+  Future<void> _refresh({bool quiet = false}) async {
+    if (quiet && _busy) return;
+    if (!quiet) setState(() => _loading = true);
     try {
       if (_isOwner) {
         _attendance = await AppData.fetchHouseholdAttendance(_householdId);
@@ -75,7 +80,7 @@ class _AttendanceTabState extends State<AttendanceTab> {
         _leaveRequests = await AppData.fetchMyLeaveRequests();
       }
     } catch (e) {
-      if (mounted) {
+      if (mounted && !quiet) {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text(e.toString())));
       }
@@ -616,79 +621,82 @@ class _AttendanceTabState extends State<AttendanceTab> {
     final selectedEvents =
         _selectedDay != null ? _getEventsForDay(_selectedDay!) : [];
 
-    return RefreshIndicator(
-      onRefresh: () async => _refresh(),
-      child: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          if (!_isOwner) _buildMaidActions(l),
-          if (_isOwner && _staffOptions().isNotEmpty)
-            StaffFilter(
-              options: _staffOptions(),
-              selectedId: _selectedMemberId,
-              onSelected: (id) => setState(() => _selectedMemberId = id),
-              lang: l,
-            ),
-          if (_isOwner && _selectedMemberId != null) _buildMonthSummary(l),
-          Card(
-            clipBehavior: Clip.antiAlias,
-            child: TableCalendar(
-              firstDay: DateTime.now().subtract(const Duration(days: 365)),
-              lastDay: DateTime.now().add(const Duration(days: 365)),
-              focusedDay: _focusedDay,
-              selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-              onDaySelected: (selectedDay, focusedDay) {
-                setState(() {
-                  _selectedDay = selectedDay;
-                  _focusedDay = focusedDay;
-                });
-              },
-              // Keeps the month summary in step with the month on screen.
-              onPageChanged: (focusedDay) =>
-                  setState(() => _focusedDay = focusedDay),
-              eventLoader: _getEventsForDay,
-              calendarBuilders: CalendarBuilders(
-                markerBuilder: (context, date, events) {
-                  if (events.isEmpty) return const SizedBox();
-                  return Positioned(
-                    bottom: 1,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: events.take(4).map((e) {
-                        Color c = brandGold;
-                        if (e.runtimeType.toString().contains('Leave')) {
-                          final status = (e as dynamic).status.stringValue;
-                          c = status == 'approved'
-                              ? brandMaroon
-                              : (status == 'rejected'
-                                  ? Colors.black
-                                  : Colors.black38);
-                        }
-                        return Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 1),
-                          width: 6,
-                          height: 6,
-                          decoration:
-                              BoxDecoration(shape: BoxShape.circle, color: c),
-                        );
-                      }).toList(),
-                    ),
-                  );
+    return AutoRefresh(
+      onRefresh: () => _refresh(quiet: true),
+      child: RefreshIndicator(
+        onRefresh: () async => _refresh(),
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            if (!_isOwner) _buildMaidActions(l),
+            if (_isOwner && _staffOptions().isNotEmpty)
+              StaffFilter(
+                options: _staffOptions(),
+                selectedId: _selectedMemberId,
+                onSelected: (id) => setState(() => _selectedMemberId = id),
+                lang: l,
+              ),
+            if (_isOwner && _selectedMemberId != null) _buildMonthSummary(l),
+            Card(
+              clipBehavior: Clip.antiAlias,
+              child: TableCalendar(
+                firstDay: DateTime.now().subtract(const Duration(days: 365)),
+                lastDay: DateTime.now().add(const Duration(days: 365)),
+                focusedDay: _focusedDay,
+                selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+                onDaySelected: (selectedDay, focusedDay) {
+                  setState(() {
+                    _selectedDay = selectedDay;
+                    _focusedDay = focusedDay;
+                  });
                 },
+                // Keeps the month summary in step with the month on screen.
+                onPageChanged: (focusedDay) =>
+                    setState(() => _focusedDay = focusedDay),
+                eventLoader: _getEventsForDay,
+                calendarBuilders: CalendarBuilders(
+                  markerBuilder: (context, date, events) {
+                    if (events.isEmpty) return const SizedBox();
+                    return Positioned(
+                      bottom: 1,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: events.take(4).map((e) {
+                          Color c = brandGold;
+                          if (e.runtimeType.toString().contains('Leave')) {
+                            final status = (e as dynamic).status.stringValue;
+                            c = status == 'approved'
+                                ? brandMaroon
+                                : (status == 'rejected'
+                                    ? Colors.black
+                                    : Colors.black38);
+                          }
+                          return Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 1),
+                            width: 6,
+                            height: 6,
+                            decoration:
+                                BoxDecoration(shape: BoxShape.circle, color: c),
+                          );
+                        }).toList(),
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 16),
-          if (_isOwner && !_loading && _selectedDay != null)
-            _buildAddRecordButton(l),
-          if (_loading)
-            const Center(
-                child: Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: CircularProgressIndicator()))
-          else
-            _buildEventList(selectedEvents, l),
-        ],
+            const SizedBox(height: 16),
+            if (_isOwner && !_loading && _selectedDay != null)
+              _buildAddRecordButton(l),
+            if (_loading)
+              const Center(
+                  child: Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: CircularProgressIndicator()))
+            else
+              _buildEventList(selectedEvents, l),
+          ],
+        ),
       ),
     );
   }

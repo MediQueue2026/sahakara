@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/app_data.dart';
+import '../../core/auto_refresh.dart';
 import '../../core/app_language.dart';
 import '../../core/strings.dart';
 import '../../core/theme.dart';
@@ -46,9 +47,12 @@ class _PayrollScreenState extends State<PayrollScreen> {
     _refresh();
   }
 
-  Future<void> _refresh() async {
-    if (!mounted) return;
-    setState(() => _loading = true);
+  /// Reloads everything. [quiet] is for the automatic reloads: no spinner
+  /// over what's on screen and no error message, and it skips while an
+  /// action is running, since that reloads when it's done.
+  Future<void> _refresh({bool quiet = false}) async {
+    if (!mounted || (quiet && _busy)) return;
+    if (!quiet) setState(() => _loading = true);
     try {
       if (_isOwner) {
         final members = await AppData.fetchHouseholdMembers(_householdId);
@@ -73,7 +77,7 @@ class _PayrollScreenState extends State<PayrollScreen> {
         _myAdvanceRequests = await AppData.fetchMyAdvanceRequests();
       }
     } catch (error) {
-      if (mounted) {
+      if (mounted && !quiet) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(error.toString())));
@@ -209,26 +213,29 @@ class _PayrollScreenState extends State<PayrollScreen> {
     return ValueListenableBuilder<AppLanguage>(
       valueListenable: widget.lang,
       builder: (context, language, _) => Scaffold(
-        body: RefreshIndicator(
-          onRefresh: _refresh,
-          child: _loading
-              ? ListView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  children: const [
-                    SizedBox(
-                      height: 300,
-                      child: Center(child: CircularProgressIndicator()),
-                    ),
-                  ],
-                )
-              : ListView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  padding: const EdgeInsets.all(16),
-                  children: [
-                    if (_isOwner) ..._buildOwnerContent(language),
-                    if (!_isOwner) ..._buildStaffContent(language),
-                  ],
-                ),
+        body: AutoRefresh(
+          onRefresh: () => _refresh(quiet: true),
+          child: RefreshIndicator(
+            onRefresh: _refresh,
+            child: _loading
+                ? ListView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    children: const [
+                      SizedBox(
+                        height: 300,
+                        child: Center(child: CircularProgressIndicator()),
+                      ),
+                    ],
+                  )
+                : ListView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.all(16),
+                    children: [
+                      if (_isOwner) ..._buildOwnerContent(language),
+                      if (!_isOwner) ..._buildStaffContent(language),
+                    ],
+                  ),
+          ),
         ),
       ),
     );
