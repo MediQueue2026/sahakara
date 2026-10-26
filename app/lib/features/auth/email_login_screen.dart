@@ -7,6 +7,7 @@ import '../../core/firebase_client.dart';
 import '../../core/remember_me.dart';
 import '../../core/strings.dart';
 import '../../core/theme.dart';
+import '../../core/transitions.dart';
 import '../../dataconnect_generated/sahakara.dart' show AccountType;
 
 /// Email + password sign in / sign up, with separate front doors for house
@@ -39,7 +40,16 @@ class EmailLoginScreen extends StatefulWidget {
   State<EmailLoginScreen> createState() => _EmailLoginScreenState();
 }
 
-class _EmailLoginScreenState extends State<EmailLoginScreen> {
+class _EmailLoginScreenState extends State<EmailLoginScreen>
+    with SingleTickerProviderStateMixin {
+  // Drives the staggered entrance: logo, then language chips, then the
+  // account-type choice or form.
+  late final _entrance = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 900),
+  );
+  bool _entranceStarted = false;
+
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -55,6 +65,24 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
     super.initState();
     final key = widget.initialErrorKey;
     if (key != null) _error = Strings.of(key, widget.lang.value);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_entranceStarted) return;
+    _entranceStarted = true;
+    if (MediaQuery.maybeDisableAnimationsOf(context) ?? false) {
+      _entrance.value = 1;
+    } else {
+      _entrance.forward();
+    }
+  }
+
+  @override
+  void dispose() {
+    _entrance.dispose();
+    super.dispose();
   }
 
   // Lower-cased so it matches the address an owner typed when inviting a
@@ -116,47 +144,68 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Image.asset(
-                        'assets/images/logo_vertical.png',
-                        height: 200,
-                        semanticLabel: Strings.of('appName', lang),
+                      _EntranceItem(
+                        animation: _entrance,
+                        interval: const Interval(0, 0.6),
+                        child: Image.asset(
+                          'assets/images/logo_vertical.png',
+                          height: 200,
+                          semanticLabel: Strings.of('appName', lang),
+                        ),
                       ),
                       const SizedBox(height: 24),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: AppLanguage.values
-                            .map(
-                              (l) => Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 4,
+                      _EntranceItem(
+                        animation: _entrance,
+                        interval: const Interval(0.2, 0.75),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: AppLanguage.values
+                              .map(
+                                (l) => Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 4,
+                                  ),
+                                  child: ChoiceChip(
+                                    label: Text(l.short),
+                                    selected: lang == l,
+                                    onSelected: (_) => widget.lang.value = l,
+                                  ),
                                 ),
-                                child: ChoiceChip(
-                                  label: Text(l.short),
-                                  selected: lang == l,
-                                  onSelected: (_) => widget.lang.value = l,
-                                ),
-                              ),
-                            )
-                            .toList(),
+                              )
+                              .toList(),
+                        ),
                       ),
                       const SizedBox(height: 32),
-                      if (_accountType == null) ...[
-                        AccountTypeChoice(
-                          lang: lang,
-                          onSelected: (type) => setState(() {
-                            _accountType = type;
-                            _error = null;
-                          }),
-                        ),
-                        if (_error != null) ...[
-                          const SizedBox(height: 16),
-                          Text(
-                            _error!,
-                            style: const TextStyle(color: brandMaroon),
+                      _EntranceItem(
+                        animation: _entrance,
+                        interval: const Interval(0.4, 1),
+                        // AnimatedSize eases the height change between the
+                        // choice and the form, so the centred logo glides
+                        // rather than jumps.
+                        child: AnimatedSize(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOutCubic,
+                          alignment: Alignment.topCenter,
+                          child: FadeThroughSwitcher(
+                            child: Column(
+                              key: ValueKey(_accountType),
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: _accountType == null
+                                  ? [
+                                      AccountTypeChoice(
+                                        lang: lang,
+                                        onSelected: (type) => setState(() {
+                                          _accountType = type;
+                                          _error = null;
+                                        }),
+                                      ),
+                                      _errorText(),
+                                    ]
+                                  : _form(context, lang),
+                            ),
                           ),
-                        ],
-                      ] else
-                        ..._form(context, lang),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -193,14 +242,17 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
         ],
       ),
       const SizedBox(height: 12),
-      if (_signUp) ...[
-        TextField(
-          controller: _nameController,
-          textCapitalization: TextCapitalization.words,
-          decoration: InputDecoration(labelText: Strings.of('name', lang)),
+      AnimatedReveal(
+        visible: _signUp,
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: TextField(
+            controller: _nameController,
+            textCapitalization: TextCapitalization.words,
+            decoration: InputDecoration(labelText: Strings.of('name', lang)),
+          ),
         ),
-        const SizedBox(height: 12),
-      ],
+      ),
       TextField(
         controller: _emailController,
         keyboardType: TextInputType.emailAddress,
@@ -214,23 +266,25 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
         decoration: InputDecoration(labelText: Strings.of('password', lang)),
         onSubmitted: _signUp ? null : (_) => _submit(lang),
       ),
-      if (_signUp) ...[
-        const SizedBox(height: 12),
-        TextField(
-          controller: _confirmController,
-          obscureText: true,
-          decoration: InputDecoration(
-            labelText: Strings.of('confirmPassword', lang),
+      AnimatedReveal(
+        visible: _signUp,
+        child: Padding(
+          padding: const EdgeInsets.only(top: 12),
+          child: TextField(
+            controller: _confirmController,
+            obscureText: true,
+            decoration: InputDecoration(
+              labelText: Strings.of('confirmPassword', lang),
+            ),
+            onSubmitted: (_) => _submit(lang),
           ),
-          onSubmitted: (_) => _submit(lang),
         ),
-      ],
+      ),
       const SizedBox(height: 8),
       CheckboxListTile(
         value: _rememberMe,
-        onChanged: _busy
-            ? null
-            : (v) => setState(() => _rememberMe = v ?? true),
+        onChanged:
+            _busy ? null : (v) => setState(() => _rememberMe = v ?? true),
         title: Text(Strings.of('rememberMe', lang)),
         controlAffinity: ListTileControlAffinity.leading,
         contentPadding: EdgeInsets.zero,
@@ -239,7 +293,19 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
       const SizedBox(height: 12),
       FilledButton(
         onPressed: _busy ? null : () => _submit(lang),
-        child: Text(Strings.of(_signUp ? 'signUp' : 'signIn', lang)),
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 200),
+          child: _busy
+              ? const SizedBox.square(
+                  key: ValueKey('busy'),
+                  dimension: 18,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : Text(
+                  Strings.of(_signUp ? 'signUp' : 'signIn', lang),
+                  key: ValueKey(_signUp),
+                ),
+        ),
       ),
       const SizedBox(height: 8),
       TextButton(
@@ -249,13 +315,60 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                   _signUp = !_signUp;
                   _error = null;
                 }),
-        child: Text(Strings.of(_signUp ? 'haveAccount' : 'noAccount', lang)),
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 200),
+          child: Text(
+            Strings.of(_signUp ? 'haveAccount' : 'noAccount', lang),
+            key: ValueKey(_signUp),
+          ),
+        ),
       ),
-      if (_error != null) ...[
-        const SizedBox(height: 16),
-        Text(_error!, style: const TextStyle(color: brandMaroon)),
-      ],
+      _errorText(),
     ];
+  }
+
+  Widget _errorText() {
+    final error = _error;
+    return AnimatedReveal(
+      visible: error != null,
+      child: Padding(
+        padding: const EdgeInsets.only(top: 16),
+        child: Text(error ?? '', style: const TextStyle(color: brandMaroon)),
+      ),
+    );
+  }
+}
+
+/// Fades [child] in and lifts it into place over its [interval] of the
+/// screen's entrance animation.
+class _EntranceItem extends StatelessWidget {
+  final Animation<double> animation;
+  final Interval interval;
+  final Widget child;
+
+  const _EntranceItem({
+    required this.animation,
+    required this.interval,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final curved = CurvedAnimation(
+      parent: animation,
+      curve: Interval(interval.begin, interval.end, curve: Curves.easeOutCubic),
+    );
+    return AnimatedBuilder(
+      animation: curved,
+      builder: (context, child) => Opacity(
+        opacity: curved.value,
+        child: Transform.translate(
+          offset: Offset(0, 24 * (1 - curved.value)),
+          child: child,
+        ),
+      ),
+      child: child,
+    );
   }
 }
 

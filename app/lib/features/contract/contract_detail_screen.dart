@@ -227,6 +227,7 @@ class _ContractDetailScreenState extends State<ContractDetailScreen> {
             email: widget.profile!.email,
             onHouseholdAccepted: widget.onHouseholdAccepted ?? (_) => _load(),
             inHomeShell: true,
+            showWaitingIfNone: widget.memberId == AppData.previewMembershipId,
           ),
         if (_contract == null && widget.showMissingContract)
           Text(

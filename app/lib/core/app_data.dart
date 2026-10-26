@@ -1,7 +1,8 @@
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:firebase_data_connect/firebase_data_connect.dart' show Timestamp;
+import 'package:firebase_data_connect/firebase_data_connect.dart'
+    show Timestamp;
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:translator/translator.dart';
 
@@ -42,6 +43,10 @@ class Membership {
     required this.status,
     required this.household,
   });
+
+  /// The placeholder from [AppData.previewMaidMembership]: a maid account
+  /// that hasn't joined a household yet.
+  bool get isUnassigned => id == AppData.previewMembershipId;
 }
 
 /// The account type and (on sign-up) name picked on the login screen,
@@ -160,7 +165,11 @@ class AppData {
   /// supports several (multi-house, Phase 3) — the basics here just use
   /// the first one.
   static Future<Membership?> fetchMyMembership() async {
-    final result = await db.myMembership().execute();
+    // Both at once, to save a round trip when there's no active one.
+    final (result, pendingResult) = await (
+      db.myMembership().execute(),
+      db.pendingMyMembership().execute(),
+    ).wait;
     final activeMember = result.data.householdMembers.firstOrNull;
     if (activeMember != null) {
       return Membership(
@@ -171,7 +180,6 @@ class AppData {
         household: activeMember.household,
       );
     }
-    final pendingResult = await db.pendingMyMembership().execute();
     final pendingMember = pendingResult.data.householdMembers.firstOrNull;
     if (pendingMember != null) {
       return Membership(
@@ -190,8 +198,10 @@ class AppData {
     return null;
   }
 
+  static const previewMembershipId = '00000000-0000-0000-0000-000000000000';
+
   static Membership previewMaidMembership() => Membership(
-        id: '00000000-0000-0000-0000-000000000000',
+        id: previewMembershipId,
         role: const Known(MemberRole.maid),
         active: false,
         status: const Known(MembershipStatus.pending),

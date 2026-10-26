@@ -4,6 +4,7 @@ import '../../core/app_data.dart';
 import '../../core/app_language.dart';
 import '../../core/strings.dart';
 import '../../core/theme.dart';
+import '../../core/transitions.dart';
 import '../contract/contract_detail_screen.dart';
 import '../contract/contract_screen.dart';
 import '../settings/settings_screen.dart';
@@ -25,12 +26,17 @@ class HomeShell extends StatefulWidget {
   final Membership membership;
   final ValueChanged<String> onHouseholdAccepted;
 
+  /// Opens the profile over the shell straight away, for a maid who has
+  /// just signed up.
+  final bool openProfileOnStart;
+
   const HomeShell({
     super.key,
     required this.lang,
     required this.profile,
     required this.membership,
     required this.onHouseholdAccepted,
+    this.openProfileOnStart = false,
   });
 
   @override
@@ -39,6 +45,16 @@ class HomeShell extends StatefulWidget {
 
 class _HomeShellState extends State<HomeShell> {
   int _index = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.openProfileOnStart) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _openSettings(widget.lang.value, welcome: true);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +69,10 @@ class _HomeShellState extends State<HomeShell> {
 
         return Scaffold(
           appBar: AppBar(
-            title: Text(tabs[index].label),
+            title: FadeThroughSwitcher(
+              alignment: AlignmentDirectional.centerStart,
+              child: Text(tabs[index].label, key: ValueKey(index)),
+            ),
             actions: [
               IconButton(
                 tooltip: Strings.of('settings', lang),
@@ -62,7 +81,9 @@ class _HomeShellState extends State<HomeShell> {
               ),
             ],
           ),
-          body: tabs[index].page,
+          body: FadeThroughSwitcher(
+            child: KeyedSubtree(key: ValueKey(index), child: tabs[index].page),
+          ),
           bottomNavigationBar: _BottomBar(
             selectedIndex: index,
             onSelected: (i) => setState(() => _index = i),
@@ -82,12 +103,16 @@ class _HomeShellState extends State<HomeShell> {
     );
   }
 
-  void _openSettings(AppLanguage lang) {
+  void _openSettings(AppLanguage lang, {bool welcome = false}) {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => Scaffold(
           appBar: AppBar(title: Text(Strings.of('settings', lang))),
-          body: SettingsScreen(lang: widget.lang, profile: widget.profile),
+          body: SettingsScreen(
+            lang: widget.lang,
+            profile: widget.profile,
+            welcome: welcome,
+          ),
         ),
       ),
     );
@@ -158,72 +183,86 @@ class _HomeShellState extends State<HomeShell> {
         ),
       ];
 
-  List<_Tab> _staffTabs(AppLanguage lang) => [
-        _Tab(
-          Icons.checklist,
-          Icons.checklist,
-          Strings.of('myTasks', lang),
-          MyTasksScreen(
+  List<_Tab> _staffTabs(AppLanguage lang) {
+    // A maid with no household yet has nothing to show outside My contract,
+    // which lists the owners' requests, so the other tabs say so instead.
+    Widget gate(Widget page) => widget.membership.isUnassigned
+        ? _NotAssignedYet(
+            lang: lang,
+            onViewRequests: () => setState(() => _index = _contractTab),
+          )
+        : page;
+
+    return [
+      _Tab(
+        Icons.checklist,
+        Icons.checklist,
+        Strings.of('myTasks', lang),
+        gate(MyTasksScreen(
+          lang: widget.lang,
+          profile: widget.profile,
+          membership: widget.membership,
+          readOnly: !widget.membership.active ||
+              widget.membership.status.stringValue != 'accepted',
+        )),
+      ),
+      _Tab(
+        Icons.description_outlined,
+        Icons.description,
+        Strings.of('myContract', lang),
+        ContractDetailScreen(
+          lang: widget.lang,
+          memberId: widget.membership.id,
+          memberName: widget.profile.name,
+          editable: false,
+          profile: widget.profile,
+          showMissingContract: widget.membership.active,
+          showAppBar: false,
+          onHouseholdAccepted: widget.onHouseholdAccepted,
+        ),
+      ),
+      _Tab(
+        Icons.event_available,
+        Icons.event_available,
+        Strings.of('attendance', lang),
+        gate(AttendanceTab(
             lang: widget.lang,
-            profile: widget.profile,
             membership: widget.membership,
-            readOnly: !widget.membership.active ||
-                widget.membership.status.stringValue != 'accepted',
-          ),
-        ),
-        _Tab(
-          Icons.description_outlined,
-          Icons.description,
-          Strings.of('myContract', lang),
-          ContractDetailScreen(
-            lang: widget.lang,
-            memberId: widget.membership.id,
-            memberName: widget.profile.name,
-            editable: false,
             profile: widget.profile,
-            showMissingContract: widget.membership.active,
-            showAppBar: false,
-            onHouseholdAccepted: widget.onHouseholdAccepted,
-          ),
-        ),
-        _Tab(
-          Icons.event_available,
-          Icons.event_available,
-          Strings.of('attendance', lang),
-          AttendanceTab(
-              lang: widget.lang,
-              membership: widget.membership,
-              profile: widget.profile,
-              readOnly: !widget.membership.active ||
-                  widget.membership.status.stringValue != 'accepted'),
-        ),
-        _Tab(
-          Icons.payments_outlined,
-          Icons.payments,
-          Strings.of('pay', lang),
-          PayrollScreen(
-            lang: widget.lang,
-            membership: widget.membership,
             readOnly: !widget.membership.active ||
-                widget.membership.status.stringValue != 'accepted',
-          ),
-        ),
-        _Tab(
-          Icons.shopping_cart_outlined,
-          Icons.shopping_cart,
-          lang == AppLanguage.si
-              ? 'බඩු ලැයිස්තුව'
-              : lang == AppLanguage.ta
-                  ? 'பொருட்கள் பட்டியல்'
-                  : 'Groceries',
-          GroceryListScreen(
-            householdId: widget.membership.household.id,
-            lang: widget.lang,
-            readOnly: !widget.membership.active ||
-                widget.membership.status.stringValue != 'accepted',
-          ),
-        ),
-      ];
+                widget.membership.status.stringValue != 'accepted')),
+      ),
+      _Tab(
+        Icons.payments_outlined,
+        Icons.payments,
+        Strings.of('pay', lang),
+        gate(PayrollScreen(
+          lang: widget.lang,
+          membership: widget.membership,
+          readOnly: !widget.membership.active ||
+              widget.membership.status.stringValue != 'accepted',
+        )),
+      ),
+      _Tab(
+        Icons.shopping_cart_outlined,
+        Icons.shopping_cart,
+        lang == AppLanguage.si
+            ? 'බඩු ලැයිස්තුව'
+            : lang == AppLanguage.ta
+                ? 'பொருட்கள் பட்டியல்'
+                : 'Groceries',
+        gate(GroceryListScreen(
+          householdId: widget.membership.household.id,
+          lang: widget.lang,
+          readOnly: !widget.membership.active ||
+              widget.membership.status.stringValue != 'accepted',
+        )),
+      ),
+    ];
+  }
+
+  // Index of My contract in [_staffTabs].
+  static const _contractTab = 1;
 }
 
 class _Tab {
@@ -351,6 +390,49 @@ class _BottomBarButton extends StatelessWidget {
                     ),
                   ),
                 ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Stands in for a maid tab while the account has no household yet.
+class _NotAssignedYet extends StatelessWidget {
+  final AppLanguage lang;
+  final VoidCallback onViewRequests;
+
+  const _NotAssignedYet({required this.lang, required this.onViewRequests});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 360),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.hourglass_empty, size: 48, color: mutedText),
+              const SizedBox(height: 16),
+              Text(
+                Strings.of('notAssignedYet', lang),
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                Strings.of('notAssignedYetBody', lang),
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: mutedText),
+              ),
+              const SizedBox(height: 24),
+              FilledButton.tonal(
+                onPressed: onViewRequests,
+                child: Text(Strings.of('viewRequests', lang)),
               ),
             ],
           ),

@@ -228,6 +228,24 @@ class Strings {
       AppLanguage.ta:
           'இந்த மின்னஞ்சலைப் பயன்படுத்தி உங்களை சஹகாரவில் சேர்க்க வீட்டு உரிமையாளரிடம் கேளுங்கள்:',
     },
+    'notAssignedYet': {
+      AppLanguage.en: "You're not assigned to a household yet",
+      AppLanguage.si: 'ඔබ තවමත් නිවසකට අනුයුක්ත කර නැත',
+      AppLanguage.ta: 'நீங்கள் இன்னும் எந்த வீட்டிலும் நியமிக்கப்படவில்லை',
+    },
+    'notAssignedYetBody': {
+      AppLanguage.en:
+          'Once a house owner adds you and you accept their request, this will fill in.',
+      AppLanguage.si:
+          'නිවස් හිමිකරුවෙකු ඔබව එක් කර, ඔබ ඔවුන්ගේ ඉල්ලීම පිළිගත් පසු මෙහි තොරතුරු පෙන්වනු ඇත.',
+      AppLanguage.ta:
+          'ஒரு வீட்டு உரிமையாளர் உங்களைச் சேர்த்து, நீங்கள் அவர்களின் கோரிக்கையை ஏற்றதும் இங்கே விவரங்கள் தோன்றும்.',
+    },
+    'viewRequests': {
+      AppLanguage.en: 'View requests',
+      AppLanguage.si: 'ඉල්ලීම් බලන්න',
+      AppLanguage.ta: 'கோரிக்கைகளைப் பார்க்கவும்',
+    },
     'checkAgain': {
       AppLanguage.en: 'Check again',
       AppLanguage.si: 'නැවත පරීක්ෂා කරන්න',
@@ -418,6 +436,19 @@ class Strings {
       AppLanguage.en: 'Settings',
       AppLanguage.si: 'සැකසුම්',
       AppLanguage.ta: 'அமைப்புகள்',
+    },
+    'completeProfile': {
+      AppLanguage.en: 'Welcome! Complete your profile',
+      AppLanguage.si: 'සාදරයෙන් පිළිගනිමු! ඔබගේ පැතිකඩ සම්පූර්ණ කරන්න',
+      AppLanguage.ta: 'வரவேற்கிறோம்! உங்கள் சுயவிவரத்தை நிறைவு செய்யுங்கள்',
+    },
+    'completeProfileBody': {
+      AppLanguage.en:
+          'Add the languages you speak, the areas you can work in and the work you do, so house owners can find you.',
+      AppLanguage.si:
+          'නිවස් හිමිකරුවන්ට ඔබව සොයා ගැනීමට හැකි වන පරිදි, ඔබ කතා කරන භාෂා, වැඩ කළ හැකි ප්‍රදේශ සහ ඔබ කරන වැඩ එක් කරන්න.',
+      AppLanguage.ta:
+          'வீட்டு உரிமையாளர்கள் உங்களைக் கண்டறிய, நீங்கள் பேசும் மொழிகள், வேலை செய்யக்கூடிய பகுதிகள் மற்றும் நீங்கள் செய்யும் வேலைகளைச் சேர்க்கவும்.',
     },
     'accountDetails': {
       AppLanguage.en: 'Account details',
@@ -1338,7 +1369,8 @@ class Strings {
     'checkOutAfterCheckIn': {
       AppLanguage.en: 'Check-out must be after check-in',
       AppLanguage.si: 'පිටවීම පැමිණීමට පසුව විය යුතුය',
-      AppLanguage.ta: 'வெளியேறும் நேரம் வருகை நேரத்திற்குப் பிறகு இருக்க வேண்டும்',
+      AppLanguage.ta:
+          'வெளியேறும் நேரம் வருகை நேரத்திற்குப் பிறகு இருக்க வேண்டும்',
     },
     'confirmDeleteAttendance': {
       AppLanguage.en: 'Remove this attendance record?',
@@ -1358,7 +1390,8 @@ class Strings {
     'groceryEmpty': {
       AppLanguage.en: 'No items yet. Anyone in the household can add one.',
       AppLanguage.si: 'තවම භාණ්ඩ නැත. නිවසේ ඕනෑම අයෙකුට එකතු කළ හැක.',
-      AppLanguage.ta: 'இன்னும் பொருட்கள் இல்லை. வீட்டில் உள்ள எவரும் சேர்க்கலாம்.',
+      AppLanguage.ta:
+          'இன்னும் பொருட்கள் இல்லை. வீட்டில் உள்ள எவரும் சேர்க்கலாம்.',
     },
   };
 

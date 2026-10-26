@@ -5,6 +5,7 @@ import 'core/app_data.dart';
 import 'core/app_language.dart';
 import 'core/firebase_client.dart';
 import 'core/strings.dart';
+import 'core/transitions.dart';
 import 'dataconnect_generated/sahakara.dart' show AccountType;
 import 'features/auth/email_login_screen.dart';
 import 'features/home/home_shell.dart';
@@ -41,34 +42,38 @@ class _MobileAppState extends State<MobileApp> {
   Widget build(BuildContext context) {
     return StreamBuilder<User?>(
       stream: auth.authStateChanges(),
-      builder: (context, snapshot) {
-        final user = snapshot.data;
-        if (user == null) {
-          final rejectedAs = _rejectedAs;
-          return EmailLoginScreen(
-            lang: lang,
-            onIntent: (intent) {
-              _intent = intent;
-              _rejectedAs = null;
-            },
-            // An admin has no mobile form to go back to.
-            initialAccountType:
-                rejectedAs == AccountType.admin ? null : rejectedAs,
-            initialErrorKey: switch (rejectedAs) {
-              AccountType.owner => 'registeredAsOwner',
-              AccountType.maid => 'registeredAsMaid',
-              AccountType.admin => 'adminUseWebPanel',
-              null => null,
-            },
-          );
-        }
-        return _AuthedRouter(
-          key: ValueKey(user.uid),
-          lang: lang,
-          intent: _intent,
-          onWrongAccountType: _onWrongAccountType,
-        );
-      },
+      // Without this a remembered session renders the login screen for a
+      // frame, and its entrance animation starts before fading away.
+      initialData: auth.currentUser,
+      builder: (context, snapshot) =>
+          FadeThroughSwitcher(child: _screenFor(snapshot.data)),
+    );
+  }
+
+  Widget _screenFor(User? user) {
+    if (user == null) {
+      final rejectedAs = _rejectedAs;
+      return EmailLoginScreen(
+        lang: lang,
+        onIntent: (intent) {
+          _intent = intent;
+          _rejectedAs = null;
+        },
+        // An admin has no mobile form to go back to.
+        initialAccountType: rejectedAs == AccountType.admin ? null : rejectedAs,
+        initialErrorKey: switch (rejectedAs) {
+          AccountType.owner => 'registeredAsOwner',
+          AccountType.maid => 'registeredAsMaid',
+          AccountType.admin => 'adminUseWebPanel',
+          null => null,
+        },
+      );
+    }
+    return _AuthedRouter(
+      key: ValueKey(user.uid),
+      lang: lang,
+      intent: _intent,
+      onWrongAccountType: _onWrongAccountType,
     );
   }
 }
@@ -96,6 +101,12 @@ class _AuthedRouterState extends State<_AuthedRouter> {
   late AuthIntent? _intent = widget.intent;
   String? _preferredMembershipId;
 
+  // A maid who just signed up (the login screen only passes a name then)
+  // lands on their profile first. Any later reload of this router is
+  // after that, so refresh() clears it.
+  late bool _openProfile = widget.intent?.name != null &&
+      widget.intent?.accountType == AccountType.maid;
+
   @override
   void initState() {
     super.initState();
@@ -106,15 +117,22 @@ class _AuthedRouterState extends State<_AuthedRouter> {
     // A persisted session can outlive its account (e.g. the Auth emulator
     // restarted and dropped its users). Data Connect would then send no
     // token and every operation fails as unauthenticated, so force a token
-    // refresh up front and sign out if the account is gone.
-    try {
-      await auth.currentUser?.getIdToken(true);
-    } on FirebaseAuthException catch (e) {
-      if (e.code != 'network-request-failed') {
-        await auth.signOut();
+    // refresh up front and sign out if the account is gone. A session the
+    // login screen just started has a fresh token, so skip the round trip.
+    if (widget.intent == null) {
+      try {
+        await auth.currentUser?.getIdToken(true);
+      } on FirebaseAuthException catch (e) {
+        if (e.code != 'network-request-failed') {
+          await auth.signOut();
+        }
+        rethrow;
       }
-      rethrow;
     }
+    // The membership doesn't depend on the profile, so fetch both at once.
+    // Errors surface when it's awaited below; ignore() only stops one from
+    // being reported as unhandled if the profile step throws first.
+    final membershipFuture = _fetchMembership()..ignore();
     final Profile? profile;
     try {
       profile = await AppData.ensureUserProfile(signUp: _intent);
@@ -129,14 +147,21 @@ class _AuthedRouterState extends State<_AuthedRouter> {
     if (storedLang != null) {
       widget.lang.value = storedLang;
     }
-    final membershipId = _preferredMembershipId;
-    final membership = membershipId == null
-        ? await AppData.fetchMyMembership()
-        : await AppData.fetchMyMembershipById(membershipId);
+    // Memberships match on authUid, which an invited profile only gets once
+    // ensureUserProfile claims it, so an empty result may just be early.
+    final membership = await membershipFuture ?? await _fetchMembership();
     return (profile, membership);
   }
 
+  Future<Membership?> _fetchMembership() {
+    final membershipId = _preferredMembershipId;
+    return membershipId == null
+        ? AppData.fetchMyMembership()
+        : AppData.fetchMyMembershipById(membershipId);
+  }
+
   void refresh() => setState(() {
+        _openProfile = false;
         _future = _bootstrap();
       });
 
@@ -154,48 +179,53 @@ class _AuthedRouterState extends State<_AuthedRouter> {
   Widget build(BuildContext context) {
     return FutureBuilder(
       future: _future,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState != ConnectionState.done) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
-        if (snapshot.hasError) {
-          return Scaffold(
-            body: Center(
-              child: Text('Something went wrong: ${snapshot.error}'),
-            ),
-          );
-        }
-        final data = snapshot.data;
-        if (data == null) {
-          return _AccountTypeScreen(
-            lang: widget.lang,
-            onSelected: _chooseAccountType,
-          );
-        }
-        final (profile, membership) = data;
-        if (profile.accountType.stringValue == AccountType.admin.name) {
-          return _AdminOnMobileScreen(lang: widget.lang);
-        }
-        if (membership == null) {
-          if (profile.accountType.stringValue == AccountType.maid.name) {
-            return HomeShell(
-              lang: widget.lang,
-              profile: profile,
-              membership: AppData.previewMaidMembership(),
-              onHouseholdAccepted: _onHouseholdAccepted,
-            );
-          }
-          return HouseholdSetupScreen(lang: widget.lang, onDone: refresh);
-        }
+      builder: (context, snapshot) =>
+          FadeThroughSwitcher(child: _screenFor(snapshot)),
+    );
+  }
+
+  Widget _screenFor(AsyncSnapshot<(Profile, Membership?)?> snapshot) {
+    if (snapshot.connectionState != ConnectionState.done) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+    if (snapshot.hasError) {
+      return Scaffold(
+        body: Center(
+          child: Text('Something went wrong: ${snapshot.error}'),
+        ),
+      );
+    }
+    final data = snapshot.data;
+    if (data == null) {
+      return _AccountTypeScreen(
+        lang: widget.lang,
+        onSelected: _chooseAccountType,
+      );
+    }
+    final (profile, membership) = data;
+    if (profile.accountType.stringValue == AccountType.admin.name) {
+      return _AdminOnMobileScreen(lang: widget.lang);
+    }
+    if (membership == null) {
+      if (profile.accountType.stringValue == AccountType.maid.name) {
         return HomeShell(
           lang: widget.lang,
           profile: profile,
-          membership: membership,
+          membership: AppData.previewMaidMembership(),
           onHouseholdAccepted: _onHouseholdAccepted,
+          openProfileOnStart: _openProfile,
         );
-      },
+      }
+      return HouseholdSetupScreen(lang: widget.lang, onDone: refresh);
+    }
+    return HomeShell(
+      lang: widget.lang,
+      profile: profile,
+      membership: membership,
+      onHouseholdAccepted: _onHouseholdAccepted,
+      openProfileOnStart: _openProfile,
     );
   }
 }

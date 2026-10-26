@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'transitions.dart';
+
 /// The app's only two colours: gold (primary) for bars, buttons and
 /// highlights, maroon (secondary) for the selected tab, errors and accents.
 /// [brandGoldSoft] is a pale tint of the gold for selected chips and other
@@ -55,6 +57,7 @@ final appTheme = ThemeData(
   useMaterial3: true,
   colorScheme: _scheme,
   scaffoldBackgroundColor: brandIvory,
+  pageTransitionsTheme: pageTransitionsTheme,
   inputDecorationTheme: const InputDecorationTheme(
     border: OutlineInputBorder(),
     filled: true,
