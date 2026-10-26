@@ -3,6 +3,7 @@ import 'package:shimmer/shimmer.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
 import '../../core/app_data.dart';
+import '../../core/auto_refresh.dart';
 import '../../core/app_language.dart';
 import '../../core/strings.dart';
 import 'add_daily_task_screen.dart';
@@ -83,10 +84,13 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
     _tasks = _fetchTasks();
   }
 
-  Future<List<TaskRow>> _fetchTasks() async {
+  /// [generate] also creates the day's copies of daily tasks first, which
+  /// takes extra round trips; the automatic reloads skip it.
+  Future<List<TaskRow>> _fetchTasks({bool generate = true}) async {
     final tasks = await AppData.fetchHouseholdTasks(
       householdId: widget.membership.household.id,
       day: _day,
+      generateRecurringTasks: generate,
     );
     return tasks
         .map(
@@ -113,6 +117,17 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
           ),
         )
         .toList();
+  }
+
+  /// Reloads the day's tasks in the background, so the owner sees staff
+  /// updating their tasks. What's on screen stays until the new list
+  /// arrives, and stays if the reload fails (e.g. offline).
+  Future<void> _refresh() async {
+    final day = _day;
+    final next = _fetchTasks(generate: false);
+    await next;
+    // A different day picked meanwhile already has its own load.
+    if (mounted && day == _day) setState(() => _tasks = next);
   }
 
   void _changeDay(DateTime day) {
@@ -197,45 +212,48 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
             children: [
               DaySwitcher(day: _day, onChanged: _changeDay),
               Expanded(
-                child: FutureBuilder<List<TaskRow>>(
-                  future: _tasks,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasError) {
-                      return Center(child: Text('${snapshot.error}'));
-                    }
-                    if (!snapshot.hasData) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 16, horizontal: 16),
-                        child: Shimmer.fromColors(
-                          baseColor: Colors.grey[300]!,
-                          highlightColor: Colors.grey[100]!,
-                          child: Column(
-                            children: List.generate(
-                              4,
-                              (index) => Padding(
-                                padding: const EdgeInsets.only(bottom: 8.0),
-                                child: Container(
-                                  height: 80,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(12),
+                child: AutoRefresh(
+                  onRefresh: _refresh,
+                  child: FutureBuilder<List<TaskRow>>(
+                    future: _tasks,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasError) {
+                        return Center(child: Text('${snapshot.error}'));
+                      }
+                      if (!snapshot.hasData) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 16, horizontal: 16),
+                          child: Shimmer.fromColors(
+                            baseColor: Colors.grey[300]!,
+                            highlightColor: Colors.grey[100]!,
+                            child: Column(
+                              children: List.generate(
+                                4,
+                                (index) => Padding(
+                                  padding: const EdgeInsets.only(bottom: 8.0),
+                                  child: Container(
+                                    height: 80,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                      );
-                    }
-                    final tasks = snapshot.data!;
-                    if (tasks.isEmpty) {
-                      return Center(
-                        child: Text(Strings.of('noTasksForDay', lang)),
-                      );
-                    }
-                    return _buildGrouped(tasks, lang);
-                  },
+                        );
+                      }
+                      final tasks = snapshot.data!;
+                      if (tasks.isEmpty) {
+                        return Center(
+                          child: Text(Strings.of('noTasksForDay', lang)),
+                        );
+                      }
+                      return _buildGrouped(tasks, lang);
+                    },
+                  ),
                 ),
               ),
             ],

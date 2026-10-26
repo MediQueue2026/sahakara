@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:translator/translator.dart';
 
 import '../../core/app_data.dart';
+import '../../core/auto_refresh.dart';
 import '../../core/app_language.dart';
 import '../../core/strings.dart';
 import '../../core/theme.dart';
@@ -187,79 +188,84 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
         // No app bar of its own: HomeShell's top bar already shows the
         // tab's label.
         return Scaffold(
-          body: StreamBuilder<List<GetGroceryItemsGroceryItems>>(
-            stream: _items,
-            builder: (context, snapshot) {
-              if (!snapshot.hasData && !snapshot.hasError) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              if (snapshot.hasError) {
-                return Center(child: Text(snapshot.error.toString()));
-              }
-              final items = snapshot.data ?? [];
-              if (items.isEmpty) {
-                return RefreshIndicator(
-                  onRefresh: _refresh,
-                  child: ListView(
-                    children: [
-                      const SizedBox(height: 100),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 32),
-                        child: Text(
-                          Strings.of('groceryEmpty', lang),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }
-              return RefreshIndicator(
-                onRefresh: _refresh,
-                child: ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: items.length,
-                  itemBuilder: (context, index) {
-                    final item = items[index];
-                    return Card(
-                      margin: const EdgeInsets.only(bottom: 8),
-                      child: ListTile(
-                        leading: Checkbox(
-                          value: item.isBought,
-                          onChanged: widget.readOnly ? null : (val) {
-                            if (val != null) _toggleBought(item, val);
-                          },
-                        ),
-                        title: Text(
-                          _getItemName(item, lang),
-                          style: TextStyle(
-                            decoration:
-                                item.isBought ? TextDecoration.lineThrough : null,
-                            color: item.isBought ? Colors.black38 : Colors.black87,
+          // The subscription below usually pushes changes on its own; this
+          // is the fallback for when it misses one.
+          body: AutoRefresh(
+            onRefresh: _refresh,
+            child: StreamBuilder<List<GetGroceryItemsGroceryItems>>(
+              stream: _items,
+              builder: (context, snapshot) {
+                if (!snapshot.hasData && !snapshot.hasError) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (snapshot.hasError) {
+                  return Center(child: Text(snapshot.error.toString()));
+                }
+                final items = snapshot.data ?? [];
+                if (items.isEmpty) {
+                  return RefreshIndicator(
+                    onRefresh: _refresh,
+                    child: ListView(
+                      children: [
+                        const SizedBox(height: 100),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 32),
+                          child: Text(
+                            Strings.of('groceryEmpty', lang),
+                            textAlign: TextAlign.center,
                           ),
                         ),
-                        subtitle: Text(
-                          [
-                            Strings.of('groceryAddedBy', lang)
-                                .replaceFirst('{name}', item.addedBy.name),
-                            if (item.isBought && item.boughtBy != null)
-                              Strings.of('groceryBoughtBy', lang)
-                                  .replaceFirst('{name}', item.boughtBy!.name),
-                          ].join(' · '),
-                          style: const TextStyle(fontSize: 12),
+                      ],
+                    ),
+                  );
+                }
+                return RefreshIndicator(
+                  onRefresh: _refresh,
+                  child: ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: items.length,
+                    itemBuilder: (context, index) {
+                      final item = items[index];
+                      return Card(
+                        margin: const EdgeInsets.only(bottom: 8),
+                        child: ListTile(
+                          leading: Checkbox(
+                            value: item.isBought,
+                            onChanged: widget.readOnly ? null : (val) {
+                              if (val != null) _toggleBought(item, val);
+                            },
+                          ),
+                          title: Text(
+                            _getItemName(item, lang),
+                            style: TextStyle(
+                              decoration:
+                                  item.isBought ? TextDecoration.lineThrough : null,
+                              color: item.isBought ? Colors.black38 : Colors.black87,
+                            ),
+                          ),
+                          subtitle: Text(
+                            [
+                              Strings.of('groceryAddedBy', lang)
+                                  .replaceFirst('{name}', item.addedBy.name),
+                              if (item.isBought && item.boughtBy != null)
+                                Strings.of('groceryBoughtBy', lang)
+                                    .replaceFirst('{name}', item.boughtBy!.name),
+                            ].join(' · '),
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                          trailing: IconButton(
+                            icon:
+                                const Icon(Icons.delete_outline, color: brandMaroon),
+                            onPressed:
+                                widget.readOnly ? null : () => _deleteItem(item.id),
+                          ),
                         ),
-                        trailing: IconButton(
-                          icon:
-                              const Icon(Icons.delete_outline, color: brandMaroon),
-                          onPressed:
-                              widget.readOnly ? null : () => _deleteItem(item.id),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              );
-            },
+                      );
+                    },
+                  ),
+                );
+              },
+            ),
           ),
           floatingActionButton: widget.readOnly
               ? null

@@ -246,6 +246,13 @@ class Strings {
       AppLanguage.si: 'ඉල්ලීම් බලන්න',
       AppLanguage.ta: 'கோரிக்கைகளைப் பார்க்கவும்',
     },
+    'couldNotRefresh': {
+      AppLanguage.en: "Couldn't refresh. Check your internet connection.",
+      AppLanguage.si:
+          'යාවත්කාලීන කළ නොහැකි විය. ඔබගේ අන්තර්ජාල සම්බන්ධතාවය පරීක්ෂා කරන්න.',
+      AppLanguage.ta:
+          'புதுப்பிக்க முடியவில்லை. உங்கள் இணைய இணைப்பைச் சரிபார்க்கவும்.',
+    },
     'checkAgain': {
       AppLanguage.en: 'Check again',
       AppLanguage.si: 'නැවත පරීක්ෂා කරන්න',
