@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/app_data.dart';
+import '../../core/fcm_service.dart';
 import '../../core/firebase_client.dart';
 import '../../dataconnect_generated/sahakara.dart' show AccountType;
 import 'admin_login_screen.dart';
@@ -67,9 +68,9 @@ class _NotAdminScreen extends StatelessWidget {
               child: Text(message, textAlign: TextAlign.center),
             ),
             const SizedBox(height: 12),
-            OutlinedButton(
-              onPressed: () => auth.signOut(),
-              child: const Text('Sign out'),
+            const OutlinedButton(
+              onPressed: FcmService.signOut,
+              child: Text('Sign out'),
             ),
           ],
         ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../core/firebase_client.dart';
+import '../../core/fcm_service.dart';
 import 'holidays_admin_page.dart';
 import 'households_admin_page.dart';
 import 'payment_plans_admin_page.dart';
@@ -63,14 +63,14 @@ class _AdminShellState extends State<AdminShell> {
                 ),
               ),
             ),
-            trailing: Expanded(
+            trailing: const Expanded(
               child: Align(
                 alignment: Alignment.bottomCenter,
                 child: Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
+                  padding: EdgeInsets.only(bottom: 16),
                   child: IconButton(
-                    onPressed: () => auth.signOut(),
-                    icon: const Icon(Icons.logout),
+                    onPressed: FcmService.signOut,
+                    icon: Icon(Icons.logout),
                     tooltip: 'Sign out',
                   ),
                 ),

@@ -29,6 +29,34 @@ query MyProfile @auth(level: USER) {
   }
 }
 
+query TaskNotificationDetails($taskId: UUID!) @auth(level: NO_ACCESS) {
+  tasks(where: { id: { eq: $taskId } }, limit: 1) {
+    id
+    assignedTo {
+      id
+      user {
+        language
+        userDeviceTokens_on_user {
+          token
+        }
+      }
+    }
+    template {
+      customTitle
+      customTitleSi
+      customTitleTa
+      library {
+        nameEn
+        nameSi
+        nameTa
+      }
+      household {
+        name
+      }
+    }
+  }
+}
+
 # The signed-in user's active household. Pending invitations are loaded
 # separately so legacy membership rows with no status do not break login.
 query MyMembership @auth(level: USER) {

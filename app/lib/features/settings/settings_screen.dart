@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../core/app_data.dart';
 import '../../core/app_language.dart';
+import '../../core/fcm_service.dart';
 import '../../core/strings.dart';
-import '../../core/firebase_client.dart';
 import '../../core/theme.dart';
 import 'change_password_dialog.dart';
 import 'profile_section.dart';
@@ -135,7 +135,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               // login screen isn't left hidden underneath.
               onPressed: () {
                 Navigator.of(context).popUntil((route) => route.isFirst);
-                auth.signOut();
+                FcmService.signOut();
               },
               icon: const Icon(Icons.logout),
               label: Text(Strings.of('signOut', current)),

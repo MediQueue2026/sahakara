@@ -61,6 +61,58 @@ mutation SetMyLanguage($language: AppLanguage!) @auth(level: USER) {
   )
 }
 
+mutation SaveMyFcmToken($token: String!, $previousToken: String)
+@auth(level: USER)
+@transaction {
+  query @redact {
+    users(where: { authUid: { eq_expr: "auth.uid" } })
+      @check(expr: "this.size() == 1", message: "Profile not found") {
+      id
+    }
+    userDeviceTokens(where: { token: { eq: $token } })
+      @check(
+        expr: "this.size() == 0 || this[0].user.id == response.query.users[0].id"
+        message: "This FCM token is registered to another account"
+      ) {
+      user {
+        id
+      }
+    }
+  }
+  userDeviceToken_deleteMany(
+    where: {
+      _and: [
+        { user: { authUid: { eq_expr: "auth.uid" } } }
+        {
+          _or: [
+            { token: { eq: $previousToken } }
+            { token: { eq: $token } }
+          ]
+        }
+      ]
+    }
+  )
+  userDeviceToken_insert(
+    data: {
+      token: $token
+      userId_expr: "response.query.users[0].id"
+    }
+  )
+}
+
+mutation RemoveMyFcmToken($token: String!) @auth(level: USER) {
+  userDeviceToken_deleteMany(
+    where: {
+      token: { eq: $token }
+      user: { authUid: { eq_expr: "auth.uid" } }
+    }
+  )
+}
+
+mutation RemoveInvalidFcmToken($token: String!) @auth(level: NO_ACCESS) {
+  userDeviceToken_deleteMany(where: { token: { eq: $token } })
+}
+
 # ── households & membership ─────────────────────────────────────────────
 
 # Owner sets the area the house is in. Matches nothing for anyone else.

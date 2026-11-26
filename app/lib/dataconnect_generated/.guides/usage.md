@@ -6,11 +6,11 @@ SahakaraConnector.instance.CreateMyProfile(createMyProfileVariables).execute();
 SahakaraConnector.instance.SetMyName(setMyNameVariables).execute();
 SahakaraConnector.instance.SetMyProfile(setMyProfileVariables).execute();
 SahakaraConnector.instance.SetMyLanguage(setMyLanguageVariables).execute();
+SahakaraConnector.instance.SaveMyFcmToken(saveMyFcmTokenVariables).execute();
+SahakaraConnector.instance.RemoveMyFcmToken(removeMyFcmTokenVariables).execute();
+SahakaraConnector.instance.RemoveInvalidFcmToken(removeInvalidFcmTokenVariables).execute();
 SahakaraConnector.instance.SetHouseholdArea(setHouseholdAreaVariables).execute();
 SahakaraConnector.instance.CreateHousehold(createHouseholdVariables).execute();
-SahakaraConnector.instance.AddHouseholdMember(addHouseholdMemberVariables).execute();
-SahakaraConnector.instance.InviteHouseholdMember(inviteHouseholdMemberVariables).execute();
-SahakaraConnector.instance.ReinviteHouseholdMember(reinviteHouseholdMemberVariables).execute();
 
 ```
 
