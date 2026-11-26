@@ -62,6 +62,55 @@ ref.subscribe(...);
 ```
 
 
+### TaskNotificationDetails
+#### Required Arguments
+```dart
+String taskId = ...;
+SahakaraConnector.instance.taskNotificationDetails(
+  taskId: taskId,
+).execute();
+```
+
+
+
+#### Return Type
+`execute()` returns a `QueryResult<TaskNotificationDetailsData, TaskNotificationDetailsVariables>`
+```dart
+/// Result of an Operation Request (query/mutation).
+class OperationResult<Data, Variables> {
+  OperationResult(this.dataConnect, this.data, this.ref);
+  Data data;
+  OperationRef<Data, Variables> ref;
+  FirebaseDataConnect dataConnect;
+}
+
+/// Result of a query request. Created to hold extra variables in the future.
+class QueryResult<Data, Variables> extends OperationResult<Data, Variables> {
+  QueryResult(super.dataConnect, super.data, super.ref);
+}
+
+final result = await SahakaraConnector.instance.taskNotificationDetails(
+  taskId: taskId,
+);
+TaskNotificationDetailsData data = result.data;
+final ref = result.ref;
+```
+
+#### Getting the Ref
+Each builder returns an `execute` function, which is a helper function that creates a `Ref` object, and executes the underlying operation.
+An example of how to use the `Ref` object is shown below:
+```dart
+String taskId = ...;
+
+final ref = SahakaraConnector.instance.taskNotificationDetails(
+  taskId: taskId,
+).ref();
+ref.execute();
+
+ref.subscribe(...);
+```
+
+
 ### MyMembership
 #### Required Arguments
 ```dart
@@ -1429,6 +1478,150 @@ AppLanguage language = ...;
 
 final ref = SahakaraConnector.instance.setMyLanguage(
   language: language,
+).ref();
+ref.execute();
+```
+
+
+### SaveMyFcmToken
+#### Required Arguments
+```dart
+String token = ...;
+SahakaraConnector.instance.saveMyFcmToken(
+  token: token,
+).execute();
+```
+
+#### Optional Arguments
+We return a builder for each query. For SaveMyFcmToken, we created `SaveMyFcmTokenBuilder`. For queries and mutations with optional parameters, we return a builder class.
+The builder pattern allows Data Connect to distinguish between fields that haven't been set and fields that have been set to null. A field can be set by calling its respective setter method like below:
+```dart
+class SaveMyFcmTokenVariablesBuilder {
+  ...
+   SaveMyFcmTokenVariablesBuilder previousToken(String? t) {
+   _previousToken.value = t;
+   return this;
+  }
+
+  ...
+}
+SahakaraConnector.instance.saveMyFcmToken(
+  token: token,
+)
+.previousToken(previousToken)
+.execute();
+```
+
+#### Return Type
+`execute()` returns a `OperationResult<SaveMyFcmTokenData, SaveMyFcmTokenVariables>`
+```dart
+/// Result of an Operation Request (query/mutation).
+class OperationResult<Data, Variables> {
+  OperationResult(this.dataConnect, this.data, this.ref);
+  Data data;
+  OperationRef<Data, Variables> ref;
+  FirebaseDataConnect dataConnect;
+}
+
+final result = await SahakaraConnector.instance.saveMyFcmToken(
+  token: token,
+);
+SaveMyFcmTokenData data = result.data;
+final ref = result.ref;
+```
+
+#### Getting the Ref
+Each builder returns an `execute` function, which is a helper function that creates a `Ref` object, and executes the underlying operation.
+An example of how to use the `Ref` object is shown below:
+```dart
+String token = ...;
+
+final ref = SahakaraConnector.instance.saveMyFcmToken(
+  token: token,
+).ref();
+ref.execute();
+```
+
+
+### RemoveMyFcmToken
+#### Required Arguments
+```dart
+String token = ...;
+SahakaraConnector.instance.removeMyFcmToken(
+  token: token,
+).execute();
+```
+
+
+
+#### Return Type
+`execute()` returns a `OperationResult<RemoveMyFcmTokenData, RemoveMyFcmTokenVariables>`
+```dart
+/// Result of an Operation Request (query/mutation).
+class OperationResult<Data, Variables> {
+  OperationResult(this.dataConnect, this.data, this.ref);
+  Data data;
+  OperationRef<Data, Variables> ref;
+  FirebaseDataConnect dataConnect;
+}
+
+final result = await SahakaraConnector.instance.removeMyFcmToken(
+  token: token,
+);
+RemoveMyFcmTokenData data = result.data;
+final ref = result.ref;
+```
+
+#### Getting the Ref
+Each builder returns an `execute` function, which is a helper function that creates a `Ref` object, and executes the underlying operation.
+An example of how to use the `Ref` object is shown below:
+```dart
+String token = ...;
+
+final ref = SahakaraConnector.instance.removeMyFcmToken(
+  token: token,
+).ref();
+ref.execute();
+```
+
+
+### RemoveInvalidFcmToken
+#### Required Arguments
+```dart
+String token = ...;
+SahakaraConnector.instance.removeInvalidFcmToken(
+  token: token,
+).execute();
+```
+
+
+
+#### Return Type
+`execute()` returns a `OperationResult<RemoveInvalidFcmTokenData, RemoveInvalidFcmTokenVariables>`
+```dart
+/// Result of an Operation Request (query/mutation).
+class OperationResult<Data, Variables> {
+  OperationResult(this.dataConnect, this.data, this.ref);
+  Data data;
+  OperationRef<Data, Variables> ref;
+  FirebaseDataConnect dataConnect;
+}
+
+final result = await SahakaraConnector.instance.removeInvalidFcmToken(
+  token: token,
+);
+RemoveInvalidFcmTokenData data = result.data;
+final ref = result.ref;
+```
+
+#### Getting the Ref
+Each builder returns an `execute` function, which is a helper function that creates a `Ref` object, and executes the underlying operation.
+An example of how to use the `Ref` object is shown below:
+```dart
+String token = ...;
+
+final ref = SahakaraConnector.instance.removeInvalidFcmToken(
+  token: token,
 ).ref();
 ref.execute();
 ```

@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'core/env.dart';
+import 'core/fcm_service.dart';
 import 'core/firebase_client.dart';
 import 'core/remember_me.dart';
 import 'core/theme.dart';
@@ -35,6 +38,12 @@ Future<void> main() async {
   await RememberMe.applyOnLaunch();
 
   runApp(const RootApp());
+  if (!kIsWeb) {
+    unawaited(FcmService.initialize()
+        .catchError((Object error, StackTrace stackTrace) {
+      debugPrint('FCM startup failed: $error\n$stackTrace');
+    }));
+  }
 }
 
 class _MissingConfigApp extends StatelessWidget {

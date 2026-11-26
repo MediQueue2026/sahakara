@@ -3,3 +3,7 @@ generate:
   dartSdk:
     - outputDir: ../../app/lib/dataconnect_generated
       package: sahakara
+  adminNodeSdk:
+    outputDir: ../../functions/generated
+    package: "@dataconnect/admin-generated"
+    packageJsonDir: ../../functions

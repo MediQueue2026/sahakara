@@ -14,6 +14,12 @@ part 'set_my_profile.dart';
 
 part 'set_my_language.dart';
 
+part 'save_my_fcm_token.dart';
+
+part 'remove_my_fcm_token.dart';
+
+part 'remove_invalid_fcm_token.dart';
+
 part 'set_household_area.dart';
 
 part 'create_household.dart';
@@ -91,6 +97,8 @@ part 'delete_grocery_item.dart';
 part 'create_task_from_template.dart';
 
 part 'my_profile.dart';
+
+part 'task_notification_details.dart';
 
 part 'my_membership.dart';
 
@@ -922,6 +930,21 @@ class SahakaraConnector {
   }
   
   
+  SaveMyFcmTokenVariablesBuilder saveMyFcmToken ({required String token, }) {
+    return SaveMyFcmTokenVariablesBuilder(dataConnect, token: token,);
+  }
+  
+  
+  RemoveMyFcmTokenVariablesBuilder removeMyFcmToken ({required String token, }) {
+    return RemoveMyFcmTokenVariablesBuilder(dataConnect, token: token,);
+  }
+  
+  
+  RemoveInvalidFcmTokenVariablesBuilder removeInvalidFcmToken ({required String token, }) {
+    return RemoveInvalidFcmTokenVariablesBuilder(dataConnect, token: token,);
+  }
+  
+  
   SetHouseholdAreaVariablesBuilder setHouseholdArea ({required String householdId, }) {
     return SetHouseholdAreaVariablesBuilder(dataConnect, householdId: householdId,);
   }
@@ -1114,6 +1137,11 @@ class SahakaraConnector {
   
   MyProfileVariablesBuilder myProfile () {
     return MyProfileVariablesBuilder(dataConnect, );
+  }
+  
+  
+  TaskNotificationDetailsVariablesBuilder taskNotificationDetails ({required String taskId, }) {
+    return TaskNotificationDetailsVariablesBuilder(dataConnect, taskId: taskId,);
   }
   
   

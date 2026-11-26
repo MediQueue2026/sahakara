@@ -1,21 +1,26 @@
-# Firebase backend (Data Connect + Auth)
+# Firebase backend (Data Connect + Auth + Functions)
 
-The app has no custom server. Firebase is the backend:
+The app's backend is hosted on Firebase:
 
 - **Firebase Data Connect**: a PostgreSQL database (Cloud SQL) that you
   define in GraphQL and that the app reaches through generated, typed Dart code.
 - **Firebase Auth**: email/password for owners, maids and staff using the
   admin panel (no email verification).
+- **Cloud Functions**: Data Connect mutation triggers send FCM notifications
+  to the assigned maid's devices when an owner assigns a task.
 
 ```
 dataconnect/
   dataconnect.yaml        Service config: region, Cloud SQL instance
-  schema/schema.gql       All 24 tables + enums (becomes the Postgres schema)
+  schema/schema.gql       All 25 tables + enums (becomes the Postgres schema)
   connector/
-    connector.yaml        Generates the Dart SDK into app/lib/dataconnect_generated
+    connector.yaml        Generates the Dart app SDK and Node admin SDK
     queries.gql           Every read the app can do, with its access rule
     mutations.gql         Every write the app can do, with its access rule
   seed_data.gql           Starter trilingual task library (run manually)
+functions/
+  src/index.js            Sends task-assignment push notifications
+  generated/              Generated Node admin SDK for the function
 ```
 
 ## How access control works
@@ -48,6 +53,13 @@ sees an in-app reminder on the Pay tab when a scheduled payment is due the
 following day; reminders are surfaced while using the app and do not require
 push-notification delivery.
 
+Mobile devices register tokens in `UserDeviceToken` after the signed-in user
+profile is loaded. Token refreshes replace stale tokens, and the app removes
+the current device's tokens before signing out. The `AssignDailyTask` and
+`AddDailyTask` Data Connect triggers load the task's current assignee and send
+the notification only to that user's registered devices. Token values are
+never returned by client-accessible queries.
+
 Adding a feature means adding an operation to `connector/` and then
 regenerating the SDK (see below).
 
@@ -59,7 +71,7 @@ From the repo root:
 firebase emulators:start
 ```
 
-This runs the Auth and Data Connect emulators. The UI is at
+This runs the Auth, Data Connect, and Cloud Functions emulators. The UI is at
 http://localhost:4000, where you can see the accounts that have signed up.
 Load the starter tasks by opening `seed_data.gql` in VS Code
 (Firebase Data Connect extension) and clicking **Run (local)**.
@@ -72,9 +84,9 @@ Then run the app with `USE_EMULATORS` set (see `app/README.md`).
 firebase dataconnect:sdk:generate
 ```
 
-This validates everything and rewrites `app/lib/dataconnect_generated/`.
-Never edit the generated code by hand. The VS Code extension also
-regenerates automatically on save while the emulator is running.
+This validates everything and rewrites the generated Dart and Node SDKs.
+Never edit generated code by hand. The VS Code extension also regenerates
+automatically on save while the emulator is running.
 
 ## Deploying to the real project (`sahakara-f78dd`)
 
@@ -83,14 +95,17 @@ regenerates automatically on save while the emulator is running.
    trial.
 2. **Enable Auth providers.** In Firebase console → Authentication → Sign-in
    method, turn on **Email/Password**.
-3. **Deploy the schema and connector:**
+3. **Deploy the schema, connector, and task notification functions:**
 
    ```bash
-   firebase deploy --only dataconnect
+   firebase deploy --only dataconnect,functions
    ```
 
    The first deploy creates the Cloud SQL instance and database named in
    `dataconnect.yaml` (region `asia-southeast1`) and migrates the schema.
+   Cloud Functions and Cloud SQL require billing enabled. Firebase Cloud
+   Messaging must also be configured for each target platform, including APNs
+   credentials for iOS.
 4. **Seed** by opening `seed_data.gql` and clicking **Run (production)**.
 
 ## Creating an admin (admin panel) account

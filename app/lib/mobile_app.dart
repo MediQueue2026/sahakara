@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'core/app_data.dart';
 import 'core/app_language.dart';
+import 'core/fcm_service.dart';
 import 'core/firebase_client.dart';
 import 'core/strings.dart';
 import 'core/transitions.dart';
@@ -124,7 +127,7 @@ class _AuthedRouterState extends State<_AuthedRouter> {
         await auth.currentUser?.getIdToken(true);
       } on FirebaseAuthException catch (e) {
         if (e.code != 'network-request-failed') {
-          await auth.signOut();
+          await FcmService.signOut();
         }
         rethrow;
       }
@@ -138,10 +141,14 @@ class _AuthedRouterState extends State<_AuthedRouter> {
       profile = await AppData.ensureUserProfile(signUp: _intent);
     } on WrongAccountTypeException catch (e) {
       widget.onWrongAccountType(e);
-      await auth.signOut();
+      await FcmService.signOut();
       rethrow;
     }
     if (profile == null) return null;
+    unawaited(FcmService.onUserReady()
+        .catchError((Object error, StackTrace stackTrace) {
+      debugPrint('Could not sync this device FCM token: $error\n$stackTrace');
+    }));
     final storedLang =
         AppLanguage.values.asNameMap()[profile.language.stringValue];
     if (storedLang != null) {
@@ -256,7 +263,7 @@ class _AccountTypeScreen extends StatelessWidget {
                       AccountTypeChoice(lang: lang, onSelected: onSelected),
                       const SizedBox(height: 16),
                       TextButton(
-                        onPressed: () => auth.signOut(),
+                        onPressed: FcmService.signOut,
                         child: Text(Strings.of('signOut', lang)),
                       ),
                     ],
@@ -296,7 +303,7 @@ class _AdminOnMobileScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   OutlinedButton(
-                    onPressed: () => auth.signOut(),
+                    onPressed: FcmService.signOut,
                     child: Text(Strings.of('signOut', lang)),
                   ),
                 ],

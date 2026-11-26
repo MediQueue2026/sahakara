@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'fcm_service.dart';
 import 'firebase_client.dart';
 
 /// The "Remember me" choice on the login screens.
@@ -30,7 +31,7 @@ class RememberMe {
     if (kIsWeb) return;
     final prefs = await SharedPreferences.getInstance();
     if (!(prefs.getBool(_key) ?? true) && auth.currentUser != null) {
-      await auth.signOut();
+      await FcmService.signOut();
     }
   }
 }

@@ -1,5 +1,5 @@
 # Sahakara (Housemaid Management App) — Firebase Data Connect schema.
-# 24 tables in 6 groups: users & households, tasks, rewards, attendance &
+# 25 tables in 6 groups: users & households, tasks, rewards, attendance &
 # leave, payments, household & admin. Data Connect turns each `@table` type
 # into a PostgreSQL table (Cloud SQL); access rules live on the operations
 # in ../connector/, not here.
@@ -82,6 +82,13 @@ type User @table {
   spokenLanguages: [AppLanguage!]
   workCategories: [TaskCategory!]
   createdAt: Timestamp! @default(expr: "request.time")
+}
+
+type UserDeviceToken @table @unique(fields: ["token"]) {
+  id: UUID! @default(expr: "uuidV4()")
+  user: User!
+  token: String!
+  updatedAt: Timestamp! @default(expr: "request.time")
 }
 
 type Household @table {

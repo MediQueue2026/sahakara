@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/app_data.dart';
 import '../../core/app_language.dart';
-import '../../core/firebase_client.dart';
+import '../../core/fcm_service.dart';
 import '../../core/strings.dart';
 import '../../core/theme.dart';
 import '../profile/profile_details.dart';
@@ -207,7 +207,7 @@ class _WaitingForHouseholdScreenState extends State<WaitingForHouseholdScreen> {
                             ),
                             const SizedBox(height: 8),
                             TextButton(
-                              onPressed: () => auth.signOut(),
+                              onPressed: FcmService.signOut,
                               child: Text(Strings.of('signOut', lang)),
                             ),
                           ],
