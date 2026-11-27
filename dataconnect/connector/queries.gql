@@ -23,6 +23,7 @@ query MyProfile @auth(level: USER) {
     name
     accountType
     language
+    profilePhoto
     preferredAreas
     spokenLanguages
     workCategories
@@ -184,6 +185,7 @@ query HouseholdMembers($householdId: UUID!) @auth(level: USER) {
       id
       name
       email
+      profilePhoto
     }
   }
 }
@@ -213,6 +215,7 @@ query MaidProfileByEmail($email: String!)
     limit: 1
   ) {
     name
+    profilePhoto
     preferredAreas
     spokenLanguages
     workCategories
@@ -247,6 +250,7 @@ query AvailableMaids @auth(
   ) {
     id
     name
+    profilePhoto
     preferredAreas
     spokenLanguages
     workCategories

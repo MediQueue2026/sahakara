@@ -20,6 +20,7 @@ class AvailableMaidsVariablesBuilder {
 class AvailableMaidsUsers {
   final String id;
   final String name;
+  final String? profilePhoto;
   final List<String>? preferredAreas;
   final List<EnumValue<AppLanguage>>? spokenLanguages;
   final List<EnumValue<TaskCategory>>? workCategories;
@@ -27,6 +28,7 @@ class AvailableMaidsUsers {
   
   id = nativeFromJson<String>(json['id']),
   name = nativeFromJson<String>(json['name']),
+  profilePhoto = json['profilePhoto'] == null ? null : nativeFromJson<String>(json['profilePhoto']),
   preferredAreas = json['preferredAreas'] == null ? null : (json['preferredAreas'] as List<dynamic>)
         .map((e) => nativeFromJson<String>(e))
         .toList(),
@@ -48,19 +50,23 @@ class AvailableMaidsUsers {
     final AvailableMaidsUsers otherTyped = other as AvailableMaidsUsers;
     return id == otherTyped.id && 
     name == otherTyped.name && 
+    profilePhoto == otherTyped.profilePhoto && 
     preferredAreas == otherTyped.preferredAreas && 
     spokenLanguages == otherTyped.spokenLanguages && 
     workCategories == otherTyped.workCategories;
     
   }
   @override
-  int get hashCode => Object.hashAll([id.hashCode, name.hashCode, preferredAreas.hashCode, spokenLanguages.hashCode, workCategories.hashCode]);
+  int get hashCode => Object.hashAll([id.hashCode, name.hashCode, profilePhoto.hashCode, preferredAreas.hashCode, spokenLanguages.hashCode, workCategories.hashCode]);
   
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> json = {};
     json['id'] = nativeToJson<String>(id);
     json['name'] = nativeToJson<String>(name);
+    if (profilePhoto != null) {
+      json['profilePhoto'] = nativeToJson<String?>(profilePhoto);
+    }
     if (preferredAreas != null) {
       json['preferredAreas'] = preferredAreas?.map((e) => nativeToJson<String>(e)).toList();
     }
@@ -76,6 +82,7 @@ class AvailableMaidsUsers {
   AvailableMaidsUsers({
     required this.id,
     required this.name,
+    this.profilePhoto,
     this.preferredAreas,
     this.spokenLanguages,
     this.workCategories,

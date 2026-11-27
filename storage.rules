@@ -7,6 +7,13 @@ rules_version = '2';
 // under 5 MB; the random file names keep photos from being guessed.
 service firebase.storage {
   match /b/{bucket}/o {
+    match /users/{uid}/profile/{file} {
+      allow read: if request.auth != null;
+      allow create, update: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
     match /households/{householdId}/tasks/{file} {
       allow read: if request.auth != null;
       allow create: if request.auth != null

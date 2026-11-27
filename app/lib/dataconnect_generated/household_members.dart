@@ -80,11 +80,13 @@ class HouseholdMembersHouseholdMembersUser {
   final String id;
   final String name;
   final String email;
+  final String? profilePhoto;
   HouseholdMembersHouseholdMembersUser.fromJson(dynamic json):
   
   id = nativeFromJson<String>(json['id']),
   name = nativeFromJson<String>(json['name']),
-  email = nativeFromJson<String>(json['email']);
+  email = nativeFromJson<String>(json['email']),
+  profilePhoto = json['profilePhoto'] == null ? null : nativeFromJson<String>(json['profilePhoto']);
   @override
   bool operator ==(Object other) {
     if(identical(this, other)) {
@@ -97,11 +99,12 @@ class HouseholdMembersHouseholdMembersUser {
     final HouseholdMembersHouseholdMembersUser otherTyped = other as HouseholdMembersHouseholdMembersUser;
     return id == otherTyped.id && 
     name == otherTyped.name && 
-    email == otherTyped.email;
+    email == otherTyped.email && 
+    profilePhoto == otherTyped.profilePhoto;
     
   }
   @override
-  int get hashCode => Object.hashAll([id.hashCode, name.hashCode, email.hashCode]);
+  int get hashCode => Object.hashAll([id.hashCode, name.hashCode, email.hashCode, profilePhoto.hashCode]);
   
 
   Map<String, dynamic> toJson() {
@@ -109,6 +112,9 @@ class HouseholdMembersHouseholdMembersUser {
     json['id'] = nativeToJson<String>(id);
     json['name'] = nativeToJson<String>(name);
     json['email'] = nativeToJson<String>(email);
+    if (profilePhoto != null) {
+      json['profilePhoto'] = nativeToJson<String?>(profilePhoto);
+    }
     return json;
   }
 
@@ -116,6 +122,7 @@ class HouseholdMembersHouseholdMembersUser {
     required this.id,
     required this.name,
     required this.email,
+    this.profilePhoto,
   });
 }
 

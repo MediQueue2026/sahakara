@@ -7,13 +7,19 @@ import '../../core/theme.dart';
 import '../../core/glass.dart';
 import 'add_maid_screen.dart';
 
-/// Owner: the household's details and members — including maids who
-/// haven't accepted their request yet — and asking a maid to join.
+/// Owner: the household's details and maids — including those who haven't
+/// accepted their request yet — and asking a maid to join.
 class HouseholdTab extends StatefulWidget {
   final LanguageController lang;
   final Membership membership;
+  final Profile profile;
 
-  const HouseholdTab({super.key, required this.lang, required this.membership});
+  const HouseholdTab({
+    super.key,
+    required this.lang,
+    required this.membership,
+    required this.profile,
+  });
 
   @override
   State<HouseholdTab> createState() => _HouseholdTabState();
@@ -91,35 +97,68 @@ class _HouseholdTabState extends State<HouseholdTab> {
   static bool _isRemoved(Member m) =>
       m.status.stringValue == 'accepted' && !m.active;
 
+  Widget _memberAvatar(Member member) {
+    return _avatar(
+      name: member.user.name,
+      photoUrl: member.user.profilePhoto,
+    );
+  }
+
+  Widget _ownerAvatar() {
+    return _avatar(
+      name: widget.profile.name,
+      photoUrl: widget.profile.profilePhoto,
+    );
+  }
+
+  Widget _avatar({required String name, required String? photoUrl}) {
+    name = name.trim();
+    final initial = name.isEmpty
+        ? '?'
+        : String.fromCharCode(name.runes.first).toUpperCase();
+
+    Widget fallback() => Text(
+          initial,
+          style: const TextStyle(fontWeight: FontWeight.w600),
+        );
+
+    return CircleAvatar(
+      backgroundColor: brandGoldSoft,
+      child: photoUrl == null || photoUrl.isEmpty
+          ? fallback()
+          : ClipOval(
+              child: Image.network(
+                photoUrl,
+                width: 40,
+                height: 40,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => fallback(),
+                loadingBuilder: (_, child, progress) =>
+                    progress == null ? child : fallback(),
+              ),
+            ),
+    );
+  }
+
   /// A member's card: name and role, and a button to remove staff; for a
   /// request that hasn't been accepted, where it stands and a button to
   /// cancel or remove it.
   Widget _memberCard(Member m, AppLanguage lang) {
     final status = m.status.stringValue;
     final accepted = status == 'accepted';
-    final isOwner = m.role.stringValue == 'owner';
     return Card(
       child: ListTile(
-        leading: accepted
-            ? null
-            : Icon(
-                status == 'pending'
-                    ? Icons.hourglass_empty
-                    : Icons.cancel_outlined,
-                color: mutedText,
-              ),
+        leading: _memberAvatar(m),
         title: Text(m.user.name),
         subtitle: Text(
           accepted ? m.role.stringValue : Strings.of('invite_$status', lang),
         ),
         trailing: accepted
-            ? (isOwner
-                ? null
-                : IconButton(
-                    tooltip: Strings.of('removeFromHousehold', lang),
-                    icon: const Icon(Icons.person_remove_outlined),
-                    onPressed: () => _removeMember(m, lang),
-                  ))
+            ? IconButton(
+                tooltip: Strings.of('removeFromHousehold', lang),
+                icon: const Icon(Icons.person_remove_outlined),
+                onPressed: () => _removeMember(m, lang),
+              )
             : IconButton(
                 tooltip: Strings.of(
                   status == 'pending' ? 'cancelRequest' : 'remove',
@@ -141,15 +180,28 @@ class _HouseholdTabState extends State<HouseholdTab> {
         return ListView(
           padding: clearOfGlassBar(context, const EdgeInsets.all(16)),
           children: [
-            Text(
-              household.name,
-              style: Theme.of(context).textTheme.headlineSmall,
+            Row(
+              children: [
+                _ownerAvatar(),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        household.name,
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
+                      if (household.address?.isNotEmpty == true)
+                        Text(
+                          household.address!,
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            if (household.address?.isNotEmpty == true)
-              Text(
-                household.address!,
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
             const SizedBox(height: 20),
             FutureBuilder<List<Member>>(
               future: _members,
@@ -160,7 +212,9 @@ class _HouseholdTabState extends State<HouseholdTab> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: snapshot.data!
-                      .where((m) => !_isRemoved(m))
+                      .where(
+                        (m) => m.role.stringValue != 'owner' && !_isRemoved(m),
+                      )
                       .map((m) => _memberCard(m, lang))
                       .toList(),
                 );
