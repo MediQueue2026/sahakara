@@ -5,6 +5,7 @@ import '../../core/auto_refresh.dart';
 import '../../core/app_language.dart';
 import '../../core/strings.dart';
 import '../../core/theme.dart';
+import '../../core/glass.dart';
 import '../../dataconnect_generated/sahakara.dart' hide AppLanguage;
 import '../home/staff_filter.dart';
 
@@ -229,7 +230,7 @@ class _PayrollScreenState extends State<PayrollScreen> {
                   )
                 : ListView(
                     physics: const AlwaysScrollableScrollPhysics(),
-                    padding: const EdgeInsets.all(16),
+                    padding: clearOfGlassBar(context, const EdgeInsets.all(16)),
                     children: [
                       if (_isOwner) ..._buildOwnerContent(language),
                       if (!_isOwner) ..._buildStaffContent(language),

@@ -6,6 +6,7 @@ import '../../core/auto_refresh.dart';
 import '../../core/app_language.dart';
 import '../../core/strings.dart';
 import '../../core/theme.dart';
+import '../../core/glass.dart';
 import '../../dataconnect_generated/sahakara.dart' hide AppLanguage;
 
 class GroceryListScreen extends StatefulWidget {
@@ -222,7 +223,7 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
                 return RefreshIndicator(
                   onRefresh: _refresh,
                   child: ListView.builder(
-                    padding: const EdgeInsets.all(16),
+                    padding: clearOfGlassBar(context, const EdgeInsets.all(16)),
                     itemCount: items.length,
                     itemBuilder: (context, index) {
                       final item = items[index];

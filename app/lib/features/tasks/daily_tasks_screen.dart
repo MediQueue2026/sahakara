@@ -6,6 +6,7 @@ import '../../core/app_data.dart';
 import '../../core/auto_refresh.dart';
 import '../../core/app_language.dart';
 import '../../core/strings.dart';
+import '../../core/glass.dart';
 import 'add_daily_task_screen.dart';
 import 'task_common.dart';
 
@@ -275,7 +276,7 @@ class _DailyTasksScreenState extends State<DailyTasksScreen> {
     }
     return ListView(
       // Leaves room so the last task isn't hidden behind the add button.
-      padding: const EdgeInsets.fromLTRB(8, 0, 8, 88),
+      padding: clearOfGlassBar(context, const EdgeInsets.fromLTRB(8, 0, 8, 88)),
       children: byAssignee.values.map((group) {
         final minutes = group.fold<int>(
           0,

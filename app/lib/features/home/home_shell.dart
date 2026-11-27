@@ -1,7 +1,10 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../../core/app_data.dart';
 import '../../core/app_language.dart';
+import '../../core/glass.dart';
 import '../../core/strings.dart';
 import '../../core/theme.dart';
 import '../../core/transitions.dart';
@@ -68,6 +71,9 @@ class _HomeShellState extends State<HomeShell> {
         final index = _index < tabs.length ? _index : 0;
 
         return Scaffold(
+          // On iOS the tab bar is frosted glass floating over the page, so
+          // the page runs underneath it.
+          extendBody: useGlassEffect,
           appBar: AppBar(
             title: FadeThroughSwitcher(
               alignment: AlignmentDirectional.centerStart,
@@ -81,8 +87,11 @@ class _HomeShellState extends State<HomeShell> {
               ),
             ],
           ),
-          body: FadeThroughSwitcher(
-            child: KeyedSubtree(key: ValueKey(index), child: tabs[index].page),
+          body: _ClearOfBar(
+            child: FadeThroughSwitcher(
+              child:
+                  KeyedSubtree(key: ValueKey(index), child: tabs[index].page),
+            ),
           ),
           bottomNavigationBar: _BottomBar(
             selectedIndex: index,
@@ -281,7 +290,29 @@ class _BottomBarItem {
   const _BottomBarItem({required this.icon, required this.label});
 }
 
-/// The cream tab bar along the bottom. Built by hand rather than with
+/// Passes the space the floating glass bar takes up on to the page as view
+/// padding too, so a page's own add button rises above the bar instead of
+/// sitting under it. With `extendBody`, [Scaffold] already reports that space
+/// as the body's bottom padding.
+class _ClearOfBar extends StatelessWidget {
+  final Widget child;
+
+  const _ClearOfBar({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    if (!useGlassEffect) return child;
+    final media = MediaQuery.of(context);
+    return MediaQuery(
+      data: media.copyWith(
+        viewPadding: media.viewPadding.copyWith(bottom: media.padding.bottom),
+      ),
+      child: child,
+    );
+  }
+}
+
+/// The gold tab bar along the bottom. On iOS it floats as frosted glass. Built by hand rather than with
 /// [NavigationBar] so that six tabs fit on a phone: labels shrink to fit
 /// instead of being cut off, which matters for the longer Sinhala and Tamil
 /// labels.
@@ -298,6 +329,35 @@ class _BottomBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final buttons = Row(
+      children: [
+        for (var i = 0; i < items.length; i++)
+          Expanded(
+            child: _BottomBarButton(
+              item: items[i],
+              selected: i == selectedIndex,
+              onTap: () => onSelected(i),
+            ),
+          ),
+      ],
+    );
+
+    if (useGlassEffect) {
+      // Sits a little into the home-indicator area, as iOS's own bars do.
+      final bottomGap =
+          math.max(10.0, MediaQuery.viewPaddingOf(context).bottom - 14);
+      return Padding(
+        padding: EdgeInsets.fromLTRB(12, 0, 12, bottomGap),
+        child: GlassPanel(
+          tint: brandGold,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(4, 8, 4, 6),
+            child: buttons,
+          ),
+        ),
+      );
+    }
+
     return Container(
       decoration: const BoxDecoration(
         color: brandGold,
@@ -314,18 +374,7 @@ class _BottomBar extends StatelessWidget {
         top: false,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(4, 8, 4, 6),
-          child: Row(
-            children: [
-              for (var i = 0; i < items.length; i++)
-                Expanded(
-                  child: _BottomBarButton(
-                    item: items[i],
-                    selected: i == selectedIndex,
-                    onTap: () => onSelected(i),
-                  ),
-                ),
-            ],
-          ),
+          child: buttons,
         ),
       ),
     );

@@ -5,6 +5,7 @@ import '../../core/auto_refresh.dart';
 import '../../core/app_language.dart';
 import '../../core/strings.dart';
 import '../../core/theme.dart';
+import '../../core/glass.dart';
 import '../home/staff_filter.dart';
 import 'attendance_record_dialog.dart';
 import 'leave_request_dialog.dart';
@@ -626,7 +627,7 @@ class _AttendanceTabState extends State<AttendanceTab> {
       child: RefreshIndicator(
         onRefresh: () async => _refresh(),
         child: ListView(
-          padding: const EdgeInsets.all(16),
+          padding: clearOfGlassBar(context, const EdgeInsets.all(16)),
           children: [
             if (!_isOwner) _buildMaidActions(l),
             if (_isOwner && _staffOptions().isNotEmpty)

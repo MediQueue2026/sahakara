@@ -11,6 +11,7 @@ import '../../core/auto_refresh.dart';
 import '../../core/app_language.dart';
 import '../../core/strings.dart';
 import '../../core/theme.dart';
+import '../../core/glass.dart';
 import 'task_common.dart';
 
 /// Staff: a greeting, how much of the day's work is done, and their own
@@ -238,7 +239,8 @@ class _MyTasksScreenState extends State<MyTasksScreen> {
             return ListView(
               // Scrollable even when short, so pull-to-refresh always works.
               physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+              padding: clearOfGlassBar(
+                  context, const EdgeInsets.fromLTRB(16, 16, 16, 24)),
               children: [
                 _header(tasks, lang),
                 const SizedBox(height: 8),
