@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../core/app_data.dart';
 import '../../core/app_language.dart';
@@ -50,6 +52,14 @@ class _ProfileSectionState extends State<ProfileSection> {
   };
   bool _busy = false;
   String? _error;
+  Uint8List? _photoBytes;
+  String? _photoUrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _photoUrl = widget.profile.profilePhoto;
+  }
 
   @override
   void dispose() {
@@ -67,6 +77,57 @@ class _ProfileSectionState extends State<ProfileSection> {
       if (!exists) _areas.add(area);
       _areaController.clear();
     });
+  }
+
+  Future<void> _pickPhoto(ImageSource source) async {
+    if (_busy) return;
+    try {
+      final file = await ImagePicker().pickImage(
+        source: source,
+        maxWidth: 1024,
+        maxHeight: 1024,
+        imageQuality: 85,
+      );
+      if (file == null) return;
+      final bytes = await file.readAsBytes();
+      if (!mounted) return;
+      setState(() {
+        _photoBytes = bytes;
+        _error = null;
+      });
+    } catch (e) {
+      if (mounted) setState(() => _error = e.toString());
+    }
+  }
+
+  Future<void> _choosePhoto() async {
+    await showModalBottomSheet<void>(
+      context: context,
+      builder: (sheetContext) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_library_outlined),
+              title: Text(Strings.of('chooseFromGallery', widget.lang)),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                _pickPhoto(ImageSource.gallery);
+              },
+            ),
+            if (!kIsWeb)
+              ListTile(
+                leading: const Icon(Icons.photo_camera_outlined),
+                title: Text(Strings.of('profileTakePhoto', widget.lang)),
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  _pickPhoto(ImageSource.camera);
+                },
+              ),
+          ],
+        ),
+      ),
+    );
   }
 
   Future<void> _save() async {
@@ -88,6 +149,9 @@ class _ProfileSectionState extends State<ProfileSection> {
           householdId: household.id,
           area: _houseAreaController.text,
         );
+      }
+      if (_photoBytes != null) {
+        _photoUrl = await AppData.uploadProfilePhoto(bytes: _photoBytes!);
       }
       await AppData.saveProfile(
         name: name,
@@ -126,6 +190,43 @@ class _ProfileSectionState extends State<ProfileSection> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(Strings.of('myProfile', lang), style: textTheme.titleMedium),
+            const SizedBox(height: 16),
+            Center(
+              child: InkWell(
+                onTap: _busy ? null : _choosePhoto,
+                customBorder: const CircleBorder(),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircleAvatar(
+                      radius: 48,
+                      backgroundColor: brandGoldSoft,
+                      backgroundImage: _photoBytes != null
+                          ? MemoryImage(_photoBytes!)
+                          : (_photoUrl?.isNotEmpty == true
+                              ? NetworkImage(_photoUrl!)
+                              : null),
+                      child: _photoBytes == null && _photoUrl?.isEmpty != false
+                          ? const Icon(Icons.person_outline, size: 48)
+                          : null,
+                    ),
+                    const SizedBox(height: 8),
+                    OutlinedButton.icon(
+                      onPressed: _busy ? null : _choosePhoto,
+                      icon: const Icon(Icons.add_a_photo_outlined),
+                      label: Text(
+                        Strings.of(
+                          _photoUrl?.isNotEmpty == true || _photoBytes != null
+                              ? 'changePhoto'
+                              : 'addProfilePhoto',
+                          lang,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
             const SizedBox(height: 16),
             TextField(
               controller: _nameController,

@@ -12,6 +12,8 @@ part 'set_my_name.dart';
 
 part 'set_my_profile.dart';
 
+part 'set_my_profile_photo.dart';
+
 part 'set_my_language.dart';
 
 part 'save_my_fcm_token.dart';
@@ -922,6 +924,11 @@ class SahakaraConnector {
   
   SetMyProfileVariablesBuilder setMyProfile ({required String name, required List<String> preferredAreas, required List<AppLanguage> spokenLanguages, }) {
     return SetMyProfileVariablesBuilder(dataConnect, name: name,preferredAreas: preferredAreas,spokenLanguages: spokenLanguages,);
+  }
+  
+  
+  SetMyProfilePhotoVariablesBuilder setMyProfilePhoto () {
+    return SetMyProfilePhotoVariablesBuilder(dataConnect, );
   }
   
   

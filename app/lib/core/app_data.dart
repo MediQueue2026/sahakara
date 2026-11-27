@@ -161,6 +161,17 @@ class AppData {
         .execute();
   }
 
+  /// Uploads the signed-in user's profile picture and saves its URL.
+  static Future<String> uploadProfilePhoto({required Uint8List bytes}) async {
+    final uid = auth.currentUser?.uid;
+    if (uid == null) throw StateError('Not signed in');
+    final ref = storage.ref('users/$uid/profile/photo.jpg');
+    await ref.putData(bytes, SettableMetadata(contentType: 'image/jpeg'));
+    final url = await ref.getDownloadURL();
+    await db.setMyProfilePhoto().profilePhoto(url).execute();
+    return url;
+  }
+
   /// The signed-in user's first active household membership. The schema
   /// supports several (multi-house, Phase 3) — the basics here just use
   /// the first one.

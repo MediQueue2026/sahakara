@@ -54,6 +54,14 @@ mutation SetMyProfile(
   )
 }
 
+# Saves the download URL of the signed-in user's profile picture.
+mutation SetMyProfilePhoto($profilePhoto: String) @auth(level: USER) {
+  user_updateMany(
+    where: { authUid: { eq_expr: "auth.uid" } }
+    data: { profilePhoto: $profilePhoto }
+  )
+}
+
 mutation SetMyLanguage($language: AppLanguage!) @auth(level: USER) {
   user_updateMany(
     where: { authUid: { eq_expr: "auth.uid" } }

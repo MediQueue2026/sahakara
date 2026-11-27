@@ -16,6 +16,7 @@ class ProfileDetails extends StatelessWidget {
   final List<dc.EnumValue<dc.TaskCategory>>? workCategories;
   final List<String>? preferredAreas;
   final String? area;
+  final String? profilePhoto;
 
   const ProfileDetails({
     super.key,
@@ -25,6 +26,7 @@ class ProfileDetails extends StatelessWidget {
     this.workCategories,
     this.preferredAreas,
     this.area,
+    this.profilePhoto,
   });
 
   @override
@@ -70,7 +72,20 @@ class ProfileDetails extends StatelessWidget {
       );
     }
     return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch, children: rows);
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (profilePhoto?.isNotEmpty == true) ...[
+          Center(
+            child: CircleAvatar(
+              radius: 40,
+              backgroundImage: NetworkImage(profilePhoto!),
+            ),
+          ),
+          const SizedBox(height: 12),
+        ],
+        ...rows,
+      ],
+    );
   }
 
   Widget _row(IconData icon, String label, String value) => Padding(

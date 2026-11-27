@@ -24,6 +24,7 @@ class MyProfileUsers {
   final String name;
   final EnumValue<AccountType> accountType;
   final EnumValue<AppLanguage> language;
+  final String? profilePhoto;
   final List<String>? preferredAreas;
   final List<EnumValue<AppLanguage>>? spokenLanguages;
   final List<EnumValue<TaskCategory>>? workCategories;
@@ -35,6 +36,7 @@ class MyProfileUsers {
   name = nativeFromJson<String>(json['name']),
   accountType = accountTypeDeserializer(json['accountType']),
   language = appLanguageDeserializer(json['language']),
+  profilePhoto = json['profilePhoto'] == null ? null : nativeFromJson<String>(json['profilePhoto']),
   preferredAreas = json['preferredAreas'] == null ? null : (json['preferredAreas'] as List<dynamic>)
         .map((e) => nativeFromJson<String>(e))
         .toList(),
@@ -60,13 +62,14 @@ class MyProfileUsers {
     name == otherTyped.name && 
     accountType == otherTyped.accountType && 
     language == otherTyped.language && 
+    profilePhoto == otherTyped.profilePhoto && 
     preferredAreas == otherTyped.preferredAreas && 
     spokenLanguages == otherTyped.spokenLanguages && 
     workCategories == otherTyped.workCategories;
     
   }
   @override
-  int get hashCode => Object.hashAll([id.hashCode, authUid.hashCode, email.hashCode, name.hashCode, accountType.hashCode, language.hashCode, preferredAreas.hashCode, spokenLanguages.hashCode, workCategories.hashCode]);
+  int get hashCode => Object.hashAll([id.hashCode, authUid.hashCode, email.hashCode, name.hashCode, accountType.hashCode, language.hashCode, profilePhoto.hashCode, preferredAreas.hashCode, spokenLanguages.hashCode, workCategories.hashCode]);
   
 
   Map<String, dynamic> toJson() {
@@ -83,6 +86,9 @@ class MyProfileUsers {
     json['language'] = 
     appLanguageSerializer(language)
     ;
+    if (profilePhoto != null) {
+      json['profilePhoto'] = nativeToJson<String?>(profilePhoto);
+    }
     if (preferredAreas != null) {
       json['preferredAreas'] = preferredAreas?.map((e) => nativeToJson<String>(e)).toList();
     }
@@ -102,6 +108,7 @@ class MyProfileUsers {
     required this.name,
     required this.accountType,
     required this.language,
+    this.profilePhoto,
     this.preferredAreas,
     this.spokenLanguages,
     this.workCategories,

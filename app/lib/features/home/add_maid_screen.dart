@@ -437,6 +437,7 @@ class _AddMaidScreenState extends State<AddMaidScreen> {
               ProfileDetails(
                 lang: lang,
                 name: maid.name,
+                profilePhoto: maid.profilePhoto,
                 preferredAreas: maid.preferredAreas,
                 spokenLanguages: maid.spokenLanguages,
                 workCategories: maid.workCategories,
@@ -534,6 +535,7 @@ class _AddMaidScreenState extends State<AddMaidScreen> {
               ProfileDetails(
                 lang: lang,
                 name: maid.name,
+                profilePhoto: maid.profilePhoto,
                 preferredAreas: maid.preferredAreas,
                 spokenLanguages: maid.spokenLanguages,
                 workCategories: maid.workCategories,

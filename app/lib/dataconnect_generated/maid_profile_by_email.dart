@@ -20,12 +20,14 @@ class MaidProfileByEmailVariablesBuilder {
 @immutable
 class MaidProfileByEmailUsers {
   final String name;
+  final String? profilePhoto;
   final List<String>? preferredAreas;
   final List<EnumValue<AppLanguage>>? spokenLanguages;
   final List<EnumValue<TaskCategory>>? workCategories;
   MaidProfileByEmailUsers.fromJson(dynamic json):
   
   name = nativeFromJson<String>(json['name']),
+  profilePhoto = json['profilePhoto'] == null ? null : nativeFromJson<String>(json['profilePhoto']),
   preferredAreas = json['preferredAreas'] == null ? null : (json['preferredAreas'] as List<dynamic>)
         .map((e) => nativeFromJson<String>(e))
         .toList(),
@@ -46,18 +48,22 @@ class MaidProfileByEmailUsers {
 
     final MaidProfileByEmailUsers otherTyped = other as MaidProfileByEmailUsers;
     return name == otherTyped.name && 
+    profilePhoto == otherTyped.profilePhoto && 
     preferredAreas == otherTyped.preferredAreas && 
     spokenLanguages == otherTyped.spokenLanguages && 
     workCategories == otherTyped.workCategories;
     
   }
   @override
-  int get hashCode => Object.hashAll([name.hashCode, preferredAreas.hashCode, spokenLanguages.hashCode, workCategories.hashCode]);
+  int get hashCode => Object.hashAll([name.hashCode, profilePhoto.hashCode, preferredAreas.hashCode, spokenLanguages.hashCode, workCategories.hashCode]);
   
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> json = {};
     json['name'] = nativeToJson<String>(name);
+    if (profilePhoto != null) {
+      json['profilePhoto'] = nativeToJson<String?>(profilePhoto);
+    }
     if (preferredAreas != null) {
       json['preferredAreas'] = preferredAreas?.map((e) => nativeToJson<String>(e)).toList();
     }
@@ -72,6 +78,7 @@ class MaidProfileByEmailUsers {
 
   MaidProfileByEmailUsers({
     required this.name,
+    this.profilePhoto,
     this.preferredAreas,
     this.spokenLanguages,
     this.workCategories,

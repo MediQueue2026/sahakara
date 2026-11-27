@@ -90,6 +90,21 @@ class Strings {
       AppLanguage.si: 'පැතිකඩ සුරකින ලදී',
       AppLanguage.ta: 'சுயவிவரம் சேமிக்கப்பட்டது',
     },
+    'changePhoto': {
+      AppLanguage.en: 'Change profile photo',
+      AppLanguage.si: 'පැතිකඩ ඡායාරූපය වෙනස් කරන්න',
+      AppLanguage.ta: 'சுயவிவர புகைப்படத்தை மாற்று',
+    },
+    'addProfilePhoto': {
+      AppLanguage.en: 'Add profile photo',
+      AppLanguage.si: 'පැතිකඩ ඡායාරූපයක් එක් කරන්න',
+      AppLanguage.ta: 'சுயவிவரப் புகைப்படத்தைச் சேர்',
+    },
+    'profileTakePhoto': {
+      AppLanguage.en: 'Take a photo',
+      AppLanguage.si: 'ඡායාරූපයක් ගන්න',
+      AppLanguage.ta: 'புகைப்படம் எடு',
+    },
     'houseLocation': {
       AppLanguage.en: 'House location',
       AppLanguage.si: 'නිවසේ පිහිටීම',

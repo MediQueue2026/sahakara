@@ -150,7 +150,11 @@ class _HomeShellState extends State<HomeShell> {
           Icons.home_outlined,
           Icons.home,
           Strings.of('household', lang),
-          HouseholdTab(lang: widget.lang, membership: widget.membership),
+          HouseholdTab(
+            lang: widget.lang,
+            membership: widget.membership,
+            profile: widget.profile,
+          ),
         ),
         _Tab(
           Icons.task_alt,

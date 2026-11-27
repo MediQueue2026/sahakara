@@ -86,8 +86,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               const SizedBox(height: 16),
             ],
-            Text(profile.name, style: Theme.of(context).textTheme.titleMedium),
-            Text(profile.email, style: const TextStyle(color: mutedText)),
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 28,
+                  backgroundImage: profile.profilePhoto?.isNotEmpty == true
+                      ? NetworkImage(profile.profilePhoto!)
+                      : null,
+                  child: profile.profilePhoto?.isNotEmpty == true
+                      ? null
+                      : const Icon(Icons.person_outline, size: 28),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        profile.name,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      Text(
+                        profile.email,
+                        style: const TextStyle(color: mutedText),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
             const SizedBox(height: 24),
             if (_loaded)
               ProfileSection(
