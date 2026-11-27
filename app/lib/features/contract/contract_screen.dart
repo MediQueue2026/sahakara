@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/app_data.dart';
 import '../../core/app_language.dart';
+import '../../core/glass.dart';
 import 'contract_detail_screen.dart';
 
 /// Owner: pick a staff member to view/edit their contract. Staff see their
@@ -40,7 +41,7 @@ class ContractScreen extends StatelessWidget {
           );
         }
         return ListView(
-          padding: const EdgeInsets.all(16),
+          padding: clearOfGlassBar(context, const EdgeInsets.all(16)),
           children: staff
               .map(
                 (m) => Card(

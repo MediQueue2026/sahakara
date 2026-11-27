@@ -4,6 +4,7 @@ import '../../core/app_data.dart';
 import '../../core/app_language.dart';
 import '../../core/strings.dart';
 import '../../core/theme.dart';
+import '../../core/glass.dart';
 import '../onboarding/waiting_for_household_screen.dart';
 
 const payTypes = ['monthly', 'daily', 'hourly', 'per_visit'];
@@ -187,7 +188,7 @@ class _ContractDetailScreenState extends State<ContractDetailScreen> {
                   onRefresh: _load,
                   child: SingleChildScrollView(
                     physics: const AlwaysScrollableScrollPhysics(),
-                    padding: const EdgeInsets.all(16),
+                    padding: clearOfGlassBar(context, const EdgeInsets.all(16)),
                     child: _error != null
                         ? Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,

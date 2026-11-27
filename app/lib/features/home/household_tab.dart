@@ -4,6 +4,7 @@ import '../../core/app_data.dart';
 import '../../core/app_language.dart';
 import '../../core/strings.dart';
 import '../../core/theme.dart';
+import '../../core/glass.dart';
 import 'add_maid_screen.dart';
 
 /// Owner: the household's details and members — including maids who
@@ -138,7 +139,7 @@ class _HouseholdTabState extends State<HouseholdTab> {
       valueListenable: widget.lang,
       builder: (context, lang, _) {
         return ListView(
-          padding: const EdgeInsets.all(16),
+          padding: clearOfGlassBar(context, const EdgeInsets.all(16)),
           children: [
             Text(
               household.name,
